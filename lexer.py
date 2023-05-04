@@ -1,4 +1,4 @@
-from tokens import SSToken, SSTokens, SSKEYWORDS
+from tokens.tokens import SSToken, SSTokens, SSKEYWORDS
 
 import string
 
@@ -41,7 +41,7 @@ class Lexer:
             elif chars[0] in '!':
                 tokens.append(SSToken(SSTokens.UnaryOperatorToken, chars[0]))
                 chars.pop(0)
-            elif chars[0] in '+-*/%':
+            elif chars[0] in '+-*/%|&':
                 tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0]))
                 chars.pop(0)
             else:
