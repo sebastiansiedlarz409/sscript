@@ -10,10 +10,10 @@ class ProgramNode(Node):
         self.children.append(child)
 
     def __repr__(self):
-        ret = ""
+        ret = f"<{type(self).__name__}>\n"
         for child in self.children:
             ret += "\t"
-            ret += child
+            ret += f"{child}"
             ret += "\n"
         return ret
     
@@ -25,36 +25,21 @@ class IdentifierNode(Node):
         self.identifier = identifier
 
     def __repr__(self):
-        ret = self.identifier
+        ret = f"<{type(self).__name__}> {self.identifier}"
         return ret
     
 class NumberNode(Node):
     def __init__(self):
         self.number = None
 
-    def setIdentifier(self, number):
+    def setValue(self, number):
         self.number = number
 
     def __repr__(self):
-        ret = self.number
-        return ret
-    
-class VariableAssignNode(Node):
-    def __init__(self):
-        self.identifier = None
-        self.child = None
-
-    def setIdentifier(self, identifier):
-        self.identifier = identifier
-
-    def setChild(self, child):
-        self.child = child
-
-    def __repr__(self):
-        ret = f"{self.identifier} <= ({self.child})"
+        ret = f"<{type(self).__name__}> {self.number}"
         return ret
 
-class UnaryExpressionNode(None):
+class UnaryExpressionNode(Node):
     def __init__(self):
         self.child = None
         self.operator = None
@@ -66,7 +51,7 @@ class UnaryExpressionNode(None):
         self.child = child
 
     def __repr__(self):
-        ret = f"({self.operator} {self.child})"
+        ret = f"<{type(self).__name__}>({self.operator} {self.child})"
         return ret
     
 class BinaryExpressionNode(Node):
@@ -85,5 +70,45 @@ class BinaryExpressionNode(Node):
         self.rChild = child
 
     def __repr__(self):
-        ret = f"({self.lChild} {self.operator} {self.rChild})"
+        ret = f"<{type(self).__name__}>({self.lChild} {self.operator} {self.rChild})"
+        return ret
+    
+class FunctionDeclarationNode(Node):
+    def __init__(self):
+        self.identifier = None
+        self.params = [] #params
+        self.child = [] #body
+
+    def setIdentifier(self, identifier):
+        self.identifier = identifier
+
+    def appendParams(self, param):
+        self.params.append(param)
+
+    def appendChild(self, child):
+        self.child.append(child)
+
+    def __repr__(self):
+        ret = f"{self.identifier}: ("
+        for p in self.params:
+            ret += f"{p} "
+        ret+=f")\n"
+        for c in self.child:
+            ret += f"\t{c}"
+
+        return ret
+    
+class VariableAssignNode(Node):
+    def __init__(self):
+        self.identifier = None
+        self.child = None
+
+    def setIdentifier(self, identifier):
+        self.identifier = identifier
+
+    def setChild(self, child):
+        self.child = child
+
+    def __repr__(self):
+        ret = f"{self.identifier} <= ({self.child})"
         return ret
