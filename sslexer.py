@@ -38,10 +38,10 @@ class SSLexer:
             elif chars[0] == ';':
                 tokens.append(SSToken(SSTokens.SemicolonToken, chars[0]))
                 chars.pop(0)
-            elif chars[0] in '!':
+            elif chars[0] == '!':
                 tokens.append(SSToken(SSTokens.UnaryOperatorToken, chars[0]))
                 chars.pop(0)
-            elif chars[0] in '+-*/%|&':
+            elif chars[0] in '+-*/%|&<>':
                 tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0]))
                 chars.pop(0)
             else:
@@ -61,7 +61,7 @@ class SSLexer:
                         value+=chars[0]
                         chars.pop(0)
 
-                    if value in SSKEYWORDS.keys():
+                    if value.lower() in SSKEYWORDS.keys():
                         tokens.append(SSToken(SSKEYWORDS[value], value))
                     else:
                         tokens.append(SSToken(SSTokens.IdentifierToken, value))
