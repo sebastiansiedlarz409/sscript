@@ -29,6 +29,7 @@ class SSTokens(Enum):
     LParenToken = 11,
     RParenToken = 12,
     NumberToken = 13,
+    EOFToken = 9999
 
 SSKEYWORDS = {
     "let" : SSTokens.LetKwToken,

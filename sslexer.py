@@ -2,7 +2,7 @@ from tokens.tokens import SSToken, SSTokens, SSKEYWORDS
 
 import string
 
-class Lexer:
+class SSLexer:
     def __init__(self):
         pass
 
@@ -68,5 +68,8 @@ class Lexer:
                 
                 else:
                     raise Exception(f"SSLexer: Unknown token {chars[0]}")
+
+        #add EOF
+        tokens.append(SSToken(SSTokens.EOFToken, "EOF"))
 
         return tokens
