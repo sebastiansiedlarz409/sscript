@@ -49,6 +49,17 @@ class NullNode(Node):
     def __repr__(self):
         ret = f"{self.value}"
         return ret
+    
+class BoolNode(Node):
+    def __init__(self):
+        self.value = None
+
+    def setValue(self, value):
+        self.value = value
+
+    def __repr__(self):
+        ret = f"{self.value}"
+        return ret
 
 class UnaryExpressionNode(Node):
     def __init__(self):

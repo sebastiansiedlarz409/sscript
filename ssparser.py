@@ -82,6 +82,12 @@ class SSParser:
             n.setValue(self.get().value)
             return n
         
+        #true false
+        if self.peak().type == SSTokens.TrueKwToken or self.peak().type == SSTokens.FalseKwToken:
+            n = BoolNode()
+            n.setValue(self.get().value)
+            return n
+        
         raise Exception(f"SSParser: Unexpected token {self.peak().value}")
 
     """

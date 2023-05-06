@@ -1,1 +1,1 @@
-1 or null * 99 + 1
+1 or null * 99 + 1 + true or false
