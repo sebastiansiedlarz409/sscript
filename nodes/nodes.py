@@ -10,7 +10,7 @@ class ProgramNode(Node):
         self.children.append(child)
 
     def __repr__(self):
-        ret = f"<{type(self).__name__}>\n"
+        ret = f"Program:\n"
         for child in self.children:
             ret += "\t"
             ret += f"{child}"
@@ -25,7 +25,7 @@ class IdentifierNode(Node):
         self.identifier = identifier
 
     def __repr__(self):
-        ret = f"<{type(self).__name__}> {self.identifier}"
+        ret = f"{self.identifier}"
         return ret
     
 class NumberNode(Node):
@@ -36,7 +36,7 @@ class NumberNode(Node):
         self.number = number
 
     def __repr__(self):
-        ret = f"<{type(self).__name__}> {self.number}"
+        ret = f"{self.number}"
         return ret
 
 class UnaryExpressionNode(Node):
@@ -51,7 +51,7 @@ class UnaryExpressionNode(Node):
         self.child = child
 
     def __repr__(self):
-        ret = f"<{type(self).__name__}>({self.operator} {self.child})"
+        ret = f"({self.operator} {self.child})"
         return ret
     
 class BinaryExpressionNode(Node):
@@ -70,7 +70,7 @@ class BinaryExpressionNode(Node):
         self.rChild = child
 
     def __repr__(self):
-        ret = f"<{type(self).__name__}>({self.lChild} {self.operator} {self.rChild})"
+        ret = f"({self.lChild} {self.operator} {self.rChild})"
         return ret
     
 class FunctionDeclarationNode(Node):

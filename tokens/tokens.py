@@ -29,6 +29,7 @@ class SSTokens(Enum):
     GeKwToken = 24,
     LsKwToken = 25,
     LeKwToken = 26,
+    NullKwToken = 27,
     IdentifierToken = 31,
     AssignOperatorToken = 41,
     UnaryOperatorToken = 42,
@@ -60,5 +61,6 @@ SSKEYWORDS = {
     "gr": SSTokens.GrKwToken,
     "ge": SSTokens.GeKwToken,
     "ls": SSTokens.LsKwToken,
-    "le": SSTokens.LeKwToken
+    "le": SSTokens.LeKwToken,
+    "null": SSTokens.NullKwToken
 }

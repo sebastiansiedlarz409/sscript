@@ -76,6 +76,12 @@ class SSParser:
             n.setIdentifier(self.get().value)
             return n
         
+        #null
+        if self.peak().type == SSTokens.NullKwToken:
+            n = IdentifierNode()
+            n.setIdentifier(self.get().value)
+            return n
+        
         raise Exception(f"SSParser: Unexpected token {self.peak().value}")
 
     """
