@@ -175,7 +175,8 @@ class SSParser:
         return left
     
     """
-    
+    unaryexpression -> [UnaryExpressionNode, logicalexpression]
+        (unaryoperatortoken) logicalexpression
     """
     def parseUnaryExpression(self) -> Node:
         if self.peak().type == SSTokens.UnaryOperatorToken:

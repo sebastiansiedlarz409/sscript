@@ -36,10 +36,12 @@ class SSTokens(Enum):
     LSquareBracketToken = 57, #[]
     RSquareBracketToken = 58,
     NumberToken = 101,
+    ConstKwToken = 999,
     EOFToken = 9999
 
 SSKEYWORDS = {
     "let" : SSTokens.LetKwToken,
+    "const": SSTokens.ConstKwToken,
     "func": SSTokens.FuncKwToken,
     "return": SSTokens.ReturnKwToken,
     "if": SSTokens.IfKwToken,
