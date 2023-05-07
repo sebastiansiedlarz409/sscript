@@ -139,6 +139,7 @@ class DeclareVariableAssignNode(Node):
     def __init__(self):
         self.identifier: str = None
         self.child: Node = None
+        self.const: bool = False
 
     def setIdentifier(self, identifier: str):
         self.identifier = identifier
@@ -146,6 +147,13 @@ class DeclareVariableAssignNode(Node):
     def setChild(self, child: Node):
         self.child = child
 
+    def isConst(self):
+        self.const = True
+
     def __repr__(self) -> str:
-        ret = f"{self.identifier} <= ({self.child})"
-        return ret
+        if self.const:
+            ret = f"(const) {self.identifier} <= ({self.child})"
+            return ret
+        else:
+            ret = f"{self.identifier} <= ({self.child})"
+            return ret

@@ -31,7 +31,7 @@ class SSParser:
             node = None
 
             #parse variable assign
-            node = self.parseVariableAssign()
+            node = self.parseVariableDeclarationAssign()
             if node != None:
                 program.appendChild(node)
                 continue
@@ -190,13 +190,47 @@ class SSParser:
         
         return self.parseLogicalExpression()
 
+    """
+    variabledeclarationassign -> [VariableAssignNode]:
+        (letkwtoken | constkwtoken) identifiertoken assignoperatortoken unaryexpression
+    """
+    def parseVariableDeclarationAssign(self) -> Node:
+        if self.peak().type == SSTokens.LetKwToken or self.peak().type == SSTokens.ConstKwToken:
+            t = self.get() #skip let/const
+            if self.peak().type == SSTokens.IdentifierToken:
+                kw = DeclareVariableAssignNode()
+                kw.setIdentifier(self.get().value)
+                if t.type == SSTokens.ConstKwToken:
+                    kw.isConst()
+                if self.peak().type == SSTokens.AssignOperatorToken:
+                    self.get()
+                    exp = self.parseUnaryExpression()
+                    kw.setChild(exp)
+                    return kw
+                else:
+                    raise Exception(f"SSLexer: Expected AssignOperatorToken")
+            else:
+                raise Exception(f"SSLexer: Expected IdentifierToken")
 
+        return None
+    
     """
     variableassign -> [VariableAssignNode]:
-        letkwtoken identifiertoken assignoperatortoken logicalexpression
+        identifiertoken assignoperatortoken unaryexpression
     """
     def parseVariableAssign(self) -> Node:
-        pass
+        if self.peak().type == SSTokens.IdentifierToken:
+            kw = VariableAssignNode()
+            kw.setIdentifier(self.get().value)
+            if self.peak().type == SSTokens.AssignOperatorToken:
+                self.get()
+                exp = self.parseUnaryExpression()
+                kw.setChild(exp)
+                return kw
+            else:
+                raise Exception(f"SSLexer: Expected AssignOperatorToken")
+
+        return None
 
     def parseFunctionDeclaration(self) -> Node:
         pass

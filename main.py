@@ -31,7 +31,7 @@ runtime = SSRuntime()
 
 # open source file
 source = ""
-with open("_s3.ss", "r") as f:
+with open("_s2.ss", "r") as f:
     source = f.read()
 
 # tokenize
