@@ -13,9 +13,13 @@ class RuntimeIdentifier:
 class ValueRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
         self.value: RuntimeValue = None
+        self.const: bool = False
 
     def setValue(self, value: RuntimeValue):
         self.value = value
+
+    def isConst(self):
+        self.const = True
 
     def __repr__(self) -> str:
         ret = f"{self.identifier} = {self.value}"
@@ -61,6 +65,19 @@ class SSRuntimeScope:
         s.setValue(value)
 
         self.symbols.append(s)
+
+        #alway declare inside myself
+    def declareValueConstSymbol(self, symbol: str, value: RuntimeValue):
+        #check if already symbol exists
+        if self.checkIfSymbolExists(symbol) != None:
+            raise Exception(f"SSRuntime: Identifier '{symbol}' has already been declared")
+        
+        s = ValueRuntimeIdentifier()
+        s.setIdentifier(symbol)
+        s.setValue(value)
+        s.isConst()
+
+        self.symbols.append(s)
     
     #override can reassign in myself or in my ancestor
     def assignValueSymbol(self, symbol: str, value: RuntimeValue):
@@ -68,6 +85,10 @@ class SSRuntimeScope:
         s = self.checkIfSymbolExists(symbol)
         if s == None:
             raise Exception(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
+        
+        #throw if try to override constant
+        if s.const:
+            raise Exception(f"SSRuntime: Identifier '{symbol}' is constant")
 
         #override 
         s.setValue(value)

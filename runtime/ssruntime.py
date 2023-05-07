@@ -1,5 +1,6 @@
 from parser.nodes import *
 from runtime.values import *
+from runtime.ssscope import *
 
 class SSRuntime:
     def __init__(self):
@@ -72,16 +73,20 @@ class SSRuntime:
     def nullNode(self, node: Node) -> RuntimeValue:
         value = NullRuntimeValue()
         return value
+    
+    def identifierNode(self, node: Node, scope: SSRuntimeScope):
+        value = scope.peakValueSymbol(node.identifier)
+        return value
 
-    def programNode(self, node: Node) -> RuntimeValue:
+    def programNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         last = NullNode()
         for child in node.children:
-            last = self.execute(child)
+            last = self.execute(child, scope)
         return last
 
-    def binaryExpressionNode(self, node: Node) -> RuntimeValue:
-        left = self.execute(node.lChild)
-        right = self.execute(node.rChild)
+    def binaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        left = self.execute(node.lChild, scope)
+        right = self.execute(node.rChild, scope)
 
         #not logical operator
         if node.operator in "+-*/%&|<>^":
@@ -132,8 +137,8 @@ class SSRuntime:
             else:
                 raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
 
-    def unaryExpressionNode(self, node: Node) -> RuntimeValue:
-        child = self.execute(node.child)
+    def unaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        child = self.execute(node.child, scope)
 
         if node.operator == "not":
             if child.type == ValueTypes.Number:
@@ -144,8 +149,20 @@ class SSRuntime:
                 r = BoolRuntimeValue()
                 r.setValue(not child.value)
                 return r
+            
+    def declareVariableAssignNode(self, node: Node, scope: SSRuntimeScope):
+        exp = self.execute(node.child, scope)
+        if node.const:
+            scope.declareValueConstSymbol(node.identifier, exp)
+        else:
+            scope.declareValueSymbol(node.identifier, exp)
 
-    def execute(self, node: Node) -> RuntimeValue:
+    def variableAssignNode(self, node: Node, scope: SSRuntimeScope):
+        exp = self.execute(node.child, scope)
+        scope.assignValueSymbol(node.identifier, exp)
+
+    def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+
         if type(node).__name__ == "NullNode":
             return self.nullNode(node)
         elif type(node).__name__ == "NumberNode":
@@ -153,16 +170,18 @@ class SSRuntime:
         elif type(node).__name__ == "BoolNode":
             return self.boolNode(node)
         elif type(node).__name__ == "IdentifierNode":
-            pass
+            return self.identifierNode(node, scope)
         elif type(node).__name__ == "BinaryExpressionNode":
-            return self.binaryExpressionNode(node)
+            return self.binaryExpressionNode(node, scope)
         elif type(node).__name__ == "UnaryExpressionNode":
-            return self.unaryExpressionNode(node)
+            return self.unaryExpressionNode(node, scope)
         elif type(node).__name__ == "VariableAssignNode":
-            pass
+            self.variableAssignNode(node, scope)
+        elif type(node).__name__ == "DeclareVariableAssignNode":
+            self.declareVariableAssignNode(node, scope)
         elif type(node).__name__ == "FunctionDeclarationNode":
             pass
         elif type(node).__name__ == "ProgramNode":
-            return self.programNode(node)
+            return self.programNode(node, scope)
         else:
             raise Exception(f"SSRuntime: Failed to evaluate node {type(node).__name__}")

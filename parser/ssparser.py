@@ -30,12 +30,18 @@ class SSParser:
         while not self.iseof():
             node = None
 
-            #parse variable assign
+            #parse declaration variable assign
             node = self.parseVariableDeclarationAssign()
             if node != None:
                 program.appendChild(node)
                 continue
             
+            #parse variable assign
+            node = self.parseVariableAssign()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse function declaration
             node = self.parseFunctionDeclaration()
             if node != None:

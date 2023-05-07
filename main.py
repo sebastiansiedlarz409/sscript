@@ -1,6 +1,7 @@
 from lexer.sslexer import SSLexer
 from parser.ssparser import SSParser
 from runtime.ssruntime import SSRuntime
+from runtime.ssscope import SSRuntimeScope
 
 lexer = SSLexer()
 parser = SSParser()
@@ -31,7 +32,7 @@ runtime = SSRuntime()
 
 # open source file
 source = ""
-with open("_s2.ss", "r") as f:
+with open("_s3.ss", "r") as f:
     source = f.read()
 
 # tokenize
@@ -48,5 +49,6 @@ print()
 
 # runtime
 print("Runtime:")
-result = runtime.execute(program)
+globalScope = SSRuntimeScope()
+result = runtime.execute(program, globalScope)
 print(result)
