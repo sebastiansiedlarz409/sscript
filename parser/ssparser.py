@@ -252,10 +252,18 @@ class SSParser:
     def parseLog(self) -> Node:
         if self.peak().type == SSTokens.LogKwToken:
             self.get()
-            log = LogNode()
-            exp = self.parseUnaryExpression()
-            log.setChild(exp)
-            return log
+            if self.peak().type == SSTokens.LParenToken:
+                self.get()
+                log = LogNode()
+                exp = self.parseUnaryExpression()
+                log.setChild(exp)
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    return log
+                else:
+                    raise Exception(f"SSLexer: Expected RParenToken")
+            else:
+                raise Exception(f"SSLexer: Expected LParenToken")
 
         return None
     
@@ -266,9 +274,17 @@ class SSParser:
     def parseLogln(self) -> Node:
         if self.peak().type == SSTokens.LoglnKwToken:
             self.get()
-            log = LoglnNode()
-            exp = self.parseUnaryExpression()
-            log.setChild(exp)
-            return log
+            if self.peak().type == SSTokens.LParenToken:
+                self.get()
+                log = LoglnNode()
+                exp = self.parseUnaryExpression()
+                log.setChild(exp)
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    return log
+                else:
+                    raise Exception(f"SSLexer: Expected RParenToken")
+            else:
+                raise Exception(f"SSLexer: Expected LParenToken")
 
         return None
