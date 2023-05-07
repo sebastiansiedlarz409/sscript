@@ -29,6 +29,18 @@ class SSLexer:
             elif chars[0] == ')':
                 tokens.append(SSToken(SSTokens.RParenToken, chars[0]))
                 chars.pop(0)
+            elif chars[0] == '{':
+                tokens.append(SSToken(SSTokens.LBracketToken, chars[0]))
+                chars.pop(0)
+            elif chars[0] == '}':
+                tokens.append(SSToken(SSTokens.RBracketToken, chars[0]))
+                chars.pop(0)
+            elif chars[0] == '[':
+                tokens.append(SSToken(SSTokens.LSquareBracketToken, chars[0]))
+                chars.pop(0)
+            elif chars[0] == ']':
+                tokens.append(SSToken(SSTokens.RSquareBracketToken, chars[0]))
+                chars.pop(0)
             elif chars[0] == '=':
                 tokens.append(SSToken(SSTokens.AssignOperatorToken, chars[0]))
                 chars.pop(0)
@@ -38,10 +50,7 @@ class SSLexer:
             elif chars[0] == ';':
                 tokens.append(SSToken(SSTokens.SemicolonToken, chars[0]))
                 chars.pop(0)
-            elif chars[0] == '!':
-                tokens.append(SSToken(SSTokens.UnaryOperatorToken, chars[0]))
-                chars.pop(0)
-            elif chars[0] in '+-*/%|&<>':
+            elif chars[0] in '+-*/%|&^<>':
                 tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0]))
                 chars.pop(0)
             else:

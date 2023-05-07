@@ -22,6 +22,12 @@ class SSRuntime:
             result = lvalue.value | rvalue.value
         elif operator == "&":
             result = lvalue.value & rvalue.value
+        elif operator == "^":
+            result = lvalue.value ^ rvalue.value
+        elif operator == "<":
+            result = lvalue.value << rvalue.value
+        elif operator == ">":
+            result = lvalue.value >> rvalue.value
 
         ret = NumberRuntimeValue()
         ret.setValue(result)
@@ -46,6 +52,8 @@ class SSRuntime:
             result = lvalue.value < rvalue.value
         elif operator == "gr":
             result = lvalue.value <= rvalue.value
+        else:
+            raise Exception(f"SSRuntime: Bool expression not support this operator {operator}")
 
         ret = BoolRuntimeValue()
         ret.setValue(result)

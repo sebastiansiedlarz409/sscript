@@ -40,6 +40,10 @@ class SSTokens(Enum):
     SemicolonToken = 52,
     LParenToken = 53,
     RParenToken = 54,
+    LBracketToken = 55, #{}
+    RBracketToken = 56,
+    LSquareBracketToken = 57, #[]
+    RSquareBracketToken = 58,
     NumberToken = 101,
     EOFToken = 9999
 
