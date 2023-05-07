@@ -1,11 +1,11 @@
-from nodes.nodes import *
-from values.values import *
+from parser.nodes import *
+from runtime.values import *
 
 class SSRuntime:
     def __init__(self):
         pass
 
-    def evalBinaryExpressionNumberNumber(self, lvalue, rvalue, operator):
+    def evalBinaryExpressionNumberNumber(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
         result = 0
 
         if operator == "+":
@@ -33,7 +33,7 @@ class SSRuntime:
         ret.setValue(result)
         return ret
 
-    def evalBinaryExpressionBool(self, lvalue, rvalue, operator):
+    def evalBinaryExpressionBool(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
         result = False
 
         if operator == "or":
@@ -59,27 +59,27 @@ class SSRuntime:
         ret.setValue(result)
         return ret
     
-    def boolNode(self, node):
+    def boolNode(self, node: Node) -> RuntimeValue:
         value = BoolRuntimeValue()
         value.setValue(True if node.value == "true" else False)
         return value
 
-    def numberNode(self, node):
+    def numberNode(self, node: Node) -> RuntimeValue:
         value = NumberRuntimeValue()
         value.setValue(float(node.number))
         return value
     
-    def nullNode(self, node):
+    def nullNode(self, node: Node) -> RuntimeValue:
         value = NullRuntimeValue()
         return value
 
-    def programNode(self, node):
+    def programNode(self, node: Node) -> RuntimeValue:
         last = NullNode()
         for child in node.children:
             last = self.execute(child)
         return last
 
-    def binaryExpressionNode(self, node):
+    def binaryExpressionNode(self, node: Node) -> RuntimeValue:
         left = self.execute(node.lChild)
         right = self.execute(node.rChild)
 
@@ -100,7 +100,7 @@ class SSRuntime:
         else:
             raise Exception(f"SSRuntime: Cant evaluate binary node when one of child is 'null'")
 
-    def execute(self, node):
+    def execute(self, node: Node) -> RuntimeValue:
         if type(node).__name__ == "NullNode":
             return self.nullNode(node)
         elif type(node).__name__ == "NumberNode":

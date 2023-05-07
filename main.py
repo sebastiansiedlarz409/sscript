@@ -1,6 +1,6 @@
-from sslexer import SSLexer
-from ssparser import SSParser
-from ssruntime import SSRuntime
+from lexer.sslexer import SSLexer
+from parser.ssparser import SSParser
+from runtime.ssruntime import SSRuntime
 
 lexer = SSLexer()
 parser = SSParser()
@@ -8,7 +8,7 @@ runtime = SSRuntime()
 
 #open source file
 source = ""
-with open("_s1.ss", "r") as f:
+with open("_s3.ss", "r") as f:
     source = f.read()
 
 #tokenize
@@ -16,7 +16,6 @@ print("Lexer:")
 tokens = lexer.tokenize(source)
 for t in tokens: print(t)
 print()
-exit()
 
 #parse
 print("Parser:")

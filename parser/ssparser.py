@@ -1,19 +1,19 @@
-from tokens.tokens import *
-from nodes.nodes import *
+from lexer.tokens import *
+from parser.nodes import *
 
 class SSParser:
     def __init__(self):
         self.tokens = []
 
-    def iseof(self):
+    def iseof(self) -> bool:
         return self.tokens[0].type == SSTokens.EOFToken
     
-    def get(self):
+    def get(self) -> str:
         t = self.tokens[0]
         self.tokens.pop(0)
         return t
     
-    def peak(self, offset = 0):
+    def peak(self, offset: int = 0) -> str:
         return self.tokens[offset]
 
     """
@@ -21,7 +21,7 @@ class SSParser:
         variableassignnode |
         functiondeclarationnode
     """
-    def parseProgram(self, tokens):
+    def parseProgram(self, tokens: list[SSToken]) -> Node:
         self.tokens = tokens
 
         #prepare main node
@@ -54,8 +54,7 @@ class SSParser:
     factor -> [IdentifierNode, NumberNode, arithmeticexpression]:
         numbertoken | identifiertoken
     """
-    def parseFactor(self):
-        #TODO: paren
+    def parseFactor(self) -> Node:
         #check for exp inside paren
         if self.peak().type == SSTokens.LParenToken:
             self.get()
@@ -94,7 +93,7 @@ class SSParser:
     term -> [BinaryOperatorNode, factor]:
         factor (binaryoperatortoken(mul, div, mod) factor)
     """
-    def parseMulArithmeticExpression(self):
+    def parseMulArithmeticExpression(self) -> Node:
         left = self.parseFactor()
         while self.peak().value in "*/%":
             operator = self.get().value #operator
@@ -111,7 +110,7 @@ class SSParser:
     arithmeticexpression -> [BinaryOperatorNode, mularithmeticexpression]:
         mularithmeticexpression (binaryoperatortoken(add, sub) mularithmeticexpression)
     """
-    def parserAddArithmeticExpression(self):
+    def parserAddArithmeticExpression(self) -> Node:
         left = self.parseMulArithmeticExpression()
         while self.peak().value in "+-":
             operator = self.get().value #operator
@@ -128,7 +127,7 @@ class SSParser:
     comparasionexpression -> [BinaryOperatorNode, addarithmeticexpression]:
         addarithmeticexpression (binaryoperatortoken(comparasion) addarithmeticexpression)
     """
-    def parserComparasionExpression(self):
+    def parserComparasionExpression(self) -> Node:
         left = self.parserAddArithmeticExpression()
         while self.peak().value in ["eq", "neq", "gr", "ge", "ls", "le"]:
             operator = self.get().value #operator
@@ -145,9 +144,9 @@ class SSParser:
     bitewiseexpression -> [BinaryOperatorNode, camparasionexpression]:
         comparasionexpression (binaryoperatortoken(comparasion) comparasionexpression)
     """
-    def parserBitewiseExpression(self):
+    def parserBitewiseExpression(self) -> Node:
         left = self.parserComparasionExpression()
-        while self.peak().value in "|&":
+        while self.peak().value in "|&<>^":
             operator = self.get().value #operator
             right = self.parserComparasionExpression()
             temp = BinaryExpressionNode()
@@ -162,7 +161,7 @@ class SSParser:
     logicalexpression -> [BinaryOperatorNode, bitewiseexpression]:
         bitewisexpression (binaryoperatortoken(comparasion) bitewisexpression)
     """
-    def parserLogicalExpression(self):
+    def parserLogicalExpression(self) -> Node:
         left = self.parserBitewiseExpression()
         while self.peak().value in ["and", "or"]:
             operator = self.get().value #operator
@@ -179,9 +178,8 @@ class SSParser:
     variableassign -> [VariableAssignNode]:
         letkwtoken identifiertoken assignoperatortoken logicalexpression
     """
-    def parseVariableAssign(self):
+    def parseVariableAssign(self) -> Node:
         pass
 
-    
-    def parseFunctionDeclaration(self):
+    def parseFunctionDeclaration(self) -> Node:
         pass

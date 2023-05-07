@@ -1,4 +1,4 @@
-from tokens.tokens import SSToken, SSTokens, SSKEYWORDS
+from lexer.tokens import SSToken, SSTokens, SSKEYWORDS
 
 import string
 
@@ -6,14 +6,14 @@ class SSLexer:
     def __init__(self):
         pass
 
-    def isalphabetic(self, char):
+    def isalphabetic(self, char: str) -> bool:
         chars = string.ascii_letters + "_"
         return char in chars
     
-    def isnumber(self, char):
+    def isnumber(self, char: str) -> bool:
         return char in string.digits
 
-    def tokenize(self, source):
+    def tokenize(self, source: str) -> list[SSToken]:
         #buffer for tokens
         tokens = []
 

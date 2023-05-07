@@ -7,10 +7,10 @@ class ValueTypes(Enum):
 
 class RuntimeValue:
     def __init__(self):
-        self.type = None
+        self.type: ValueTypes = None
         self.value = None
 
-    def setType(self, t):
+    def setType(self, t: ValueTypes):
         self.type = t
 
     def setValue(self, value):

@@ -1,13 +1,5 @@
 from enum import Enum
 
-class SSToken:
-    def __init__(self, sstype, value):
-        self.type = sstype
-        self.value = value
-
-    def __repr__(self):
-        return f"{self.type} => {self.value}"
-
 class SSTokens(Enum):
     LetKwToken = 0,
     FuncKwToken = 1,
@@ -72,3 +64,11 @@ SSKEYWORDS = {
     "false": SSTokens.FalseKwToken,
     "null": SSTokens.NullKwToken
 }
+
+class SSToken:
+    def __init__(self, sstype: SSTokens, value: str):
+        self.type: SSTokens = sstype
+        self.value: str = value
+
+    def __repr__(self) -> str:
+        return f"{self.type} => {self.value}"
