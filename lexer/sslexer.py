@@ -12,6 +12,48 @@ class SSLexer:
     
     def isnumber(self, char: str) -> bool:
         return char in string.digits
+    
+    def ishexnumber(self, char: str) -> bool:
+        return char.lower() in (string.digits+"abcdef")
+    
+    def isbinnumber(self, char: str) -> bool:
+        return char.lower() in (string.digits+"abcdef")
+    
+    def getNumericValue(self, chars: list[str]) -> str:
+        value = ""
+
+        #if hex
+        if chars[0] == "0" and chars[1] == "x":
+            value+="0x"
+            chars.pop(0)
+            chars.pop(0)
+            while(len(chars) > 0 and (self.ishexnumber(chars[0]) or chars[0] == ".")):
+                #get dot once
+                value+=chars[0]
+                chars.pop(0)
+            return value
+        
+        #if bin
+        if chars[0] == "0" and chars[1] == "b":
+            value+="0b"
+            chars.pop(0)
+            chars.pop(0)
+            while(len(chars) > 0 and (self.isbinnumber(chars[0]) or chars[0] == ".")):
+                #get dot once
+                value+=chars[0]
+                chars.pop(0)
+            return value
+
+        dot = False
+        while(len(chars) > 0 and (self.isnumber(chars[0]) or chars[0] == ".")):
+            if chars[0] == "." and dot:
+                raise Exception(f"SSLexer: Floating point value cant contains only one dot")
+            #get dot once
+            if chars[0] == ".":
+                dot = True
+            value+=chars[0]
+            chars.pop(0)
+        return value
 
     def tokenize(self, source: str) -> list[SSToken]:
         #buffer for tokens
@@ -58,10 +100,7 @@ class SSLexer:
 
                 #build number token
                 if(self.isnumber(chars[0])):
-                    value = ""
-                    while(len(chars) > 0 and self.isnumber(chars[0])):
-                        value+=chars[0]
-                        chars.pop(0)
+                    value = self.getNumericValue(chars)
                     tokens.append(SSToken(SSTokens.NumberToken, value))
 
                 elif(self.isalphabetic(chars[0])):

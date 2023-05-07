@@ -77,7 +77,12 @@ class SSRuntime:
 
     def numberNode(self, node: Node) -> RuntimeValue:
         value = NumberRuntimeValue()
-        value.setValue(float(node.number))
+        if node.number[0:2] == "0x":
+            value.setValue(float(int(node.number, 16)))
+        elif node.number[0:2] == "0b":
+            value.setValue(float(int(node.number, 2)))
+        else:
+            value.setValue(float(node.number))
         return value
     
     def nullNode(self, node: Node) -> RuntimeValue:
