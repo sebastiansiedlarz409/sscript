@@ -1,4 +1,5 @@
-from lexer.tokens import SSToken, SSTokens, SSKEYWORDS
+from lexer.tokens import *
+from misc.exceptions import *
 
 import string
 
@@ -47,7 +48,7 @@ class SSLexer:
         dot = False
         while(len(chars) > 0 and (self.isnumber(chars[0]) or chars[0] == ".")):
             if chars[0] == "." and dot:
-                raise Exception(f"SSLexer: Floating point value cant contains only one dot")
+                raise SSException(f"SSLexer: Floating point value cant contains only one dot")
             #get dot once
             if chars[0] == ".":
                 dot = True
@@ -115,7 +116,7 @@ class SSLexer:
                         tokens.append(SSToken(SSTokens.IdentifierToken, value))
                 
                 else:
-                    raise Exception(f"SSLexer: Unknown token {chars[0]}")
+                    raise SSException(f"SSLexer: Unknown token {chars[0]}")
 
         #add EOF
         tokens.append(SSToken(SSTokens.EOFToken, "EOF"))

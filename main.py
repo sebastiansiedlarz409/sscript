@@ -2,6 +2,7 @@ from lexer.sslexer import SSLexer
 from parser.ssparser import SSParser
 from runtime.ssruntime import SSRuntime
 from runtime.ssscope import SSRuntimeScope
+from misc.exceptions import SSException
 
 lexer = SSLexer()
 parser = SSParser()
@@ -30,25 +31,28 @@ runtime = SSRuntime()
 # print(childScope.peakValueSymbol("a"))
 # exit()
 
-# open source file
-source = ""
-with open("_s3.ss", "r") as f:
-    source = f.read()
+try:
+    # open source file
+    source = ""
+    with open("_s3.ss", "r") as f:
+        source = f.read()
 
-# tokenize
-print("Lexer:")
-tokens = lexer.tokenize(source)
-for t in tokens: print(t)
-print()
+    # tokenize
+    print("Lexer:")
+    tokens = lexer.tokenize(source)
+    for t in tokens: print(t)
+    print()
 
-# parse
-print("Parser:")
-program = parser.parseProgram(tokens)
-print(program)
-print()
+    # parse
+    print("Parser:")
+    program = parser.parseProgram(tokens)
+    print(program)
+    print()
 
-# runtime
-print("Runtime:")
-globalScope = SSRuntimeScope()
-result = runtime.execute(program, globalScope)
-print(result)
+    # runtime
+    print("Runtime:")
+    globalScope = SSRuntimeScope()
+    result = runtime.execute(program, globalScope)
+    print(result)
+except SSException as x:
+    print(x)

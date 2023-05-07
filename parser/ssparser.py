@@ -1,5 +1,6 @@
 from lexer.tokens import *
 from parser.nodes import *
+from misc.exceptions import *
 
 class SSParser:
     def __init__(self):
@@ -70,7 +71,7 @@ class SSParser:
             self.get()
             n = self.parseUnaryExpression()
             if self.get().type != SSTokens.RParenToken:
-                raise Exception(f"SSParser: Expected RParenToken")
+                raise SSException(f"SSParser: Expected RParenToken")
             return n
 
         #number token
@@ -97,7 +98,7 @@ class SSParser:
             n.setValue(self.get().value)
             return n
         
-        raise Exception(f"SSParser: Unexpected token {self.peak().value}")
+        raise SSException(f"SSParser: Unexpected token {self.peak().value}")
 
     """
     term -> [BinaryOperatorNode, factor]:
@@ -218,9 +219,9 @@ class SSParser:
                     kw.setChild(exp)
                     return kw
                 else:
-                    raise Exception(f"SSLexer: Expected AssignOperatorToken")
+                    raise SSException(f"SSLexer: Expected AssignOperatorToken")
             else:
-                raise Exception(f"SSLexer: Expected IdentifierToken")
+                raise SSException(f"SSLexer: Expected IdentifierToken")
 
         return None
     
@@ -238,7 +239,7 @@ class SSParser:
                 kw.setChild(exp)
                 return kw
             else:
-                raise Exception(f"SSLexer: Expected AssignOperatorToken")
+                raise SSException(f"SSLexer: Expected AssignOperatorToken")
 
         return None
 
@@ -261,9 +262,9 @@ class SSParser:
                     self.get()
                     return log
                 else:
-                    raise Exception(f"SSLexer: Expected RParenToken")
+                    raise SSException(f"SSLexer: Expected RParenToken")
             else:
-                raise Exception(f"SSLexer: Expected LParenToken")
+                raise SSException(f"SSLexer: Expected LParenToken")
 
         return None
     
@@ -283,8 +284,8 @@ class SSParser:
                     self.get()
                     return log
                 else:
-                    raise Exception(f"SSLexer: Expected RParenToken")
+                    raise SSException(f"SSLexer: Expected RParenToken")
             else:
-                raise Exception(f"SSLexer: Expected LParenToken")
+                raise SSException(f"SSLexer: Expected LParenToken")
 
         return None

@@ -1,6 +1,7 @@
 from parser.nodes import *
 from runtime.values import *
 from runtime.ssscope import *
+from misc.exceptions import *
 
 class SSRuntime:
     def __init__(self):
@@ -42,7 +43,7 @@ class SSRuntime:
         elif operator == "and":
             result = lvalue.value and rvalue.value
         else:
-            raise Exception(f"SSRuntime: Bool expression not support this operator {operator}")
+            raise SSException(f"SSRuntime: Bool expression not support this operator {operator}")
 
         ret = BoolRuntimeValue()
         ret.setValue(result)
@@ -64,7 +65,7 @@ class SSRuntime:
         elif operator == "le":
             result = lvalue.value <= rvalue.value
         else:
-            raise Exception(f"SSRuntime: Bool expression not support this operator {operator}")
+            raise SSException(f"SSRuntime: Bool expression not support this operator {operator}")
 
         ret = BoolRuntimeValue()
         ret.setValue(result)
@@ -128,7 +129,7 @@ class SSRuntime:
                 r.setValue(1 if left.value else 0)
                 return self.evalBinaryExpressionNumber(l, r, node.operator)
             else:
-                raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+                raise SSException(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
         #comparasion operators
         elif node.operator in ["eq", "neq", "gr", "ge", "ls", "le"]:
             if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
@@ -152,7 +153,7 @@ class SSRuntime:
                 r.setValue(1 if left.value else 0)
                 return self.evalBinaryExpressionComparasion(l, r, node.operator)
             else:
-                raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+                raise SSException(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
         #logical operator
         else:
             if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
@@ -176,7 +177,7 @@ class SSRuntime:
             elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
                 return self.evalBinaryExpressionBool(left, right, node.operator)
             else:
-                raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+                raise SSException(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
 
     def unaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         child = self.execute(node.child, scope)
@@ -237,4 +238,4 @@ class SSRuntime:
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         else:
-            raise Exception(f"SSRuntime: Failed to evaluate node {type(node).__name__}")
+            raise SSException(f"SSRuntime: Failed to evaluate node {type(node).__name__}")

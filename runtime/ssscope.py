@@ -2,6 +2,7 @@
 #identifier can be value type (variables, consts) or function type (functions)
 
 from runtime.values import *
+from misc.exceptions import *
 
 class RuntimeIdentifier:
     def __init__(self):
@@ -58,7 +59,7 @@ class SSRuntimeScope:
     def declareValueSymbol(self, symbol: str, value: RuntimeValue):
         #check if already symbol exists
         if self.checkIfSymbolExists(symbol) != None:
-            raise Exception(f"SSRuntime: Identifier '{symbol}' has already been declared")
+            raise SSException(f"SSRuntime: Identifier '{symbol}' has already been declared")
         
         s = ValueRuntimeIdentifier()
         s.setIdentifier(symbol)
@@ -70,7 +71,7 @@ class SSRuntimeScope:
     def declareValueConstSymbol(self, symbol: str, value: RuntimeValue):
         #check if already symbol exists
         if self.checkIfSymbolExists(symbol) != None:
-            raise Exception(f"SSRuntime: Identifier '{symbol}' has already been declared")
+            raise SSException(f"SSRuntime: Identifier '{symbol}' has already been declared")
         
         s = ValueRuntimeIdentifier()
         s.setIdentifier(symbol)
@@ -84,11 +85,11 @@ class SSRuntimeScope:
         #check if already symbol exists
         s = self.checkIfSymbolExists(symbol)
         if s == None:
-            raise Exception(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
+            raise SSException(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
         
         #throw if try to override constant
         if s.const:
-            raise Exception(f"SSRuntime: Identifier '{symbol}' is constant")
+            raise SSException(f"SSRuntime: Identifier '{symbol}' is constant")
 
         #override 
         s.setValue(value)
@@ -98,7 +99,7 @@ class SSRuntimeScope:
         #check if already symbol exists
         s = self.checkIfSymbolExists(symbol)
         if s == None:
-            raise Exception(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
+            raise SSException(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
         
         return s.value
 
