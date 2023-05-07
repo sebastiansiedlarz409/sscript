@@ -1,9 +1,16 @@
 let a = 10
 const b = 30
-a = 13
-b = 20
 
-logln b + a
-log 1 + 3
-log true or false
-logln 1
+logln a + b
+logln a - b
+logln a*b
+logln a/b
+logln 10%3
+logln 255&128
+logln 256<1
+
+logln 3 eq 3
+logln 3 eq 1
+logln 3 gr 1
+logln 1 neq 9
+logln 0 ls 10

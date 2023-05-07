@@ -20,15 +20,15 @@ class SSRuntime:
         elif operator == "%":
             result = lvalue.value % rvalue.value
         elif operator == "|":
-            result = lvalue.value | rvalue.value
+            result = int(lvalue.value) | int(rvalue.value)
         elif operator == "&":
-            result = lvalue.value & rvalue.value
+            result = int(lvalue.value) & int(rvalue.value)
         elif operator == "^":
-            result = lvalue.value ^ rvalue.value
+            result = int(lvalue.value) ^ int(rvalue.value)
         elif operator == "<":
-            result = lvalue.value << rvalue.value
+            result = int(lvalue.value) << int(rvalue.value)
         elif operator == ">":
-            result = lvalue.value >> rvalue.value
+            result = int(lvalue.value) >> int(rvalue.value)
 
         ret = NumberRuntimeValue()
         ret.setValue(result)
@@ -41,7 +41,17 @@ class SSRuntime:
             result = lvalue.value or rvalue.value
         elif operator == "and":
             result = lvalue.value and rvalue.value
-        elif operator == "eq":
+        else:
+            raise Exception(f"SSRuntime: Bool expression not support this operator {operator}")
+
+        ret = BoolRuntimeValue()
+        ret.setValue(result)
+        return ret
+
+    def evalBinaryExpressionComparasion(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
+        result = False
+
+        if operator == "eq":
             result = lvalue.value == rvalue.value
         elif operator == "neq":
             result = lvalue.value != rvalue.value
@@ -49,9 +59,9 @@ class SSRuntime:
             result = lvalue.value > rvalue.value
         elif operator == "ge":
             result = lvalue.value >= rvalue.value
-        elif operator == "gr":
+        elif operator == "ls":
             result = lvalue.value < rvalue.value
-        elif operator == "gr":
+        elif operator == "le":
             result = lvalue.value <= rvalue.value
         else:
             raise Exception(f"SSRuntime: Bool expression not support this operator {operator}")
@@ -112,6 +122,30 @@ class SSRuntime:
                 r = NumberRuntimeValue()
                 r.setValue(1 if left.value else 0)
                 return self.evalBinaryExpressionNumber(l, r, node.operator)
+            else:
+                raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+        #comparasion operators
+        elif node.operator in ["eq", "neq", "gr", "ge", "ls", "le"]:
+            if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
+                return self.evalBinaryExpressionComparasion(left, right, node.operator)
+            elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
+                #convert right bool to number
+                r = NumberRuntimeValue()
+                r.setValue(1 if right.value else 0)
+                return self.evalBinaryExpressionComparasion(left, r, node.operator)
+            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
+                #convert left bool to number
+                l = NumberRuntimeValue()
+                l.setValue(1 if right.value else 0)
+                return self.evalBinaryExpressionComparasion(l, right, node.operator)
+            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
+                #convert left bool to number
+                l = NumberRuntimeValue()
+                l.setValue(1 if left.value else 0)
+                #convert right bool to number
+                r = NumberRuntimeValue()
+                r.setValue(1 if left.value else 0)
+                return self.evalBinaryExpressionComparasion(l, r, node.operator)
             else:
                 raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
         #logical operator
