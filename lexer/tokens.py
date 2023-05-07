@@ -37,9 +37,13 @@ class SSTokens(Enum):
     RSquareBracketToken = 58,
     NumberToken = 101,
     ConstKwToken = 999,
+    LogKwToken = 9997,
+    LoglnKwToken = 9998,
     EOFToken = 9999
 
 SSKEYWORDS = {
+    "log" : SSTokens.LogKwToken,
+    "logln" : SSTokens.LoglnKwToken,
     "let" : SSTokens.LetKwToken,
     "const": SSTokens.ConstKwToken,
     "func": SSTokens.FuncKwToken,

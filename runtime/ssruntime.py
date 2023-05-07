@@ -81,7 +81,9 @@ class SSRuntime:
     def programNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         last = NullNode()
         for child in node.children:
-            last = self.execute(child, scope)
+            l = self.execute(child, scope)
+            if l != None:
+                last = l
         return last
 
     def binaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
@@ -161,6 +163,14 @@ class SSRuntime:
         exp = self.execute(node.child, scope)
         scope.assignValueSymbol(node.identifier, exp)
 
+    def logNode(self, node: Node, scope: SSRuntimeScope):
+        exp = self.execute(node.child, scope)
+        print(f"{exp}",end="")
+
+    def loglnNode(self, node: Node, scope: SSRuntimeScope):
+        exp = self.execute(node.child, scope)
+        print(f"{exp}")
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -181,6 +191,10 @@ class SSRuntime:
             self.declareVariableAssignNode(node, scope)
         elif type(node).__name__ == "FunctionDeclarationNode":
             pass
+        elif type(node).__name__ == "LogNode":
+            self.logNode(node, scope)
+        elif type(node).__name__ == "LoglnNode":
+            self.loglnNode(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         else:

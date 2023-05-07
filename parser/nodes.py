@@ -157,3 +157,25 @@ class DeclareVariableAssignNode(Node):
         else:
             ret = f"{self.identifier} <= ({self.child})"
             return ret
+        
+class LogNode(Node):
+    def __init__(self):
+        self.child: Node = None
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def __repr__(self) -> str:
+        ret = f"(log {self.child})"
+        return ret
+    
+class LoglnNode(Node):
+    def __init__(self):
+        self.child: Node = None
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def __repr__(self) -> str:
+        ret = f"(logln {self.child})"
+        return ret

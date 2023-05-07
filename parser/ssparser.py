@@ -49,7 +49,11 @@ class SSParser:
                 continue
 
             #testing only
-            node = self.parseUnaryExpression()
+            node = self.parseLog()
+            if node != None:
+                program.appendChild(node)
+                continue
+            node = self.parseLogln()
             if node != None:
                 program.appendChild(node)
                 continue
@@ -240,3 +244,31 @@ class SSParser:
 
     def parseFunctionDeclaration(self) -> Node:
         pass
+
+    """
+    parselog -> [LogNode]:
+        logkw unaryexpression
+    """
+    def parseLog(self) -> Node:
+        if self.peak().type == SSTokens.LogKwToken:
+            self.get()
+            log = LogNode()
+            exp = self.parseUnaryExpression()
+            log.setChild(exp)
+            return log
+
+        return None
+    
+    """
+    parselogln -> [LoglnNode]:
+        loglnkw unaryexpression
+    """
+    def parseLogln(self) -> Node:
+        if self.peak().type == SSTokens.LoglnKwToken:
+            self.get()
+            log = LoglnNode()
+            exp = self.parseUnaryExpression()
+            log.setChild(exp)
+            return log
+
+        return None
