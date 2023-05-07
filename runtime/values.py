@@ -32,3 +32,7 @@ class NumberRuntimeValue(RuntimeValue):
 class BoolRuntimeValue(RuntimeValue):
     def __init__(self):
         self.setType(ValueTypes.Bool)
+
+    def __repr__(self):
+        ret = f"{str(self.value).lower()}"
+        return ret

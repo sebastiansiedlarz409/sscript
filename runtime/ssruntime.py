@@ -5,7 +5,7 @@ class SSRuntime:
     def __init__(self):
         pass
 
-    def evalBinaryExpressionNumberNumber(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
+    def evalBinaryExpressionNumber(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
         result = 0
 
         if operator == "+":
@@ -83,22 +83,67 @@ class SSRuntime:
         left = self.execute(node.lChild)
         right = self.execute(node.rChild)
 
-        if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
-            return self.evalBinaryExpressionNumberNumber(left, right, node.operator)
-        elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
-            #convert right number to bool
-            r = BoolRuntimeValue()
-            r.setValue(False if right.value == 0 else True)
-            return self.evalBinaryExpressionBool(left, r, node.operator)
-        elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
-            #convert left number to bool
-            l = BoolRuntimeValue()
-            l.setValue(False if left.value == 0 else True)
-            return self.evalBinaryExpressionBool(l, right, node.operator)
-        elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
-            return self.evalBinaryExpressionBool(bool(left), bool(right), node.operator)
+        #not logical operator
+        if node.operator in "+-*/%&|<>^":
+            if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
+                return self.evalBinaryExpressionNumber(left, right, node.operator)
+            elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
+                #convert right bool to number
+                r = NumberRuntimeValue()
+                r.setValue(1 if right.value else 0)
+                return self.evalBinaryExpressionNumber(left, r, node.operator)
+            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
+                #convert left bool to number
+                l = NumberRuntimeValue()
+                l.setValue(1 if right.value else 0)
+                return self.evalBinaryExpressionNumber(l, right, node.operator)
+            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
+                #convert left bool to number
+                l = NumberRuntimeValue()
+                l.setValue(1 if left.value else 0)
+                #convert right bool to number
+                r = NumberRuntimeValue()
+                r.setValue(1 if left.value else 0)
+                return self.evalBinaryExpressionNumber(l, r, node.operator)
+            else:
+                raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+        #logical operator
         else:
-            raise Exception(f"SSRuntime: Cant evaluate binary node when one of child is 'null'")
+            if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
+                #convert left number to bool
+                l = BoolRuntimeValue()
+                l.setValue(False if left.value == 0 else True)
+                #convert right number to bool
+                r = BoolRuntimeValue()
+                r.setValue(False if right.value == 0 else True)
+                return self.evalBinaryExpressionBool(l, r, node.operator)
+            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
+                #convert right number to bool
+                r = BoolRuntimeValue()
+                r.setValue(False if right.value == 0 else True)
+                return self.evalBinaryExpressionBool(left, r, node.operator)
+            elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
+                #convert left number to bool
+                l = BoolRuntimeValue()
+                l.setValue(False if left.value == 0 else True)
+                return self.evalBinaryExpressionBool(l, right, node.operator)
+            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
+                return self.evalBinaryExpressionBool(left, right, node.operator)
+            else:
+                raise Exception(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+
+    def unaryExpressionNode(self, node: Node) -> RuntimeValue:
+        child = self.execute(node.child)
+
+        if node.operator == "not":
+            if child.type == ValueTypes.Number:
+                r = BoolRuntimeValue()
+                r.setValue(True if child.value == 0 else False)
+                return r
+            elif child.type == ValueTypes.Bool:
+                r = BoolRuntimeValue()
+                r.setValue(not child.value)
+                return r
 
     def execute(self, node: Node) -> RuntimeValue:
         if type(node).__name__ == "NullNode":
@@ -112,7 +157,7 @@ class SSRuntime:
         elif type(node).__name__ == "BinaryExpressionNode":
             return self.binaryExpressionNode(node)
         elif type(node).__name__ == "UnaryExpressionNode":
-            pass
+            return self.unaryExpressionNode(node)
         elif type(node).__name__ == "VariableAssignNode":
             pass
         elif type(node).__name__ == "FunctionDeclarationNode":
