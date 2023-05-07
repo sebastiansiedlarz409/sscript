@@ -43,7 +43,7 @@ class SSParser:
                 continue
 
             #testing only
-            node = self.parserLogicalExpression()
+            node = self.parseUnaryExpression()
             if node != None:
                 program.appendChild(node)
                 continue
@@ -58,7 +58,7 @@ class SSParser:
         #check for exp inside paren
         if self.peak().type == SSTokens.LParenToken:
             self.get()
-            n = self.parserLogicalExpression()
+            n = self.parseUnaryExpression()
             if self.get().type != SSTokens.RParenToken:
                 raise Exception(f"SSParser: Expected RParenToken")
             return n
@@ -110,7 +110,7 @@ class SSParser:
     arithmeticexpression -> [BinaryOperatorNode, mularithmeticexpression]:
         mularithmeticexpression (binaryoperatortoken(add, sub) mularithmeticexpression)
     """
-    def parserAddArithmeticExpression(self) -> Node:
+    def parseAddArithmeticExpression(self) -> Node:
         left = self.parseMulArithmeticExpression()
         while self.peak().value in "+-":
             operator = self.get().value #operator
@@ -127,11 +127,11 @@ class SSParser:
     comparasionexpression -> [BinaryOperatorNode, addarithmeticexpression]:
         addarithmeticexpression (binaryoperatortoken(comparasion) addarithmeticexpression)
     """
-    def parserComparasionExpression(self) -> Node:
-        left = self.parserAddArithmeticExpression()
+    def parseComparasionExpression(self) -> Node:
+        left = self.parseAddArithmeticExpression()
         while self.peak().value in ["eq", "neq", "gr", "ge", "ls", "le"]:
             operator = self.get().value #operator
-            right = self.parserAddArithmeticExpression()
+            right = self.parseAddArithmeticExpression()
             temp = BinaryExpressionNode()
             temp.lChild = left
             temp.rChild = right
@@ -144,11 +144,11 @@ class SSParser:
     bitewiseexpression -> [BinaryOperatorNode, camparasionexpression]:
         comparasionexpression (binaryoperatortoken(comparasion) comparasionexpression)
     """
-    def parserBitewiseExpression(self) -> Node:
-        left = self.parserComparasionExpression()
+    def parseBitewiseExpression(self) -> Node:
+        left = self.parseComparasionExpression()
         while self.peak().value in "|&<>^":
             operator = self.get().value #operator
-            right = self.parserComparasionExpression()
+            right = self.parseComparasionExpression()
             temp = BinaryExpressionNode()
             temp.lChild = left
             temp.rChild = right
@@ -161,11 +161,11 @@ class SSParser:
     logicalexpression -> [BinaryOperatorNode, bitewiseexpression]:
         bitewisexpression (binaryoperatortoken(comparasion) bitewisexpression)
     """
-    def parserLogicalExpression(self) -> Node:
-        left = self.parserBitewiseExpression()
+    def parseLogicalExpression(self) -> Node:
+        left = self.parseBitewiseExpression()
         while self.peak().value in ["and", "or"]:
             operator = self.get().value #operator
-            right = self.parserBitewiseExpression()
+            right = self.parseBitewiseExpression()
             temp = BinaryExpressionNode()
             temp.lChild = left
             temp.rChild = right
@@ -173,6 +173,22 @@ class SSParser:
             left = temp
 
         return left
+    
+    """
+    
+    """
+    def parseUnaryExpression(self) -> Node:
+        if self.peak().type == SSTokens.UnaryOperatorToken:
+            u = UnaryExpressionNode()
+            u.setOperator(self.get().value)
+
+            child = self.parseLogicalExpression()
+            
+            u.setChild(child)
+            return u
+        
+        return self.parseLogicalExpression()
+
 
     """
     variableassign -> [VariableAssignNode]:
