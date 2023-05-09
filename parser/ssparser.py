@@ -74,6 +74,15 @@ class SSParser:
                 raise SSException(f"SSParser: Expected RParenToken")
             return n
 
+        #string
+        if self.peak().type == SSTokens.QuoteToken:
+            self.get()
+            n = StringNode()
+            n.setValue(self.get().value)
+            if self.get().type != SSTokens.QuoteToken:
+                raise SSException(f"SSParser: Expected QuoteToken")
+            return n
+
         #number token
         if self.peak().type == SSTokens.NumberToken:
             n = NumberNode()

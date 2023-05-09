@@ -69,7 +69,7 @@ class StringNode(Node):
         self.value = value
 
     def __repr__(self) -> str:
-        ret = f"{self.value}"
+        ret = f'"{self.value}"'
         return ret
 
 class UnaryExpressionNode(Node):

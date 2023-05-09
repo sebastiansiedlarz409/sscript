@@ -1,1 +1,1 @@
-let a = 10
+let a = "Ala ma kota"
