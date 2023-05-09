@@ -58,7 +58,7 @@ class SSLexer:
     
     def getStringValue(self, chars: list[str]) -> str:
         value = ""
-        while chars[0] in (string.ascii_uppercase + string.ascii_lowercase + string.digits + string.whitespace):
+        while chars[0] in string.printable and chars[0] != '"':
             value += chars[0]
             chars.pop(0)
         return value
@@ -66,6 +66,8 @@ class SSLexer:
     def tokenize(self, source: str) -> list[SSToken]:
         #buffer for tokens
         tokens = []
+
+        #
 
         #get all characters
         chars = [x for x in source]
@@ -100,9 +102,6 @@ class SSLexer:
             elif chars[0] == ';':
                 tokens.append(SSToken(SSTokens.SemicolonToken, chars[0]))
                 chars.pop(0)
-            elif chars[0] == '"':
-                tokens.append(SSToken(SSTokens.QuoteToken, chars[0]))
-                chars.pop(0)
             elif chars[0] in '+-*/%|&^<>':
                 tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0]))
                 chars.pop(0)
@@ -110,11 +109,15 @@ class SSLexer:
                 #here we handle multicharacter tokens
 
                 #strings
-                if len(tokens) > 0:
-                    if tokens[len(tokens)-1].type == SSTokens.QuoteToken:
-                        value = self.getStringValue(chars)
-                        tokens.append(SSToken(SSTokens.StringToken, value))
-                        continue
+                if chars[0] == '"':
+                    tokens.append(SSToken(SSTokens.QuoteToken, chars[0]))
+                    chars.pop(0)
+                    value = self.getStringValue(chars)
+                    tokens.append(SSToken(SSTokens.StringToken, value))
+                    if chars[0] == '"':
+                        tokens.append(SSToken(SSTokens.QuoteToken, chars[0]))
+                        chars.pop(0)
+                    continue
 
                 #build number token
                 if(self.isnumber(chars[0])):

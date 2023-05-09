@@ -1,6 +1,6 @@
 let a = 10
 const b = 30
-let c = "Ala ma kota"
+let c = "Ala ma kota - Danie ma psa! ^&@#!#! '"
 
 logln(a + b)
 logln(a - b)
@@ -19,3 +19,5 @@ logln(0 ls 10)
 logln(1.1 + 1.2)
 logln(0x10 + 0x10)
 logln(0b11 + 0b10)
+
+logln(c)
