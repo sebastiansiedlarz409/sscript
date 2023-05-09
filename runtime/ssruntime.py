@@ -90,6 +90,11 @@ class SSRuntime:
         value = NullRuntimeValue()
         return value
     
+    def stringNode(self, node: Node) -> RuntimeValue:
+        value = StringRuntimeValue()
+        value.setValue(node.value)
+        return value
+    
     def identifierNode(self, node: Node, scope: SSRuntimeScope):
         value = scope.peakValueSymbol(node.identifier)
         return value
@@ -219,6 +224,8 @@ class SSRuntime:
             return self.numberNode(node)
         elif type(node).__name__ == "BoolNode":
             return self.boolNode(node)
+        elif type(node).__name__ == "StringNode":
+            return self.stringNode(node)
         elif type(node).__name__ == "IdentifierNode":
             return self.identifierNode(node, scope)
         elif type(node).__name__ == "BinaryExpressionNode":

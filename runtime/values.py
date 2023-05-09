@@ -3,7 +3,8 @@ from enum import Enum
 class ValueTypes(Enum):
     Number = 0,
     Null = 1,
-    Bool = 2
+    Bool = 2,
+    String = 3
 
 class RuntimeValue:
     def __init__(self):
@@ -28,6 +29,10 @@ class NullRuntimeValue(RuntimeValue):
 class NumberRuntimeValue(RuntimeValue):
     def __init__(self):
         self.setType(ValueTypes.Number)
+
+class StringRuntimeValue(RuntimeValue):
+    def __init__(self):
+        self.setType(ValueTypes.String)
 
 class BoolRuntimeValue(RuntimeValue):
     def __init__(self):

@@ -1,5 +1,6 @@
 let a = 10
 const b = 30
+let c = "Ala ma kota"
 
 logln(a + b)
 logln(a - b)
