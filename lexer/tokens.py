@@ -35,7 +35,9 @@ class SSTokens(Enum):
     RBracketToken = 56,
     LSquareBracketToken = 57, #[]
     RSquareBracketToken = 58,
+    QuoteToken = 59,
     NumberToken = 101,
+    StringToken = 102,
     ConstKwToken = 999,
     LogKwToken = 9997,
     LoglnKwToken = 9998,

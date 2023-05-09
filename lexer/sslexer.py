@@ -55,13 +55,20 @@ class SSLexer:
             value+=chars[0]
             chars.pop(0)
         return value
+    
+    def getStringValue(self, chars: list[str]) -> str:
+        value = ""
+        while chars[0] in (string.ascii_uppercase + string.ascii_lowercase + string.digits + string.whitespace):
+            value += chars[0]
+            chars.pop(0)
+        return value
 
     def tokenize(self, source: str) -> list[SSToken]:
         #buffer for tokens
         tokens = []
 
         #get all characters
-        chars = [x for x in source.lower()]
+        chars = [x for x in source]
 
         while(len(chars) > 0):
             if chars[0] in '\t\n\r ':
@@ -93,17 +100,28 @@ class SSLexer:
             elif chars[0] == ';':
                 tokens.append(SSToken(SSTokens.SemicolonToken, chars[0]))
                 chars.pop(0)
+            elif chars[0] == '"':
+                tokens.append(SSToken(SSTokens.QuoteToken, chars[0]))
+                chars.pop(0)
             elif chars[0] in '+-*/%|&^<>':
                 tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0]))
                 chars.pop(0)
             else:
                 #here we handle multicharacter tokens
 
+                #strings
+                if len(tokens) > 0:
+                    if tokens[len(tokens)-1].type == SSTokens.QuoteToken:
+                        value = self.getStringValue(chars)
+                        tokens.append(SSToken(SSTokens.StringToken, value))
+                        continue
+
                 #build number token
                 if(self.isnumber(chars[0])):
                     value = self.getNumericValue(chars)
                     tokens.append(SSToken(SSTokens.NumberToken, value))
 
+                #build identifier or keyword
                 elif(self.isalphabetic(chars[0])):
                     value = ""
                     while(len(chars) > 0 and self.isalphabetic(chars[0])):
@@ -111,9 +129,9 @@ class SSLexer:
                         chars.pop(0)
 
                     if value.lower() in SSKEYWORDS.keys():
-                        tokens.append(SSToken(SSKEYWORDS[value], value))
+                        tokens.append(SSToken(SSKEYWORDS[value], value.lower()))
                     else:
-                        tokens.append(SSToken(SSTokens.IdentifierToken, value))
+                        tokens.append(SSToken(SSTokens.IdentifierToken, value.lower()))
                 
                 else:
                     raise SSException(f"SSLexer: Unknown token {chars[0]}")
