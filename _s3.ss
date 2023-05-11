@@ -21,3 +21,25 @@ logln(0x10 + 0x10)
 logln(0b11 + 0b10)
 
 logln(c)
+
+logln(not "")
+logln("" and "ASD")
+logln("" or "ASD")
+
+logln("-------")
+logln(1+2)
+logln(1+true)
+logln(1.4 + "2")
+logln(true + 56)
+logln(true + "ASD")
+logln("ASD"+2)
+logln("QWE"+false)
+logln("FF"+"GG")
+
+logln("-------")
+logln("ASD" eq true)
+logln("ASD" gr 2)
+
+logln("-------")
+logln("ASD" and true)
+logln("ASD" and false)
