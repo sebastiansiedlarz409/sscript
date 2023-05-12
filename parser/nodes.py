@@ -41,10 +41,7 @@ class NumberNode(Node):
     
 class NullNode(Node):
     def __init__(self):
-        self.value: str = None
-
-    def setValue(self, value: str):
-        self.value = value
+        self.value: str = "null"
 
     def __repr__(self) -> str:
         ret = f"{self.value}"
@@ -115,19 +112,21 @@ class FunctionDeclarationNode(Node):
     def setIdentifier(self, identifier: str):
         self.identifier = identifier
 
-    def appendParams(self, param: Node):
-        self.params.append(param)
+    def setParams(self, param: list[Node]):
+        self.params = param
 
-    def appendChild(self, child: Node):
-        self.child.append(child)
+    def setChild(self, child: list[Node]):
+        self.child = child
 
     def __repr__(self) -> str:
         ret = f"{self.identifier}: ("
         for p in self.params:
             ret += f"{p} "
         ret+=f")\n"
+        ret+=f"\t{{\n"
         for c in self.child:
             ret += f"\t{c}"
+        ret+=f"\n\t}}"
 
         return ret
     

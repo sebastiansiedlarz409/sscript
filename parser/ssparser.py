@@ -30,7 +30,7 @@ class SSParser:
 
         while not self.iseof():
             node = None
-            
+
             #parse declaration variable assign
             node = self.parseVariableDeclarationAssign()
             if node != None:
@@ -98,7 +98,7 @@ class SSParser:
         #null
         if self.peak().type == SSTokens.NullKwToken:
             n = NullNode()
-            n.setValue(self.get().value)
+            self.get().value
             return n
         
         #true false
@@ -252,9 +252,6 @@ class SSParser:
 
         return None
 
-    def parseFunctionDeclaration(self) -> Node:
-        pass
-
     """
     parselog -> [LogNode]:
         logkw unaryexpression
@@ -297,4 +294,79 @@ class SSParser:
             else:
                 raise SSException(f"SSLexer: Expected LParenToken")
 
+        return None
+    
+    def parseFunctionBody(self) -> list[Node]:
+        childs = []
+
+        while self.peak().type != SSTokens.RBracketToken:
+            node = None
+
+            #parse declaration variable assign
+            node = self.parseVariableDeclarationAssign()
+            if node != None:
+                childs.append(node)
+                continue
+            
+            #parse variable assign
+            node = self.parseVariableAssign()
+            if node != None:
+                childs.append(node)
+                continue
+
+            #testing only
+            node = self.parseLog()
+            if node != None:
+                childs.append(node)
+                continue
+            node = self.parseLogln()
+            if node != None:
+                childs.append(node)
+                continue
+
+        return childs
+
+    def parseFunctionParams(self) -> list[Node]:
+        params = []
+        while self.peak().type == SSTokens.IdentifierToken:
+            p = DeclareVariableAssignNode()
+            p.setIdentifier(self.get().value)
+            p.setChild(NullNode())
+            params.append(p)
+            if self.peak().type != SSTokens.ColonToken:
+                return params
+            else:
+                self.get()
+        return params
+    
+    def parseFunctionDeclaration(self) -> Node:
+        if self.peak().type == SSTokens.FuncKwToken:
+            self.get()
+            if self.peak().type == SSTokens.IdentifierToken:
+                f = FunctionDeclarationNode()
+                f.setIdentifier(self.get().value)
+                if self.peak().type == SSTokens.LParenToken:
+                    self.get()
+                    params = self.parseFunctionParams()
+                    f.setParams(params)
+                    if self.peak().type == SSTokens.RParenToken:
+                        self.get()
+                        if self.peak().type == SSTokens.LBracketToken:
+                            self.get()
+                            children = self.parseFunctionBody()
+                            f.setChild(children)
+                            if self.peak().type == SSTokens.RBracketToken:
+                                self.get()
+                                return f
+                            else:
+                                raise SSException(f"SSLexer: Expected RBracketToken")
+                        else:
+                            raise SSException(f"SSLexer: Expected LBracketToken")
+                    else:
+                        raise SSException(f"SSLexer: Expected RParenToken")
+                else:
+                    raise SSException(f"SSLexer: Expected LParenToken")
+            else:
+                raise SSException(f"SSLexer: Expected IdentifierToken")
+            
         return None
