@@ -18,9 +18,12 @@ class SSParser:
         return self.tokens[offset]
 
     """
-    program:
+    program -> ProgramNode:
+        declarevariableassignnode
         variableassignnode |
-        functiondeclarationnode
+        functiondeclarationnode |
+        loglnnode |
+        lognode
     """
     def parseProgram(self, tokens: list[SSToken]) -> Node:
         self.tokens = tokens
@@ -296,6 +299,15 @@ class SSParser:
 
         return None
     
+    """
+    functionbody [DeclareVariableAssignNode, VariableAssignNode, LogLnNode, LogNode]:
+        declarevariableassignnode |
+        variableassignnode |
+        functiondeclarationnode |
+        loglnnode |
+        lognode
+
+    """
     def parseFunctionBody(self) -> list[Node]:
         childs = []
 
@@ -325,7 +337,11 @@ class SSParser:
                 continue
 
         return childs
-
+    
+    """
+    functionparams -> [DeclareVariableAssignNode*]:
+        (IdentifierToken) (CommaToken, IdentifierToken)
+    """
     def parseFunctionParams(self) -> list[Node]:
         params = []
         while self.peak().type == SSTokens.IdentifierToken:
@@ -333,12 +349,16 @@ class SSParser:
             p.setIdentifier(self.get().value)
             p.setChild(NullNode())
             params.append(p)
-            if self.peak().type != SSTokens.ColonToken:
+            if self.peak().type != SSTokens.CommaToken:
                 return params
             else:
                 self.get()
         return params
     
+    """
+    functiondeclaration -> [FunctionDeclarationNode]:
+        FuncKwToken IdentifierToken FunctionParams FunctionBody
+    """
     def parseFunctionDeclaration(self) -> Node:
         if self.peak().type == SSTokens.FuncKwToken:
             self.get()

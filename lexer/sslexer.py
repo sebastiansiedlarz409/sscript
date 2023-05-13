@@ -97,7 +97,7 @@ class SSLexer:
                 tokens.append(SSToken(SSTokens.AssignOperatorToken, chars[0]))
                 chars.pop(0)
             elif chars[0] == ',':
-                tokens.append(SSToken(SSTokens.ColonToken, chars[0]))
+                tokens.append(SSToken(SSTokens.CommaToken, chars[0]))
                 chars.pop(0)
             elif chars[0] == ';':
                 tokens.append(SSToken(SSTokens.SemicolonToken, chars[0]))
