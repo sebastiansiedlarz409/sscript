@@ -102,6 +102,17 @@ class BinaryExpressionNode(Node):
     def __repr__(self) -> str:
         ret = f"({self.lChild} {self.operator} {self.rChild})"
         return ret
+    
+class ReturnNode(Node):
+    def __init__(self):
+        self.value: str = None
+
+    def setValue(self, value: str):
+        self.value = value
+
+    def __repr__(self) -> str:
+        ret = f"return {self.value}"
+        return ret
 
 class FunctionCallNode(Node):
     def __init__(self):

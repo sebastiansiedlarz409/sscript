@@ -337,7 +337,7 @@ class SSRuntime:
 
         scope.declareFunction(node.identifier, f)
 
-    def functionCallNode(self, node: Node, scope: SSRuntimeScope):
+    def functionCallNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         function = scope.peakFunctionSymbol(node.identifier)
 
         if len(function.params) != len(node.params):
@@ -349,12 +349,15 @@ class SSRuntime:
             exp = self.execute(node.params[i], scope) #eval param with global scope
             functionScope.declareValueSymbol(function.params[i].identifier, exp)
 
-        ret = None
+        ret = NullRuntimeValue()
         for child in function.body:
             l = self.execute(child, functionScope)
             if l != None:
                 ret = l
         return ret
+    
+    def returnNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        return self.execute(node.value, scope)
 
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
@@ -379,7 +382,9 @@ class SSRuntime:
         elif type(node).__name__ == "FunctionDeclarationNode":
             self.functionDeclarationNode(node, scope)
         elif type(node).__name__ == "FunctionCallNode":
-            self.functionCallNode(node, scope)
+            return self.functionCallNode(node, scope)
+        elif type(node).__name__ == "ReturnNode":
+            return self.returnNode(node, scope)
         elif type(node).__name__ == "LogNode":
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":

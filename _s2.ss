@@ -1,7 +1,9 @@
-let a = "Ala ma kota"
+let a = "Wynik dodawania: "
 
 func dodaj(a, b){
-    logln(a + b)
+    let c = a + b
+    return c
 }
 
-let b = dodaj(1,2)
+logln(a + dodaj(1,2))
+return 1

@@ -39,6 +39,18 @@ class SSParser:
             if node != None:
                 program.appendChild(node)
                 continue
+
+            #function calls
+            node = self.parseFunctionCall()
+            if node != None:
+                program.appendChild(node)
+                continue
+            
+            #parse return value
+            node = self.parseReturnValue()
+            if node != None:
+                program.appendChild(node)
+                continue
             
             #parse variable assign
             node = self.parseVariableAssign()
@@ -265,9 +277,9 @@ class SSParser:
                     kw.setChild(exp)
                     return kw
                 else:
-                    raise SSException(f"SSLexer: Expected AssignOperatorToken")
+                    raise SSException(f"SSParser: Expected AssignOperatorToken")
             else:
-                raise SSException(f"SSLexer: Expected IdentifierToken")
+                raise SSException(f"SSParser: Expected IdentifierToken")
 
         return None
     
@@ -285,7 +297,7 @@ class SSParser:
                 kw.setChild(exp)
                 return kw
             else:
-                raise SSException(f"SSLexer: Expected AssignOperatorToken")
+                raise SSException(f"SSParser: Expected AssignOperatorToken")
 
         return None
 
@@ -305,9 +317,9 @@ class SSParser:
                     self.get()
                     return log
                 else:
-                    raise SSException(f"SSLexer: Expected RParenToken")
+                    raise SSException(f"SSParser: Expected RParenToken")
             else:
-                raise SSException(f"SSLexer: Expected LParenToken")
+                raise SSException(f"SSParser: Expected LParenToken")
 
         return None
     
@@ -327,11 +339,26 @@ class SSParser:
                     self.get()
                     return log
                 else:
-                    raise SSException(f"SSLexer: Expected RParenToken")
+                    raise SSException(f"SSParser: Expected RParenToken")
             else:
-                raise SSException(f"SSLexer: Expected LParenToken")
+                raise SSException(f"SSParser: Expected LParenToken")
 
         return None
+    
+    """
+    returnvalue -> [unaryexpression]:
+        returnkwtoken unaryexpression
+    """
+    def parseReturnValue(self) -> Node:
+        if self.peak().type == SSTokens.ReturnKwToken:
+            self.get()
+            exp = self.parseUnaryExpression()
+            if exp != None:
+                r = ReturnNode()
+                r.setValue(exp)
+                return r
+            else:
+                raise SSException(f"SSParser: Expected return expression")
     
     """
     functionbody [DeclareVariableAssignNode, VariableAssignNode, LogLnNode, LogNode]:
@@ -356,6 +383,12 @@ class SSParser:
             
             #parse variable assign
             node = self.parseVariableAssign()
+            if node != None:
+                childs.append(node)
+                continue
+
+            #parse return value
+            node = self.parseReturnValue()
             if node != None:
                 childs.append(node)
                 continue
@@ -413,14 +446,14 @@ class SSParser:
                                 self.get()
                                 return f
                             else:
-                                raise SSException(f"SSLexer: Expected RBracketToken")
+                                raise SSException(f"SSParser: Expected RBracketToken")
                         else:
-                            raise SSException(f"SSLexer: Expected LBracketToken")
+                            raise SSException(f"SSParser: Expected LBracketToken")
                     else:
-                        raise SSException(f"SSLexer: Expected RParenToken")
+                        raise SSException(f"SSParser: Expected RParenToken")
                 else:
-                    raise SSException(f"SSLexer: Expected LParenToken")
+                    raise SSException(f"SSParser: Expected LParenToken")
             else:
-                raise SSException(f"SSLexer: Expected IdentifierToken")
+                raise SSException(f"SSParser: Expected IdentifierToken")
             
         return None
