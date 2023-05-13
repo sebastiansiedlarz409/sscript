@@ -64,6 +64,35 @@ class SSParser:
 
         return program
     
+
+    """
+    functioncall -> [FunctionCallNode]:
+        Identifier LParen (UnaryExpression CommaToken)* RParen
+    """
+    def parseFunctionCall(self) -> Node:
+        if self.peak().type == SSTokens.IdentifierToken and self.peak(1).type == SSTokens.LParenToken:
+            c = FunctionCallNode()
+            c.setIdentifier(self.get().value)
+            self.get() #lparen
+            if self.peak().type == SSTokens.RParenToken:
+                self.get()
+                return c
+            params = []
+            child = self.parseUnaryExpression()
+            while child != None:
+                params.append(child)
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    break
+                elif self.peak().type == SSTokens.CommaToken:
+                    self.get()
+                else:
+                    raise SSException(f"SSParser: Expected CommaToken or RParenToken")
+                child = self.parseUnaryExpression()
+            c.setParams(params)
+            
+            return c
+                    
     """
     factor -> [IdentifierNode, NumberNode, arithmeticexpression]:
         numbertoken | identifiertoken
@@ -75,6 +104,11 @@ class SSParser:
             n = self.parseUnaryExpression()
             if self.get().type != SSTokens.RParenToken:
                 raise SSException(f"SSParser: Expected RParenToken")
+            return n
+        
+        #function call
+        n = self.parseFunctionCall()
+        if n != None:
             return n
 
         #string

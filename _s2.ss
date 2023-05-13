@@ -5,3 +5,4 @@ func dodaj(a, b){
 }
 
 let b = dodaj(1,2)
+let c = asd()
