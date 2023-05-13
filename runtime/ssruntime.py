@@ -330,6 +330,13 @@ class SSRuntime:
         exp = self.execute(node.child, scope)
         print(f"{exp}")
 
+    def functionDeclarationNode(self, node: Node, scope: SSRuntimeScope):
+        f = FunctionRuntimeValue()
+        f.setParams(node.params)
+        f.setBody(node.child)
+
+        scope.declareFunction(node.identifier, f)
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -351,7 +358,7 @@ class SSRuntime:
         elif type(node).__name__ == "DeclareVariableAssignNode":
             self.declareVariableAssignNode(node, scope)
         elif type(node).__name__ == "FunctionDeclarationNode":
-            pass
+            self.functionDeclarationNode(node, scope)
         elif type(node).__name__ == "LogNode":
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":

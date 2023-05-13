@@ -28,9 +28,14 @@ class ValueRuntimeIdentifier(RuntimeIdentifier):
     
 class FunctionRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
-        pass
+        self.value: RuntimeValue = None
+    
+    def setValue(self, value: RuntimeValue):
+        self.value = value
 
-    #TODO: function
+    def __repr__(self) -> str:
+        ret = f"{self.identifier} = () => {self.value}"
+        return ret
     
 #scope
 class SSRuntimeScope:
@@ -42,23 +47,59 @@ class SSRuntimeScope:
     def setParentScope(self, parent):
         self.parent = parent
 
-    #check if symbol exist in myself or in my ancestor
+    #check if function exist in myself or in my ancestor
     #if exist returns it
     #otherwise returns None
-    def checkIfSymbolExists(self, symbol: str) -> RuntimeIdentifier:
-        test = [x for x in self.symbols if x.identifier == symbol]
+    def checkIfFunctionExists(self, symbol: str, par: bool) -> RuntimeIdentifier:
+        test = [x for x in self.symbols if x.identifier == symbol and isinstance(x, FunctionRuntimeIdentifier)]
         if len(test) == 1:
             return test[0]
         
-        if self.parent != None:
-            return self.parent.checkIfSymbolExists(symbol)
+        if par:
+            if self.parent != None:
+                return self.parent.checkIfFunctionExists(symbol, True)
+        
+        return None
+    
+    #alway declare inside myself
+    def declareFunction(self, symbol: str, value: RuntimeValue):
+        #check if already symbol exists
+        if self.checkIfFunctionExists(symbol, False) != None:
+            raise SSException(f"SSRuntime: Function '{symbol}' has already been declared")
+        
+        s = FunctionRuntimeIdentifier()
+        s.setIdentifier(symbol)
+        s.setValue(value)
+
+        self.symbols.append(s)
+
+    #return function value
+    def peakValueSymbol(self, symbol: str) -> RuntimeValue:
+        #check if already symbol exists
+        s = self.checkIfFunctionExists(symbol, True)
+        if s == None:
+            raise SSException(f"SSRuntime: Function '{symbol}' has not been declered yet")
+        
+        return s.value
+
+    #check if symbol exist in myself or in my ancestor
+    #if exist returns it
+    #otherwise returns None
+    def checkIfSymbolExists(self, symbol: str, par: bool) -> RuntimeIdentifier:
+        test = [x for x in self.symbols if x.identifier == symbol and isinstance(x, ValueRuntimeIdentifier)]
+        if len(test) == 1:
+            return test[0]
+        
+        if par:
+            if self.parent != None:
+                return self.parent.checkIfSymbolExists(symbol, True)
         
         return None
 
     #alway declare inside myself
     def declareValueSymbol(self, symbol: str, value: RuntimeValue):
         #check if already symbol exists
-        if self.checkIfSymbolExists(symbol) != None:
+        if self.checkIfSymbolExists(symbol, False) != None:
             raise SSException(f"SSRuntime: Identifier '{symbol}' has already been declared")
         
         s = ValueRuntimeIdentifier()
@@ -67,10 +108,10 @@ class SSRuntimeScope:
 
         self.symbols.append(s)
 
-        #alway declare inside myself
+    #alway declare inside myself
     def declareValueConstSymbol(self, symbol: str, value: RuntimeValue):
         #check if already symbol exists
-        if self.checkIfSymbolExists(symbol) != None:
+        if self.checkIfSymbolExists(symbol, False) != None:
             raise SSException(f"SSRuntime: Identifier '{symbol}' has already been declared")
         
         s = ValueRuntimeIdentifier()
@@ -83,7 +124,7 @@ class SSRuntimeScope:
     #override can reassign in myself or in my ancestor
     def assignValueSymbol(self, symbol: str, value: RuntimeValue):
         #check if already symbol exists
-        s = self.checkIfSymbolExists(symbol)
+        s = self.checkIfSymbolExists(symbol, True)
         if s == None:
             raise SSException(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
         
@@ -97,11 +138,8 @@ class SSRuntimeScope:
     #return symbol value
     def peakValueSymbol(self, symbol: str) -> RuntimeValue:
         #check if already symbol exists
-        s = self.checkIfSymbolExists(symbol)
+        s = self.checkIfSymbolExists(symbol, True)
         if s == None:
             raise SSException(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
         
         return s.value
-
-
-    

@@ -1,4 +1,5 @@
 from enum import Enum
+from parser.nodes import *
 
 class ValueTypes(Enum):
     Number = 0,
@@ -40,4 +41,19 @@ class BoolRuntimeValue(RuntimeValue):
 
     def __repr__(self):
         ret = f"{str(self.value).lower()}"
+        return ret
+    
+class FunctionRuntimeValue(RuntimeValue):
+    def __init__(self):
+        self.params: list[Node] = []
+        self.body: list[Node] = []
+
+    def setParams(self, params: list[Node]):
+        self.params = params
+
+    def setBody(self, body: list[Node]):
+        self.body = body
+
+    def __repr__(self):
+        ret = f"{{...}}"
         return ret

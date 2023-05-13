@@ -1,35 +1,12 @@
-from lexer.sslexer import SSLexer
-from parser.ssparser import SSParser
-from runtime.ssruntime import SSRuntime
-from runtime.ssscope import SSRuntimeScope
-from misc.exceptions import SSException
+from lexer.sslexer import *
+from parser.ssparser import *
+from runtime.ssruntime import *
+from runtime.ssscope import *
+from misc.exceptions import *
 
 lexer = SSLexer()
 parser = SSParser()
 runtime = SSRuntime()
-
-# here i test scoping
-# from runtime.ssscope import SSRuntimeScope
-# from runtime.values import *
-# mainScope = SSRuntimeScope()
-# av = NumberRuntimeValue()
-# av.setValue(10)
-# bv = NumberRuntimeValue()
-# bv.setValue(22)
-# mainScope.declareValueSymbol("a", av)
-# mainScope.declareValueSymbol("b", bv)
-# print(mainScope.peakValueSymbol("a"))
-# print(mainScope.peakValueSymbol("b"))
-# mainScope.assignValueSymbol("a", bv)
-# print(mainScope.peakValueSymbol("a"))
-# childScope = SSRuntimeScope()
-# childScope.setParentScope(mainScope)
-# #childScope.declareValueSymbol("a", av) #ok, failed
-# print(childScope.peakValueSymbol("a"))
-# childScope.assignValueSymbol("a", av)
-# print(mainScope.peakValueSymbol("a"))
-# print(childScope.peakValueSymbol("a"))
-# exit()
 
 try:
     # open source file
