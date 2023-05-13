@@ -24,26 +24,28 @@ class SSLexer:
         value = ""
 
         #if hex
-        if chars[0] == "0" and chars[1] == "x":
-            value+="0x"
-            chars.pop(0)
-            chars.pop(0)
-            while(len(chars) > 0 and (self.ishexnumber(chars[0]) or chars[0] == ".")):
-                #get dot once
-                value+=chars[0]
+        if len(chars) > 1:
+            if chars[0] == "0" and chars[1] == "x":
+                value+="0x"
                 chars.pop(0)
-            return value
+                chars.pop(0)
+                while(len(chars) > 0 and (self.ishexnumber(chars[0]) or chars[0] == ".")):
+                    #get dot once
+                    value+=chars[0]
+                    chars.pop(0)
+                return value
         
         #if bin
-        if chars[0] == "0" and chars[1] == "b":
-            value+="0b"
-            chars.pop(0)
-            chars.pop(0)
-            while(len(chars) > 0 and (self.isbinnumber(chars[0]) or chars[0] == ".")):
-                #get dot once
-                value+=chars[0]
+        if len(chars) > 1:
+            if chars[0] == "0" and chars[1] == "b":
+                value+="0b"
                 chars.pop(0)
-            return value
+                chars.pop(0)
+                while(len(chars) > 0 and (self.isbinnumber(chars[0]) or chars[0] == ".")):
+                    #get dot once
+                    value+=chars[0]
+                    chars.pop(0)
+                return value
 
         dot = False
         while(len(chars) > 0 and (self.isnumber(chars[0]) or chars[0] == ".")):

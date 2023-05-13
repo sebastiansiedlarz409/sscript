@@ -6,4 +6,4 @@ func dodaj(a, b){
 }
 
 logln(a + dodaj(1,2))
-return 1
+return 0
