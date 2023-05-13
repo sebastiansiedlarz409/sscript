@@ -74,7 +74,7 @@ class SSRuntimeScope:
         self.symbols.append(s)
 
     #return function value
-    def peakValueSymbol(self, symbol: str) -> RuntimeValue:
+    def peakFunctionSymbol(self, symbol: str) -> RuntimeValue:
         #check if already symbol exists
         s = self.checkIfFunctionExists(symbol, True)
         if s == None:

@@ -337,6 +337,25 @@ class SSRuntime:
 
         scope.declareFunction(node.identifier, f)
 
+    def functionCallNode(self, node: Node, scope: SSRuntimeScope):
+        function = scope.peakFunctionSymbol(node.identifier)
+
+        if len(function.params) != len(node.params):
+            raise SSException(f"SSRuntime: Function '{node.identifier}' expect {len(function.params)} params, but {len(node.params)} was given")
+
+        functionScope = SSRuntimeScope()
+        functionScope.setParentScope(scope) #create scope for function
+        for i in range(0, len(node.params)):
+            exp = self.execute(node.params[i], scope) #eval param with global scope
+            functionScope.declareValueSymbol(function.params[i].identifier, exp)
+
+        ret = None
+        for child in function.body:
+            l = self.execute(child, functionScope)
+            if l != None:
+                ret = l
+        return ret
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -359,6 +378,8 @@ class SSRuntime:
             self.declareVariableAssignNode(node, scope)
         elif type(node).__name__ == "FunctionDeclarationNode":
             self.functionDeclarationNode(node, scope)
+        elif type(node).__name__ == "FunctionCallNode":
+            self.functionCallNode(node, scope)
         elif type(node).__name__ == "LogNode":
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":
