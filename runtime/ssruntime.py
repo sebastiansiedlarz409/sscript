@@ -358,6 +358,23 @@ class SSRuntime:
     
     def returnNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         return self.execute(node.value, scope)
+    
+    def forLoopNode(self, node: Node, scope: SSRuntimeScope):
+        self.execute(node.start, scope)
+
+        #prepare test expression
+        #test if node.logic && true is true
+        true = BoolNode()
+        true.setValue("true")
+        test = BinaryExpressionNode()
+        test.setOperator("and")
+        test.setLChild(true)
+        test.setRChild(node.logic)
+
+        while self.execute(test, scope).value == True:
+            for c in node.body:
+                self.execute(c, scope)
+            self.execute(node.mod, scope)
 
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
@@ -385,6 +402,8 @@ class SSRuntime:
             return self.functionCallNode(node, scope)
         elif type(node).__name__ == "ReturnNode":
             return self.returnNode(node, scope)
+        elif type(node).__name__ == "ForLoopNode":
+            self.forLoopNode(node, scope)
         elif type(node).__name__ == "LogNode":
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":
