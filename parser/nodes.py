@@ -157,6 +157,24 @@ class WhileLoopNode(Node):
             ret += f"\t{b}\n"
         ret += "\t}"
         return ret
+    
+class DoWhileLoopNode(Node):
+    def __init(self):
+        self.body: list[Node] = [] #body
+        self.logic: Node = None #test expression
+
+    def setBody(self, body: list[Node]):
+        self.body = body
+
+    def setLogicExpression(self, expression: Node):
+        self.logic = expression
+
+    def __repr__(self) -> str:
+        ret = f"do{{\n"
+        for b in self.body:
+            ret += f"\t{b}\n"
+        ret += "\t}while({self.logic})"
+        return ret
 
 class FunctionCallNode(Node):
     def __init__(self):

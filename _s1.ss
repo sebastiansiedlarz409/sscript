@@ -14,3 +14,11 @@ while (j neq 2){
     j = j + 1
     logln("while: " + j)
 }
+
+let k = 0
+do {
+    logln("do: " + k)
+    k = k + 1
+}while(k le 3)
+
+return 0
