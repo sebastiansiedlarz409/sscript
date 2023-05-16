@@ -53,6 +53,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            #parse while loop
+            node = self.parseWhileLoop()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse return value
             node = self.parseReturnValue()
             if node != None:
@@ -401,6 +407,12 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            #parse while loop
+            node = self.parseWhileLoop()
+            if node != None:
+                childs.append(node)
+                continue
+
             #parse return value
             node = self.parseReturnValue()
             if node != None:
@@ -481,7 +493,7 @@ class SSParser:
         loglnnode |
         lognode
     """
-    def parseForLoopBody(self) -> list[Node]:
+    def parseLoopBody(self) -> list[Node]:
         childs = []
 
         while self.peak().type != SSTokens.RBracketToken:
@@ -505,6 +517,12 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            #parse while loop
+            node = self.parseWhileLoop()
+            if node != None:
+                childs.append(node)
+                continue
+
             #testing only
             node = self.parseLog()
             if node != None:
@@ -520,7 +538,7 @@ class SSParser:
     """
     forloop -> [ForLoopNode]:
         forkwtoken, lparentoken, variabledeclarationassign, commatoken, unaryexpression, commatoken, unaryexpression rparent
-        lbracket forloopbody rbracket
+        lbracket loopbody rbracket
     """
     def parseForLoop(self) -> Node:
         if self.peak().type == SSTokens.ForKwToken:
@@ -546,7 +564,7 @@ class SSParser:
                     self.get()
                     if self.peak().type == SSTokens.LBracketToken:
                         self.get()
-                        children = self.parseForLoopBody()
+                        children = self.parseLoopBody()
                         if self.peak().type == SSTokens.RBracketToken:
                             self.get()
                             f = ForLoopNode()
@@ -558,6 +576,32 @@ class SSParser:
                         else:
                             raise SSException(f"SSParser: Expected RBracketToken")
                 else:
+                    raise SSException(f"SSParser: Expected RParenToken")
+            else:
+                raise SSException(f"SSParser: Expected LParenToken")
+            
+    def parseWhileLoop(self) -> Node:
+        if self.peak().type == SSTokens.WhileKwToken:
+            self.get()
+            if self.peak().type == SSTokens.LParenToken:
+                self.get()
+                lexp = self.parseUnaryExpression()
+                if lexp == None:
+                    raise SSException(f"SSParser: Expected testing expression")
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    if self.peak().type == SSTokens.LBracketToken:
+                        self.get()
+                        children = self.parseLoopBody()
+                        if self.peak().type == SSTokens.RBracketToken:
+                            self.get()
+                            f = WhileLoopNode()
+                            f.setLogicExpression(lexp)
+                            f.setBody(children)
+                            return f
+                        else:
+                            raise SSException(f"SSParser: Expected RBracketToken")
+                else:                
                     raise SSException(f"SSParser: Expected RParenToken")
             else:
                 raise SSException(f"SSParser: Expected LParenToken")

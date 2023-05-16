@@ -376,6 +376,20 @@ class SSRuntime:
                 self.execute(c, scope)
             self.execute(node.mod, scope)
 
+    def whileLoopNode(self, node: Node, scope: SSRuntimeScope):
+        #prepare test expression
+        #test if node.logic && true is true
+        true = BoolNode()
+        true.setValue("true")
+        test = BinaryExpressionNode()
+        test.setOperator("and")
+        test.setLChild(true)
+        test.setRChild(node.logic)
+
+        while self.execute(test, scope).value == True:
+            for c in node.body:
+                self.execute(c, scope)
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -404,6 +418,8 @@ class SSRuntime:
             return self.returnNode(node, scope)
         elif type(node).__name__ == "ForLoopNode":
             self.forLoopNode(node, scope)
+        elif type(node).__name__ == "WhileLoopNode":
+            self.whileLoopNode(node, scope)
         elif type(node).__name__ == "LogNode":
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":
