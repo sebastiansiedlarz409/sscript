@@ -22,6 +22,7 @@ class SSParser:
         declarevariableassignnode
         variableassignnode |
         functiondeclarationnode |
+        forloopnode |
         loglnnode |
         lognode
     """
@@ -367,10 +368,11 @@ class SSParser:
                 raise SSException(f"SSParser: Expected return expression")
     
     """
-    functionbody [DeclareVariableAssignNode, VariableAssignNode, LogLnNode, LogNode]:
+    functionbody [DeclareVariableAssignNode, VariableAssignNode, ForLoopNode, LogLnNode, LogNode]:
         declarevariableassignnode |
         variableassignnode |
         functiondeclarationnode |
+        forloopnode |
         loglnnode |
         lognode
 
@@ -470,6 +472,15 @@ class SSParser:
             
         return None
 
+    """
+    forloopbody -> [DeclareVariableAssignNode, VariableAssignNode, ForLoopNode, LogLnNode, LogNode]:
+        declarevariableassignnode |
+        variableassignnode |
+        functiondeclarationnode |
+        forloopnode |
+        loglnnode |
+        lognode
+    """
     def parseForLoopBody(self) -> list[Node]:
         childs = []
 
@@ -506,6 +517,11 @@ class SSParser:
 
         return childs
 
+    """
+    forloop -> [ForLoopNode]:
+        forkwtoken, lparentoken, variabledeclarationassign, commatoken, unaryexpression, commatoken, unaryexpression rparent
+        lbracket forloopbody rbracket
+    """
     def parseForLoop(self) -> Node:
         if self.peak().type == SSTokens.ForKwToken:
             self.get()
