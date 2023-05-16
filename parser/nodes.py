@@ -113,6 +113,32 @@ class ReturnNode(Node):
     def __repr__(self) -> str:
         ret = f"return {self.value}"
         return ret
+    
+class ForLoopNode(Node):
+    def __init(self):
+        self.body: list[Node] = [] #body
+        self.start: Node = None #start expression
+        self.logic: Node = None #test expression
+        self.mod: Node = None #modyfication expression
+
+    def setBody(self, body: list[Node]):
+        self.body = body
+
+    def setStartExpression(self, expression: Node):
+        self.start = expression
+
+    def setLogicExpression(self, expression: Node):
+        self.logic = expression
+
+    def setModExpression(self, expression: Node):
+        self.mod = expression
+
+    def __repr__(self) -> str:
+        ret = f"for({self.start};{self.logic};{self.mod}){{\n"
+        for b in self.body:
+            ret += f"\t{b}\n"
+        ret += "\t}"
+        return ret
 
 class FunctionCallNode(Node):
     def __init__(self):

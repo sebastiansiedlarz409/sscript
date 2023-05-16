@@ -46,6 +46,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
             
+            #parse for loop
+            node = self.parseForLoop()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse return value
             node = self.parseReturnValue()
             if node != None:
@@ -387,6 +393,12 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            #parse for loop
+            node = self.parseForLoop()
+            if node != None:
+                childs.append(node)
+                continue
+
             #parse return value
             node = self.parseReturnValue()
             if node != None:
@@ -457,3 +469,79 @@ class SSParser:
                 raise SSException(f"SSParser: Expected IdentifierToken")
             
         return None
+
+    def parseForLoopBody(self) -> list[Node]:
+        childs = []
+
+        while self.peak().type != SSTokens.RBracketToken:
+            node = None
+
+            #parse declaration variable assign
+            node = self.parseVariableDeclarationAssign()
+            if node != None:
+                childs.append(node)
+                continue
+            
+            #parse variable assign
+            node = self.parseVariableAssign()
+            if node != None:
+                childs.append(node)
+                continue
+
+            #parse for loop
+            node = self.parseForLoop()
+            if node != None:
+                childs.append(node)
+                continue
+
+            #testing only
+            node = self.parseLog()
+            if node != None:
+                childs.append(node)
+                continue
+            node = self.parseLogln()
+            if node != None:
+                childs.append(node)
+                continue
+
+        return childs
+
+    def parseForLoop(self) -> Node:
+        if self.peak().type == SSTokens.ForKwToken:
+            self.get()
+            if self.peak().type == SSTokens.LParenToken:
+                self.get()
+                sexp = self.parseVariableDeclarationAssign()
+                if sexp == None:
+                    raise SSException(f"SSParser: Expected starting declaration")
+                if self.peak().type != SSTokens.SemicolonToken:
+                    raise SSException(f"SSParser: Expected SemicolonToken")
+                self.get()
+                lexp = self.parseUnaryExpression()
+                if lexp == None:
+                    raise SSException(f"SSParser: Expected testing expression")
+                if self.peak().type != SSTokens.SemicolonToken:
+                    raise SSException(f"SSParser: Expected SemicolonToken")
+                self.get()
+                mexp = self.parseVariableAssign()
+                if mexp == None:
+                    raise SSException(f"SSParser: Expected mod expression")
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    if self.peak().type == SSTokens.LBracketToken:
+                        self.get()
+                        children = self.parseForLoopBody()
+                        if self.peak().type == SSTokens.RBracketToken:
+                            self.get()
+                            f = ForLoopNode()
+                            f.setStartExpression(sexp)
+                            f.setLogicExpression(lexp)
+                            f.setModExpression(mexp)
+                            f.setBody(children)
+                            return f
+                        else:
+                            raise SSException(f"SSParser: Expected RBracketToken")
+                else:
+                    raise SSException(f"SSParser: Expected RParenToken")
+            else:
+                raise SSException(f"SSParser: Expected LParenToken")
