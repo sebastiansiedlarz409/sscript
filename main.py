@@ -11,7 +11,7 @@ runtime = SSRuntime()
 try:
     # open source file
     source = ""
-    with open("_s1.ss", "r") as f:
+    with open("_s2.ss", "r") as f:
         source = f.read()
 
     # tokenize
@@ -32,4 +32,6 @@ try:
     result = runtime.execute(program, globalScope)
     print(result)
 except SSException as x:
+    print()
+    print()
     print(x)

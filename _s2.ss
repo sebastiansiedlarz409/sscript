@@ -1,9 +1,28 @@
-let a = "Wynik dodawania: "
+let a = 6
+let b = 7
 
-func dodaj(a, b){
+func asd(a){
+    let b = 10
     let c = a + b
     return c
 }
 
-logln(a + dodaj(1,2))
+logln(asd(1))
+logln("--------------")
+
+for(let a = 0;a ls 2;a = a + 1){
+    let b = 10
+    log(a + " " + b + " ")
+}
+logln()
+logln("--------------")
+
+while(a gr 0){
+    let b = 10
+    log(a + " " + b + " ")
+    a = a - 1
+}
+logln()
+
+logln("--------------")
 return 0

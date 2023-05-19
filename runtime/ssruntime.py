@@ -324,10 +324,12 @@ class SSRuntime:
 
     def logNode(self, node: Node, scope: SSRuntimeScope):
         exp = self.execute(node.child, scope)
+        if exp == None: exp = ""
         print(f"{exp}",end="")
 
     def loglnNode(self, node: Node, scope: SSRuntimeScope):
         exp = self.execute(node.child, scope)
+        if exp == None: exp = ""
         print(f"{exp}")
 
     def functionDeclarationNode(self, node: Node, scope: SSRuntimeScope):
@@ -360,7 +362,10 @@ class SSRuntime:
         return self.execute(node.value, scope)
     
     def forLoopNode(self, node: Node, scope: SSRuntimeScope):
-        self.execute(node.start, scope)
+        loopScope = SSRuntimeScope()
+        loopScope.setParentScope(scope) #create scope for function
+
+        self.execute(node.start, loopScope)
 
         #prepare test expression
         #test if node.logic && true is true
@@ -371,12 +376,17 @@ class SSRuntime:
         test.setLChild(true)
         test.setRChild(node.logic)
 
-        while self.execute(test, scope).value == True:
+        while self.execute(test, loopScope).value == True:
+            loopBodyScope = SSRuntimeScope()
+            loopBodyScope.setParentScope(loopScope)
             for c in node.body:
-                self.execute(c, scope)
-            self.execute(node.mod, scope)
+                self.execute(c, loopBodyScope)
+            self.execute(node.mod, loopScope)
 
     def whileLoopNode(self, node: Node, scope: SSRuntimeScope):
+        loopScope = SSRuntimeScope()
+        loopScope.setParentScope(scope) #create scope for function
+
         #prepare test expression
         #test if node.logic && true is true
         true = BoolNode()
@@ -386,11 +396,16 @@ class SSRuntime:
         test.setLChild(true)
         test.setRChild(node.logic)
 
-        while self.execute(test, scope).value == True:
+        while self.execute(test, loopScope).value == True:
+            loopBodyScope = SSRuntimeScope()
+            loopBodyScope.setParentScope(loopScope)
             for c in node.body:
-                self.execute(c, scope)
+                self.execute(c, loopBodyScope)
 
     def dowhileLoopNode(self, node: Node, scope: SSRuntimeScope):
+        loopScope = SSRuntimeScope()
+        loopScope.setParentScope(scope) #create scope for function
+        
         #prepare test expression
         #test if node.logic && true is true
         true = BoolNode()
@@ -400,12 +415,16 @@ class SSRuntime:
         test.setLChild(true)
         test.setRChild(node.logic)
 
+        loopBodyScope = SSRuntimeScope()
+        loopBodyScope.setParentScope(loopScope)
         for c in node.body:
-            self.execute(c, scope)
+            self.execute(c, loopBodyScope)
 
-        while self.execute(test, scope).value == True:
+        while self.execute(test, loopScope).value == True:
+            loopBodyScope = SSRuntimeScope()
+            loopBodyScope.setParentScope(loopScope)
             for c in node.body:
-                self.execute(c, scope)
+                self.execute(c, loopBodyScope)
 
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
@@ -445,5 +464,7 @@ class SSRuntime:
             self.loglnNode(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
+        elif type(node).__name__ == "NoneType":
+            return None
         else:
             raise SSException(f"SSRuntime: Failed to evaluate node {type(node).__name__}")

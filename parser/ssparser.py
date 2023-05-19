@@ -175,7 +175,8 @@ class SSParser:
             n.setValue(self.get().value)
             return n
         
-        raise SSException(f"SSParser: Unexpected token {self.peak().value}")
+        return None
+        #raise SSException(f"SSParser: Unexpected token {self.peak().value}")
 
     """
     term -> [BinaryOperatorNode, factor]:
