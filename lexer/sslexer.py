@@ -158,7 +158,7 @@ class SSLexer:
                         column+=len(value)
                 
                 else:
-                    raise SSException(f"SSLexer: Unknown token {chars[0]}")
+                    raise SSException(f"SSLexer: Unknown token {chars[0]} at line {line} column {column}")
 
         #add EOF
         tokens.append(SSToken(SSTokens.EOFToken, "EOF",line, column))

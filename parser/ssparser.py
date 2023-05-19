@@ -118,7 +118,7 @@ class SSParser:
                 elif self.peak().type == SSTokens.CommaToken:
                     self.get()
                 else:
-                    raise SSException(f"SSParser: Expected CommaToken or RParenToken")
+                    raise SSException(f"SSParser: Expected CommaToken or RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 child = self.parseUnaryExpression()
             c.setParams(params)
             
@@ -134,7 +134,7 @@ class SSParser:
             self.get()
             n = self.parseUnaryExpression()
             if self.get().type != SSTokens.RParenToken:
-                raise SSException(f"SSParser: Expected RParenToken")
+                raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             return n
         
         #function call
@@ -148,7 +148,7 @@ class SSParser:
             n = StringNode()
             n.setValue(self.get().value)
             if self.get().type != SSTokens.QuoteToken:
-                raise SSException(f"SSParser: Expected QuoteToken")
+                raise SSException(f"SSParser: Expected QuoteToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             return n
 
         #number token
@@ -180,7 +180,7 @@ class SSParser:
         if n != None:
             return n
 
-        raise SSException(f"SSParser: Unexpected token {self.peak().value}")
+        raise SSException(f"SSParser: Unexpected token {self.peak().value} at line {self.peak().line} column {self.peak().column}")
 
     """
     term -> [BinaryOperatorNode, factor]:
@@ -301,9 +301,9 @@ class SSParser:
                     kw.setChild(exp)
                     return kw
                 else:
-                    raise SSException(f"SSParser: Expected AssignOperatorToken")
+                    raise SSException(f"SSParser: Expected AssignOperatorToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected IdentifierToken")
+                raise SSException(f"SSParser: Expected IdentifierToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
 
         return None
     
@@ -321,7 +321,7 @@ class SSParser:
                 kw.setChild(exp)
                 return kw
             else:
-                raise SSException(f"SSParser: Expected AssignOperatorToken")
+                raise SSException(f"SSParser: Expected AssignOperatorToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
 
         return None
 
@@ -344,9 +344,9 @@ class SSParser:
                     self.get()
                     return log
                 else:
-                    raise SSException(f"SSParser: Expected RParenToken")
+                    raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected LParenToken")
+                raise SSException(f"SSParser: Expected LParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
 
         return None
     
@@ -369,9 +369,9 @@ class SSParser:
                     self.get()
                     return log
                 else:
-                    raise SSException(f"SSParser: Expected RParenToken")
+                    raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected LParenToken")
+                raise SSException(f"SSParser: Expected LParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
 
         return None
     
@@ -388,7 +388,7 @@ class SSParser:
                 r.setValue(exp)
                 return r
             else:
-                raise SSException(f"SSParser: Expected return expression")
+                raise SSException(f"SSParser: Expected return at line {self.peak().line} column {self.peak().column}")
     
     """
     functionbody [DeclareVariableAssignNode, VariableAssignNode, ForLoopNode, LogLnNode, LogNode]:
@@ -495,15 +495,15 @@ class SSParser:
                                 self.get()
                                 return f
                             else:
-                                raise SSException(f"SSParser: Expected RBracketToken")
+                                raise SSException(f"SSParser: Expected RBracketToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                         else:
-                            raise SSException(f"SSParser: Expected LBracketToken")
+                            raise SSException(f"SSParser: Expected LBracketToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                     else:
-                        raise SSException(f"SSParser: Expected RParenToken")
+                        raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 else:
-                    raise SSException(f"SSParser: Expected LParenToken")
+                    raise SSException(f"SSParser: Expected LParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected IdentifierToken")
+                raise SSException(f"SSParser: Expected IdentifierToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             
         return None
 
@@ -576,19 +576,19 @@ class SSParser:
                 self.get()
                 sexp = self.parseVariableDeclarationAssign()
                 if sexp == None:
-                    raise SSException(f"SSParser: Expected starting declaration")
+                    raise SSException(f"SSParser: Expected starting declaration at line {self.peak().line} column {self.peak().column}")
                 if self.peak().type != SSTokens.SemicolonToken:
-                    raise SSException(f"SSParser: Expected SemicolonToken")
+                    raise SSException(f"SSParser: Expected SemicolonToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 self.get()
                 lexp = self.parseUnaryExpression()
                 if lexp == None:
-                    raise SSException(f"SSParser: Expected testing expression")
+                    raise SSException(f"SSParser: Expected testing exp at line {self.peak().line} column {self.peak().column}")
                 if self.peak().type != SSTokens.SemicolonToken:
-                    raise SSException(f"SSParser: Expected SemicolonToken")
+                    raise SSException(f"SSParser: Expected SemicolonToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 self.get()
                 mexp = self.parseVariableAssign()
                 if mexp == None:
-                    raise SSException(f"SSParser: Expected mod expression")
+                    raise SSException(f"SSParser: Expected mod at line {self.peak().line} column {self.peak().column}")
                 if self.peak().type == SSTokens.RParenToken:
                     self.get()
                     if self.peak().type == SSTokens.LBracketToken:
@@ -603,11 +603,11 @@ class SSParser:
                             f.setBody(children)
                             return f
                         else:
-                            raise SSException(f"SSParser: Expected RBracketToken")
+                            raise SSException(f"SSParser: Expected RBracketToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 else:
-                    raise SSException(f"SSParser: Expected RParenToken")
+                    raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected LParenToken")
+                raise SSException(f"SSParser: Expected LParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             
     def parseWhileLoop(self) -> Node:
         if self.peak().type == SSTokens.WhileKwToken:
@@ -616,7 +616,7 @@ class SSParser:
                 self.get()
                 lexp = self.parseUnaryExpression()
                 if lexp == None:
-                    raise SSException(f"SSParser: Expected testing expression")
+                    raise SSException(f"SSParser: Expected testing exp at line {self.peak().line} column {self.peak().column}")
                 if self.peak().type == SSTokens.RParenToken:
                     self.get()
                     if self.peak().type == SSTokens.LBracketToken:
@@ -629,11 +629,11 @@ class SSParser:
                             f.setBody(children)
                             return f
                         else:
-                            raise SSException(f"SSParser: Expected RBracketToken")
+                            raise SSException(f"SSParser: Expected RBracketToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 else:                
-                    raise SSException(f"SSParser: Expected RParenToken")
+                    raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected LParenToken")
+                raise SSException(f"SSParser: Expected LParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
 
     def parseDoWhileLoop(self) -> Node:
         if self.peak().type == SSTokens.DoKwToken:
@@ -650,19 +650,19 @@ class SSParser:
                             l = DoWhileLoopNode()
                             lexp = self.parseUnaryExpression()
                             if lexp == None:
-                                raise SSException(f"SSParser: Expected testing expression")
+                                raise SSException(f"SSParser: Expected testing exp at line {self.peak().line} column {self.peak().column}")
                             if self.peak().type == SSTokens.RParenToken:
                                 self.get()
                                 l.setLogicExpression(lexp)
                                 l.setBody(children)
                                 return l
                             else:
-                                raise SSException(f"SSParser: Expected RParenToken")
+                                raise SSException(f"SSParser: Expected RParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                         else:
-                            raise SSException(f"SSParser: Expected LParenToken")
+                            raise SSException(f"SSParser: Expected LParenToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                     else:
-                        raise SSException(f"SSParser: Expected WhileKwToken")
+                        raise SSException(f"SSParser: Expected WhileKwToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
                 else:
-                    raise SSException(f"SSParser: Expected RBracketToken")
+                    raise SSException(f"SSParser: Expected RBracketToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
             else:
-                raise SSException(f"SSParser: Expected LBracketToken")
+                raise SSException(f"SSParser: Expected LBracketToken but {self.peak().value} was given at line {self.peak().line} column {self.peak().column}")
