@@ -250,8 +250,8 @@ class SSRuntime:
             #NUMBER <> BOOL
             elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
                 r = NumberRuntimeValue()
-                r.setValue(1 if right.value else 0)
-                return self.evalBinaryExpressionLogical(left, r, node.operator)
+                r.setValue(False if left.value == 0 else True)
+                return self.evalBinaryExpressionLogical(left, right, node.operator)
             
             #NUMBER <> STRING
             elif left.type == ValueTypes.Number and right.type == ValueTypes.String:
