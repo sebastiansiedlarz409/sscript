@@ -69,62 +69,79 @@ class SSLexer:
         #buffer for tokens
         tokens = []
 
-        #
-
         #get all characters
         chars = [x for x in source]
+        
+        #line and column tracking for errors
+        line = 1
+        column = 1
 
         while(len(chars) > 0):
             if chars[0] in '\t\n\r ':
+                column+=1
+                if chars[0] == '\n':
+                    line+=1
+                    column=1
                 chars.pop(0)
             elif chars[0] == '(':
-                tokens.append(SSToken(SSTokens.LParenToken, chars[0]))
+                tokens.append(SSToken(SSTokens.LParenToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == ')':
-                tokens.append(SSToken(SSTokens.RParenToken, chars[0]))
+                tokens.append(SSToken(SSTokens.RParenToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == '{':
-                tokens.append(SSToken(SSTokens.LBracketToken, chars[0]))
+                tokens.append(SSToken(SSTokens.LBracketToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == '}':
-                tokens.append(SSToken(SSTokens.RBracketToken, chars[0]))
+                tokens.append(SSToken(SSTokens.RBracketToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == '[':
-                tokens.append(SSToken(SSTokens.LSquareBracketToken, chars[0]))
+                tokens.append(SSToken(SSTokens.LSquareBracketToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == ']':
-                tokens.append(SSToken(SSTokens.RSquareBracketToken, chars[0]))
+                tokens.append(SSToken(SSTokens.RSquareBracketToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == '=':
-                tokens.append(SSToken(SSTokens.AssignOperatorToken, chars[0]))
+                tokens.append(SSToken(SSTokens.AssignOperatorToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == ',':
-                tokens.append(SSToken(SSTokens.CommaToken, chars[0]))
+                tokens.append(SSToken(SSTokens.CommaToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] == ';':
-                tokens.append(SSToken(SSTokens.SemicolonToken, chars[0]))
+                tokens.append(SSToken(SSTokens.SemicolonToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             elif chars[0] in '+-*/%|&^<>':
-                tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0]))
+                tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0],line, column))
                 chars.pop(0)
+                column+=1
             else:
                 #here we handle multicharacter tokens
-
                 #strings
                 if chars[0] == '"':
-                    tokens.append(SSToken(SSTokens.QuoteToken, chars[0]))
+                    tokens.append(SSToken(SSTokens.QuoteToken, chars[0],line, column))
                     chars.pop(0)
                     value = self.getStringValue(chars)
-                    tokens.append(SSToken(SSTokens.StringToken, value))
+                    tokens.append(SSToken(SSTokens.StringToken, value,line, column))
                     if chars[0] == '"':
-                        tokens.append(SSToken(SSTokens.QuoteToken, chars[0]))
+                        tokens.append(SSToken(SSTokens.QuoteToken, chars[0],line, column))
                         chars.pop(0)
+                        column+=(len(value)+2)
                     continue
 
                 #build number token
                 if(self.isnumber(chars[0])):
                     value = self.getNumericValue(chars)
-                    tokens.append(SSToken(SSTokens.NumberToken, value))
+                    tokens.append(SSToken(SSTokens.NumberToken, value,line, column))
+                    column+=len(value)
 
                 #build identifier or keyword
                 elif(self.isalphabetic(chars[0])):
@@ -134,14 +151,16 @@ class SSLexer:
                         chars.pop(0)
 
                     if value.lower() in SSKEYWORDS.keys():
-                        tokens.append(SSToken(SSKEYWORDS[value], value.lower()))
+                        tokens.append(SSToken(SSKEYWORDS[value], value.lower(),line, column))
+                        column+=len(value)
                     else:
-                        tokens.append(SSToken(SSTokens.IdentifierToken, value.lower()))
+                        tokens.append(SSToken(SSTokens.IdentifierToken, value.lower(),line, column))
+                        column+=len(value)
                 
                 else:
                     raise SSException(f"SSLexer: Unknown token {chars[0]}")
 
         #add EOF
-        tokens.append(SSToken(SSTokens.EOFToken, "EOF"))
+        tokens.append(SSToken(SSTokens.EOFToken, "EOF",line, column))
 
         return tokens

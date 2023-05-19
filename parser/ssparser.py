@@ -180,8 +180,7 @@ class SSParser:
         if n != None:
             return n
 
-        return None
-        #raise SSException(f"SSParser: Unexpected token {self.peak().value}")
+        raise SSException(f"SSParser: Unexpected token {self.peak().value}")
 
     """
     term -> [BinaryOperatorNode, factor]:
@@ -336,6 +335,9 @@ class SSParser:
             if self.peak().type == SSTokens.LParenToken:
                 self.get()
                 log = LogNode()
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    return log
                 exp = self.parseUnaryExpression()
                 log.setChild(exp)
                 if self.peak().type == SSTokens.RParenToken:
@@ -358,6 +360,9 @@ class SSParser:
             if self.peak().type == SSTokens.LParenToken:
                 self.get()
                 log = LoglnNode()
+                if self.peak().type == SSTokens.RParenToken:
+                    self.get()
+                    return log
                 exp = self.parseUnaryExpression()
                 log.setChild(exp)
                 if self.peak().type == SSTokens.RParenToken:

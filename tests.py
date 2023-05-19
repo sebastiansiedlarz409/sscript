@@ -200,6 +200,22 @@ def t11():
     result = execute(s, True)
     print("T11 NOT OK")
 
+def t12():
+    s = ""
+    with open("tests\\t12.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "-1":
+            print("T12 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T12 NOT OK")
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -213,3 +229,4 @@ t8()
 t9()
 t10()
 t11()
+t12()
