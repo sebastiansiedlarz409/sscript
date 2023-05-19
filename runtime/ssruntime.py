@@ -310,6 +310,28 @@ class SSRuntime:
                 r = BoolRuntimeValue()
                 r.setValue(False if len(child.value) > 0 else True)
                 return r
+        elif node.operator == "+":
+            if child.type == ValueTypes.Number:
+                r = NumberRuntimeValue()
+                r.setValue(child.value)
+                return r
+            elif child.type == ValueTypes.Bool:
+                r = BoolRuntimeValue()
+                r.setValue(1 if child.value else 0)
+                return r
+            elif child.type == ValueTypes.String:
+                raise SSException(f"SSRuntime: Cant {node.operator} this type of values")
+        elif node.operator == "-":
+            if child.type == ValueTypes.Number:
+                r = NumberRuntimeValue()
+                r.setValue(child.value*(-1))
+                return r
+            elif child.type == ValueTypes.Bool:
+                r = BoolRuntimeValue()
+                r.setValue(-1 if child.value else 0)
+                return r
+            elif child.type == ValueTypes.String:
+                raise SSException(f"SSRuntime: Cant {node.operator} this type of values")
             
     def declareVariableAssignNode(self, node: Node, scope: SSRuntimeScope):
         exp = self.execute(node.child, scope)

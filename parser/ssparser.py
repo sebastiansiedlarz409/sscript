@@ -175,6 +175,11 @@ class SSParser:
             n.setValue(self.get().value)
             return n
         
+        #unaryexpression
+        n = self.parseUnaryExpression()
+        if n != None:
+            return n
+
         return None
         #raise SSException(f"SSParser: Unexpected token {self.peak().value}")
 
@@ -268,7 +273,7 @@ class SSParser:
         (unaryoperatortoken) logicalexpression
     """
     def parseUnaryExpression(self) -> Node:
-        if self.peak().type == SSTokens.UnaryOperatorToken:
+        if self.peak().type == SSTokens.UnaryOperatorToken or self.peak().value in "-+":
             u = UnaryExpressionNode()
             u.setOperator(self.get().value)
 

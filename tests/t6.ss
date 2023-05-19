@@ -1,8 +1,7 @@
 func pow(a, b){
     let i = 0
     let c = a
-    b = b - 1
-    while(i ls b){
+    while(i ls (b-1)){
         c = c * a
         i = i + 1
     }
