@@ -11,7 +11,7 @@ runtime = SSRuntime()
 try:
     # open source file
     source = ""
-    with open("_s2.ss", "r") as f:
+    with open("_s1.ss", "r") as f:
         source = f.read()
 
     # tokenize

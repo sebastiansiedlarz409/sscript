@@ -232,6 +232,72 @@ def t13():
     result = execute(s, True)
     print("T13 NOT OK")
 
+def t14():
+    s = ""
+    with open("tests\\t14.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "4":
+            print("T14 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T14 NOT OK")
+
+def t15():
+    s = ""
+    with open("tests\\t15.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "255":
+            print("T15 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T15 NOT OK")
+
+#trow tests
+def t20():
+    s = ""
+    with open("tests\\t20.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T20 NOT OK")
+        return
+    except SSLexerException as x:
+        if x.got == '`' and x.line == 2 and x.column == 1:
+            print("T20 OK")
+        else:
+            print("T20 NOT OK")
+            print(x)
+
+#trow tests
+def t21():
+    s = ""
+    with open("tests\\t21.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T21 NOT OK")
+        return
+    except SSLexerException as x:
+        if x.got == '.' and x.line == 1 and x.column == 9:
+            print("T21 OK")
+        else:
+            print("T21 NOT OK")
+            print(x)
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -247,3 +313,7 @@ t10()
 t11()
 t12()
 t13()
+t14()
+t15()
+t20()
+t21()
