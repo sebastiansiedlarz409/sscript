@@ -12,9 +12,8 @@ class ProgramNode(Node):
     def __repr__(self) -> str:
         ret = f"Program:\n"
         for child in self.children:
-            ret += "\t"
             ret += f"{child}"
-            ret += "\n"
+            ret += "\n\n"
         return ret
     
 class IdentifierNode(Node):
@@ -136,8 +135,8 @@ class ForLoopNode(Node):
     def __repr__(self) -> str:
         ret = f"for({self.start};{self.logic};{self.mod}){{\n"
         for b in self.body:
-            ret += f"\t{b}\n"
-        ret += "\t}"
+            ret += f"{b}\n"
+        ret += "}"
         return ret
 
 class WhileLoopNode(Node):
@@ -154,8 +153,8 @@ class WhileLoopNode(Node):
     def __repr__(self) -> str:
         ret = f"while({self.logic}){{\n"
         for b in self.body:
-            ret += f"\t{b}\n"
-        ret += "\t}"
+            ret += f"{b}\n"
+        ret += "}"
         return ret
     
 class DoWhileLoopNode(Node):
@@ -172,8 +171,8 @@ class DoWhileLoopNode(Node):
     def __repr__(self) -> str:
         ret = f"do{{\n"
         for b in self.body:
-            ret += f"\t{b}\n"
-        ret += "\t}while({self.logic})"
+            ret += f"{b}\n"
+        ret += "}while({self.logic})"
         return ret
 
 class FunctionCallNode(Node):
@@ -210,14 +209,14 @@ class FunctionDeclarationNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier}: ("
+        ret = f"{self.identifier}("
         for p in self.params:
-            ret += f"{p} "
+            ret += f"[{p}]"
         ret+=f")\n"
-        ret+=f"\t{{\n"
+        ret+=f"{{\n"
         for c in self.child:
-            ret += f"\t{c}"
-        ret+=f"\n\t}}"
+            ret += f"{c}\n"
+        ret+=f"}}"
 
         return ret
     
@@ -233,7 +232,7 @@ class VariableAssignNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier} <= ({self.child})"
+        ret = f"{self.identifier} <= {self.child}"
         return ret
     
 class DeclareVariableAssignNode(Node):
@@ -253,10 +252,10 @@ class DeclareVariableAssignNode(Node):
 
     def __repr__(self) -> str:
         if self.const:
-            ret = f"(const) {self.identifier} <= ({self.child})"
+            ret = f"(const) {self.identifier} <= {self.child}"
             return ret
         else:
-            ret = f"{self.identifier} <= ({self.child})"
+            ret = f"{self.identifier} <= {self.child}"
             return ret
         
 class LogNode(Node):
@@ -267,7 +266,7 @@ class LogNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"(log {self.child})"
+        ret = f"log({self.child})"
         return ret
     
 class LoglnNode(Node):
@@ -278,5 +277,5 @@ class LoglnNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"(logln {self.child})"
+        ret = f"logln({self.child})"
         return ret

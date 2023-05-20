@@ -1,9 +1,15 @@
 let a = 6
 let b = 7
+let test = not 1
+
+func dodaj(a, b){return a+b}
 
 func asd(a){
     let b = 10
     let c = a + b
+    for(let h = 0;h ls 10;h=h+1){
+        logln(h)
+    }
     return c
 }
 
