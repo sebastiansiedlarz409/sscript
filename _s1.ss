@@ -1,3 +1,5 @@
+let a = 3
+
 if (a eq 2){
     logln(2)
 }

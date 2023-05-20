@@ -448,6 +448,52 @@ class SSRuntime:
             for c in node.body:
                 self.execute(c, loopBodyScope)
 
+    def ifNode(self, node: Node, scope: SSRuntimeScope):
+        #prepare test expression
+        #test if node.logic && true is true
+        true = BoolNode()
+        true.setValue("true")
+        test = BinaryExpressionNode()
+        test.setOperator("and")
+        test.setLChild(true)
+        test.setRChild(node.logic)
+
+        if self.execute(test, scope).value == True:
+            ifBodyScope = SSRuntimeScope()
+            ifBodyScope.setParentScope(scope)
+            for c in node.body:
+                self.execute(c, ifBodyScope)
+        else:
+            #go to elif/else if exist
+            if node.child != None:
+                self.execute(node.child, scope)
+
+    def elifNode(self, node: Node, scope: SSRuntimeScope):
+        #prepare test expression
+        #test if node.logic && true is true
+        true = BoolNode()
+        true.setValue("true")
+        test = BinaryExpressionNode()
+        test.setOperator("and")
+        test.setLChild(true)
+        test.setRChild(node.logic)
+
+        if self.execute(test, scope).value == True:
+            elifBodyScope = SSRuntimeScope()
+            elifBodyScope.setParentScope(scope)
+            for c in node.body:
+                self.execute(c, elifBodyScope)
+        else:
+            #go to elif/else if exist
+            if node.child != None:
+                self.execute(node.child, scope)
+
+    def elseNode(self, node: Node, scope: SSRuntimeScope):
+        elseBodyScope = SSRuntimeScope()
+        elseBodyScope.setParentScope(scope)
+        for c in node.body:
+            self.execute(c, elseBodyScope)
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -480,6 +526,12 @@ class SSRuntime:
             self.whileLoopNode(node, scope)
         elif type(node).__name__ == "DoWhileLoopNode":
             self.dowhileLoopNode(node, scope)
+        elif type(node).__name__ == "IfNode":
+            self.ifNode(node, scope)
+        elif type(node).__name__ == "ElifNode":
+            self.elifNode(node, scope)
+        elif type(node).__name__ == "ElseNode":
+            self.elseNode(node, scope)
         elif type(node).__name__ == "LogNode":
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":
