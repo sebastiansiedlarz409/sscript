@@ -1,5 +1,19 @@
-let a = 1.2
+if (a eq 2){
+    logln(2)
+}
+elif (a eq 3){
+    logln(3)
+}
+elif (a eq 4){
+    logln(3)
+}
+else{
+    logln("ERROR")
+}
 
-func asd(a){
-
+if (a eq 2){
+    logln(2)
+}
+else{
+    logln("ERROR")
 }

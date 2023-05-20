@@ -65,6 +65,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            #parse if
+            node = self.parseIf()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse return value
             node = self.parseReturnValue()
             if node != None:
@@ -432,6 +438,12 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            #parse if
+            node = self.parseIf()
+            if node != None:
+                childs.append(node)
+                continue
+
             #parse return value
             node = self.parseReturnValue()
             if node != None:
@@ -601,6 +613,92 @@ class SSParser:
                             raise SSParserException(SSTokens.LParenToken, self.peak())
                     else:
                         raise SSParserException(SSTokens.WhileKwToken, self.peak())
+                else:
+                    raise SSParserException(SSTokens.RBracketToken, self.peak())
+            else:
+                raise SSParserException(SSTokens.LBracketToken, self.peak())
+            
+    def parseIf(self) -> Node:
+        if self.peak().type == SSTokens.IfKwToken:
+            self.get()
+            i = IfNode()
+            if self.peak().type == SSTokens.LParenToken:
+                self.get()
+                lexp = self.parseUnaryExpression()
+                if lexp == None:
+                    raise SSParserException("UnaryExpressionNode", self.peak())
+                i.setLogicExpression(lexp)
+                if self.peak().type == SSTokens.RParenToken:    
+                    self.get()                
+                    if self.peak().type == SSTokens.LBracketToken:
+                        self.get()
+                        body = self.parseBody()
+                        i.setBody(body)
+                        if self.peak().type == SSTokens.RBracketToken:
+                            self.get()
+                            child = self.parseElif()
+                            if child != None:
+                                i.setChild(child)
+                            else:
+                                child = self.parseElse()
+                                if child != None:
+                                    i.setChild(child)
+                            return i
+                        else:
+                            raise SSParserException(SSTokens.RBracketToken, self.peak())
+                    else:
+                        raise SSParserException(SSTokens.LBracketToken, self.peak())
+                else:
+                    raise SSParserException(SSTokens.RParenToken, self.peak())
+            else:
+                raise SSParserException(SSTokens.LParenToken, self.peak())
+            
+    def parseElif(self) -> Node:
+        if self.peak().type == SSTokens.ElifKwToken:
+            self.get()
+            i = ElifNode()
+            if self.peak().type == SSTokens.LParenToken:
+                self.get()
+                lexp = self.parseUnaryExpression()
+                if lexp == None:
+                    raise SSParserException("UnaryExpressionNode", self.peak())
+                i.setLogicExpression(lexp)
+                if self.peak().type == SSTokens.RParenToken:    
+                    self.get()                
+                    if self.peak().type == SSTokens.LBracketToken:
+                        self.get()
+                        body = self.parseBody()
+                        i.setBody(body)
+                        if self.peak().type == SSTokens.RBracketToken:
+                            self.get()
+                            child = self.parseElif()
+                            if child != None:
+                                i.setChild(child)
+                            else:
+                                child = self.parseElse()
+                                if child != None:
+                                    i.setChild(child)
+                            return i
+                        else:
+                            raise SSParserException(SSTokens.RBracketToken, self.peak())
+                    else:
+                        raise SSParserException(SSTokens.LBracketToken, self.peak())
+                else:
+                    raise SSParserException(SSTokens.RParenToken, self.peak())
+            else:
+                raise SSParserException(SSTokens.LParenToken, self.peak())
+            
+    def parseElse(self) -> Node:
+        if self.peak().type == SSTokens.ElseKwToken:
+            self.get()
+            i = ElseNode()                
+            if self.peak().type == SSTokens.LBracketToken:
+                self.get()
+                body = self.parseBody()
+                i.setBody(body)
+                if self.peak().type == SSTokens.RBracketToken:
+                    self.get()
+                    return i
                 else:
                     raise SSParserException(SSTokens.RBracketToken, self.peak())
             else:
