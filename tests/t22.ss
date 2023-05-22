@@ -1,0 +1,1 @@
+const taka_se_zmienna = "Ala ma kota" + 2~

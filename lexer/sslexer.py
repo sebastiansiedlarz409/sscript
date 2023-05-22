@@ -5,8 +5,19 @@ import string
 
 class SSLexer:
     def __init__(self):
-        self.line = 1
-        self.column = 1
+        self.line: int = 1
+        self.column: int = 1
+        self.current: int = 1
+        self.chars: list[str] = [] 
+
+    def peak(self, offset: int = 0, length: int = 1):
+        return ''.join(self.chars[offset:offset+length])
+
+    def get(self, offset: int = 0, length: int = 1):
+        ret = ''.join(self.chars[offset: offset+length])
+        for i in range(0, length): self.chars.pop(0)
+        self.column += length
+        return ret
 
     def isalphabetic(self, char: str) -> bool:
         chars = string.ascii_letters + "_"
@@ -19,51 +30,51 @@ class SSLexer:
         return char.lower() in (string.digits+"abcdef")
     
     def isbinnumber(self, char: str) -> bool:
-        return char.lower() in (string.digits+"abcdef")
+        return char.lower() in ("01")
     
-    def getNumericValue(self, chars: list[str]) -> str:
+    def getNumericValue(self) -> str:
         value = ""
 
         #if hex
-        if len(chars) > 1:
-            if chars[0] == "0" and chars[1] == "x":
+        if len(self.chars) > 1:
+            if self.peak(0,2) == "0x":
                 value+="0x"
-                chars.pop(0)
-                chars.pop(0)
-                while(len(chars) > 0 and (self.ishexnumber(chars[0]) or chars[0] == ".")):
+                self.get()
+                self.get()
+                while(len(self.chars) > 0 and (self.ishexnumber(self.peak()) or self.peak() == ".")):
                     #get dot once
-                    value+=chars[0]
-                    chars.pop(0)
+                    value+=self.peak()
+                    self.get()
                 return value
         
         #if bin
-        if len(chars) > 1:
-            if chars[0] == "0" and chars[1] == "b":
+        if len(self.chars) > 1:
+            if self.peak(0,2) == "0b":
                 value+="0b"
-                chars.pop(0)
-                chars.pop(0)
-                while(len(chars) > 0 and (self.isbinnumber(chars[0]) or chars[0] == ".")):
+                self.get()
+                self.get()
+                while(len(self.chars) > 0 and (self.isbinnumber(self.peak()) or self.peak() == ".")):
                     #get dot once
-                    value+=chars[0]
-                    chars.pop(0)
+                    value+=self.peak()
+                    self.get()
                 return value
 
         dot = False
-        while(len(chars) > 0 and (self.isnumber(chars[0]) or chars[0] == ".")):
-            if chars[0] == "." and dot:
-                raise SSLexerException(chars[0], self.line, self.column)
+        while(len(self.chars) > 0 and (self.isnumber(self.peak()) or self.peak() == ".")):
+            if self.peak() == "." and dot:
+                raise SSLexerException(self.peak(), self.line, self.column)
             #get dot once
-            if chars[0] == ".":
+            if self.peak() == ".":
                 dot = True
-            value+=chars[0]
-            chars.pop(0)
+            value+=self.peak()
+            self.get()
         return value
     
-    def getStringValue(self, chars: list[str]) -> str:
+    def getStringValue(self) -> str:
         value = ""
-        while chars[0] in string.printable and chars[0] != '"':
-            value += chars[0]
-            chars.pop(0)
+        while self.peak() in string.printable and self.peak() != '"':
+            value += self.peak()
+            self.get()
         return value
 
     def tokenize(self, source: str) -> list[SSToken]:
@@ -71,95 +82,85 @@ class SSLexer:
         tokens = []
 
         #get all characters
-        chars = [x for x in source]
+        self.chars = [x for x in source]
         
         #self.line and self.column tracking for errors
         self.line = 1
         self.column = 1
+        self.current = 1
 
-        while(len(chars) > 0):
-            if chars[0] in '\t\n\r ':
-                self.column+=1
-                if chars[0] == '\n':
+        while(len(self.chars) > 0):
+            self.current = self.column
+
+            if self.peak() in '\t\n\r ':
+                if self.peak() == '\n':
                     self.line+=1
-                    self.column=1
-                chars.pop(0)
-            elif chars[0] == '(':
-                tokens.append(SSToken(SSTokens.LParenToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == ')':
-                tokens.append(SSToken(SSTokens.RParenToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == '{':
-                tokens.append(SSToken(SSTokens.LBracketToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == '}':
-                tokens.append(SSToken(SSTokens.RBracketToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == '[':
-                tokens.append(SSToken(SSTokens.LSquareBracketToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == ']':
-                tokens.append(SSToken(SSTokens.RSquareBracketToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == '=':
-                tokens.append(SSToken(SSTokens.AssignOperatorToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == ',':
-                tokens.append(SSToken(SSTokens.CommaToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] == ';':
-                tokens.append(SSToken(SSTokens.SemicolonToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
-            elif chars[0] in '+-*/%|&^<>':
-                tokens.append(SSToken(SSTokens.BinaryOperatorToken, chars[0],self.line, self.column))
-                chars.pop(0)
-                self.column+=1
+                    self.column=0
+                self.get()
+            elif self.peak() == '(':
+                tokens.append(SSToken(SSTokens.LParenToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == ')':
+                tokens.append(SSToken(SSTokens.RParenToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == '{':
+                tokens.append(SSToken(SSTokens.LBracketToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == '}':
+                tokens.append(SSToken(SSTokens.RBracketToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == '[':
+                tokens.append(SSToken(SSTokens.LSquareBracketToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == ']':
+                tokens.append(SSToken(SSTokens.RSquareBracketToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == '=':
+                tokens.append(SSToken(SSTokens.AssignOperatorToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == ',':
+                tokens.append(SSToken(SSTokens.CommaToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() == ';':
+                tokens.append(SSToken(SSTokens.SemicolonToken, self.peak(),self.line, self.current))
+                self.get()
+            elif self.peak() in '+-*/%|&^<>':
+                tokens.append(SSToken(SSTokens.BinaryOperatorToken, self.peak(),self.line, self.current))
+                self.get()
             else:
                 #here we handle multicharacter tokens
                 #strings
-                if chars[0] == '"':
-                    tokens.append(SSToken(SSTokens.QuoteToken, chars[0],self.line, self.column))
-                    chars.pop(0)
-                    value = self.getStringValue(chars)
-                    tokens.append(SSToken(SSTokens.StringToken, value,self.line, self.column))
-                    if chars[0] == '"':
-                        tokens.append(SSToken(SSTokens.QuoteToken, chars[0],self.line, self.column))
-                        chars.pop(0)
-                        self.column+=(len(value)+2)
+                if self.peak() == '"':
+                    tokens.append(SSToken(SSTokens.QuoteToken, self.peak(),self.line, self.current))
+                    self.get()
+                    self.current = self.column
+                    value = self.getStringValue()
+                    tokens.append(SSToken(SSTokens.StringToken, value,self.line, self.current))
+                    self.current = self.column
+                    if self.peak() == '"':
+                        tokens.append(SSToken(SSTokens.QuoteToken, self.peak(),self.line, self.current))
+                        self.get()
                     continue
 
                 #build number token
-                if(self.isnumber(chars[0])):
-                    value = self.getNumericValue(chars)
-                    tokens.append(SSToken(SSTokens.NumberToken, value,self.line, self.column))
-                    self.column+=len(value)
+                if(self.isnumber(self.peak())):
+                    value = self.getNumericValue()
+                    tokens.append(SSToken(SSTokens.NumberToken, value,self.line, self.current))
 
                 #build identifier or keyword
-                elif(self.isalphabetic(chars[0])):
+                elif(self.isalphabetic(self.peak())):
                     value = ""
-                    while(len(chars) > 0 and self.isalphabetic(chars[0])):
-                        value+=chars[0]
-                        chars.pop(0)
+                    while(len(self.chars) > 0 and self.isalphabetic(self.peak())):
+                        value+=self.peak()
+                        self.get()
 
                     if value.lower() in SSKEYWORDS.keys():
-                        tokens.append(SSToken(SSKEYWORDS[value], value.lower(),self.line, self.column))
-                        self.column+=len(value)
+                        tokens.append(SSToken(SSKEYWORDS[value], value.lower(),self.line, self.current))
                     else:
-                        tokens.append(SSToken(SSTokens.IdentifierToken, value.lower(),self.line, self.column))
-                        self.column+=len(value)
+                        tokens.append(SSToken(SSTokens.IdentifierToken, value.lower(),self.line, self.current))
                 
                 else:
-                    raise SSLexerException(chars[0], self.line, self.column)
+                    raise SSLexerException(self.peak(), self.line, self.column)
 
         #add EOF
         tokens.append(SSToken(SSTokens.EOFToken, "EOF",self.line, self.column))

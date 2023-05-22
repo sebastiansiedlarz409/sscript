@@ -264,6 +264,38 @@ def t15():
     result = execute(s, True)
     print("T15 NOT OK")
 
+def t16():
+    s = ""
+    with open("tests\\t16.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "20":
+            print("T16 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T16 NOT OK")
+
+def t17():
+    s = ""
+    with open("tests\\t17.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "40":
+            print("T17 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T17 NOT OK")
+
 #trow tests
 def t20():
     s = ""
@@ -292,10 +324,44 @@ def t21():
         print("T21 NOT OK")
         return
     except SSLexerException as x:
-        if x.got == '.' and x.line == 1 and x.column == 9:
+        if x.got == '.' and x.line == 1 and x.column == 12:
             print("T21 OK")
         else:
             print("T21 NOT OK")
+            print(x)
+
+#trow tests
+def t22():
+    s = ""
+    with open("tests\\t22.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T22 NOT OK")
+        return
+    except SSLexerException as x:
+        if x.got == '~' and x.line == 1 and x.column == 42:
+            print("T22 OK")
+        else:
+            print("T22 NOT OK")
+            print(x)
+
+#trow tests
+def t23():
+    s = ""
+    with open("tests\\t23.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T23 NOT OK")
+        return
+    except SSParserException as x:
+        if x.got.type == SSTokens.NumberToken and x.got.line == 1 and x.got.column == 16:
+            print("T23 OK")
+        else:
+            print("T23 NOT OK")
             print(x)
 
 print()
@@ -315,5 +381,10 @@ t12()
 t13()
 t14()
 t15()
+t16()
+t17()
+
 t20()
 t21()
+t22()
+t23()
