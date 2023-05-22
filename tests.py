@@ -364,6 +364,40 @@ def t23():
             print("T23 NOT OK")
             print(x)
 
+#trow tests
+def t24():
+    s = ""
+    with open("tests\\t24.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T24 NOT OK")
+        return
+    except SSParserException as x:
+        if x.expected == SSTokens.IdentifierToken and x.got.line == 1 and x.got.column == 6:
+            print("T24 OK")
+        else:
+            print("T24 NOT OK")
+            print(x)
+
+#trow tests
+def t25():
+    s = ""
+    with open("tests\\t25.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T25 NOT OK")
+        return
+    except SSParserException as x:
+        if x.expected == SSTokens.SemicolonToken and x.got.line == 3 and x.got.column == 23:
+            print("T25 OK")
+        else:
+            print("T25 NOT OK")
+            print(x)
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -388,3 +422,5 @@ t20()
 t21()
 t22()
 t23()
+t24()
+t25()

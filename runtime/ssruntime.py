@@ -27,9 +27,9 @@ class SSRuntime:
                 result = int(lvalue.value) & int(rvalue.value)
             elif operator == "^":
                 result = int(lvalue.value) ^ int(rvalue.value)
-            elif operator == "<":
+            elif operator == "<<":
                 result = int(lvalue.value) << int(rvalue.value)
-            elif operator == ">":
+            elif operator == ">>":
                 result = int(lvalue.value) >> int(rvalue.value)
         except TypeError:
             raise SSException(f"SSRuntime: Cant {operator} this type of values")
@@ -132,7 +132,7 @@ class SSRuntime:
         right = self.execute(node.rChild, scope)
 
         #not logical operator
-        if node.operator in "+-*/%&|<>^":
+        if node.operator in "+-*/%&|<<>>^":
             #NUMBER <> NUMBER
             if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
                 return self.evalBinaryExpressionArithmetic(left, right, node.operator)

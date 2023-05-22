@@ -124,7 +124,15 @@ class SSLexer:
             elif self.peak() == ';':
                 tokens.append(SSToken(SSTokens.SemicolonToken, self.peak(),self.line, self.current))
                 self.get()
-            elif self.peak() in '+-*/%|&^<>':
+            elif self.peak(0,2) == '<<':
+                tokens.append(SSToken(SSTokens.BinaryOperatorToken, self.peak(0,2),self.line, self.current))
+                self.get()
+                self.get()
+            elif self.peak(0,2) == '>>':
+                tokens.append(SSToken(SSTokens.BinaryOperatorToken, self.peak(0,2),self.line, self.current))
+                self.get()
+                self.get()
+            elif self.peak() in '+-*/%|&^':
                 tokens.append(SSToken(SSTokens.BinaryOperatorToken, self.peak(),self.line, self.current))
                 self.get()
             else:

@@ -249,7 +249,7 @@ class SSParser:
     """
     def parseBitewiseExpression(self) -> Node:
         left = self.parseComparasionExpression()
-        while self.peak().value in "|&<>^":
+        while self.peak().value in "|&<<>>^":
             operator = self.get().value #operator
             right = self.parseComparasionExpression()
             temp = BinaryExpressionNode()
