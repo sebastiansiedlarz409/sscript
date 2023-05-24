@@ -1,3 +1,4 @@
-let a = 128<<1
-
-return a
+struct Rectangle(Shape){
+    public let a = 0
+    private let b = 1
+}

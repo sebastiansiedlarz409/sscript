@@ -38,6 +38,9 @@ class SSTokens(Enum):
     QuoteToken = 59,
     NumberToken = 101,
     StringToken = 102,
+    StructKwToken = 200,
+    AccessModifierToken = 201,
+    ImplKwToken = 300,
     ConstKwToken = 999,
     LogKwToken = 9997,
     LoglnKwToken = 9998,
@@ -69,7 +72,11 @@ SSKEYWORDS = {
     "le": SSTokens.LeKwToken,
     "true": SSTokens.TrueKwToken,
     "false": SSTokens.FalseKwToken,
-    "null": SSTokens.NullKwToken
+    "null": SSTokens.NullKwToken,
+    "struct": SSTokens.StructKwToken,
+    "public": SSTokens.AccessModifierToken,
+    "private": SSTokens.AccessModifierToken,
+    "impl": SSTokens.ImplKwToken
 }
 
 class SSToken:

@@ -89,6 +89,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            #parse struct declaration
+            node = self.parseStruct()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #testing only
             node = self.parseLog()
             if node != None:
@@ -314,8 +320,6 @@ class SSParser:
                     raise SSParserException(SSTokens.AssignOperatorToken, self.peak())
             else:
                 raise SSParserException(SSTokens.IdentifierToken, self.peak())
-
-        return None
     
     """
     variableassign -> [VariableAssignNode]:
@@ -332,8 +336,6 @@ class SSParser:
                 return kw
             else:
                 raise SSParserException(SSTokens.AssignOperatorToken, self.peak())
-
-        return None
 
     """
     parselog -> [LogNode]:
@@ -354,8 +356,6 @@ class SSParser:
                     raise SSParserException(SSTokens.RParenToken, self.peak())
             else:
                 raise SSParserException(SSTokens.LParenToken, self.peak())
-
-        return None
     
     """
     parselogln -> [LoglnNode]:
@@ -376,8 +376,6 @@ class SSParser:
                     raise SSParserException(SSTokens.RParenToken, self.peak())
             else:
                 raise SSParserException(SSTokens.LParenToken, self.peak())
-                
-        return None
     
     """
     returnvalue -> [unaryexpression]:
@@ -512,8 +510,6 @@ class SSParser:
                     raise SSParserException(SSTokens.LParenToken, self.peak())
             else:
                 raise SSParserException(SSTokens.IdentifierToken, self.peak())
-                
-        return None
 
     """
     forloop -> [ForLoopNode]:
@@ -703,3 +699,64 @@ class SSParser:
                     raise SSParserException(SSTokens.RBracketToken, self.peak())
             else:
                 raise SSParserException(SSTokens.LBracketToken, self.peak())
+
+    def parseFieldDeclarationAssign(self) -> Node:
+        if self.peak().type == SSTokens.AccessModifierToken:
+            kw = DeclareFieldAssignNode()
+            kw.setAccess(self.get().value)
+            if self.peak().type == SSTokens.LetKwToken or self.peak().type == SSTokens.ConstKwToken:
+                t = self.get() #skip let/const
+                if self.peak().type == SSTokens.IdentifierToken:
+                    kw.setIdentifier(self.get().value)
+                    if t.type == SSTokens.ConstKwToken:
+                        kw.isConst()
+                    if self.peak().type == SSTokens.AssignOperatorToken:
+                        self.get()
+                        exp = self.parseUnaryExpression()
+                        kw.setChild(exp)
+                        return kw
+                    else:
+                        raise SSParserException(SSTokens.AssignOperatorToken, self.peak())
+                else:
+                    raise SSParserException(SSTokens.IdentifierToken, self.peak())
+            else:
+                raise SSParserException([SSTokens.LetKwToken, SSTokens.ConstKwToken], self.peak())
+
+    def parseStructBody(self) -> list[Node]:
+        childs = []
+
+        while self.peak().type != SSTokens.RBracketToken:
+            node = None
+
+            #parse declaration variable assign
+            node = self.parseFieldDeclarationAssign()
+            if node != None:
+                childs.append(node)
+            
+        return childs   
+
+    def parseStruct(self) -> Node:
+        if self.peak().type == SSTokens.StructKwToken:
+            self.get()
+            if self.peak().type == SSTokens.IdentifierToken:
+                struct = StructNode()
+                struct.setName(self.get().value)
+                if self.peak().type == SSTokens.LParenToken:
+                    self.get()
+                    if self.peak().type == SSTokens.IdentifierToken:
+                        struct.setParent(self.get().value)
+                        if self.get().type != SSTokens.RParenToken:
+                            raise SSParserException(SSTokens.RParenToken, self.peak())
+                    else:
+                        raise SSParserException(SSTokens.IdentifierToken, self.peak())
+                if self.peak().type == SSTokens.LBracketToken:
+                    self.get()
+                    body = self.parseStructBody()
+                    struct.setBody(body)
+                    if self.peak().type == SSTokens.RBracketToken:
+                        self.get()
+                        return struct
+                    else:
+                        raise SSParserException(SSTokens.RBracketToken, self.peak())
+            else:
+                raise SSParserException(SSTokens.IdentifierToken, self.peak())

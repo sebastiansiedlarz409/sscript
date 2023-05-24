@@ -341,3 +341,51 @@ class LoglnNode(Node):
     def __repr__(self) -> str:
         ret = f"logln({self.child})"
         return ret
+    
+class StructNode(Node):
+    def __init__(self):
+        self.name: str = None
+        self.parent: str = None
+        self.body: list[Node] = []
+
+    def setBody(self, body: list[Node]):
+        self.body = body
+
+    def setName(self, name: str):
+        self.name = name.upper()
+
+    def setParent(self, parent: str):
+        self.parent = parent.upper()
+
+    def __repr__(self) -> str:
+        ret = f"struct {self.name}({'' if self.parent == None else self.parent}):"
+        for b in self.body:
+            ret += f"\n{b}"
+        return ret
+
+class DeclareFieldAssignNode(Node):
+    def __init__(self):
+        self.identifier: str = None
+        self.access: str = None
+        self.child: Node = None
+        self.const: bool = False
+
+    def setIdentifier(self, identifier: str):
+        self.identifier = identifier
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def setAccess(self, access: Node):
+        self.access = access
+
+    def isConst(self):
+        self.const = True
+
+    def __repr__(self) -> str:
+        if self.const:
+            ret = f"{self.access} (const) {self.identifier} <= {self.child}"
+            return ret
+        else:
+            ret = f"{self.access} {self.identifier} <= {self.child}"
+            return ret
