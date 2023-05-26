@@ -2,49 +2,50 @@ from enum import Enum
 
 class SSTokens(Enum):
     LetKwToken = 0,
-    FuncKwToken = 1,
-    ReturnKwToken = 2,
-    IfKwToken = 3,
-    ElifKwToken = 4,
-    ElseKwToken = 5,
-    ForKwToken = 6,
-    WhileKwToken = 7,
-    DoKwToken = 8,
-    BreakKwToken = 9,
-    ContinueKwToken = 10,
-    AndKwToken = 11,
-    OrKwToken = 12,
-    EqKwToken = 21,
-    NeqKwToken = 22,
-    GrKwToken = 23,
-    GeKwToken = 24,
-    LsKwToken = 25,
-    LeKwToken = 26,
-    NullKwToken = 27,
-    TrueKwToken = 28,
-    FalseKwToken = 29,
-    IdentifierToken = 31,
-    AssignOperatorToken = 41,
-    UnaryOperatorToken = 42,
-    BinaryOperatorToken = 43,
+    ConstKwToken = 1,
+    FuncKwToken = 2,
+    ReturnKwToken = 3,
+    IfKwToken = 4,
+    ElifKwToken = 5,
+    ElseKwToken = 6,
+    ForKwToken = 7,
+    WhileKwToken = 8,
+    DoKwToken = 9,
+    BreakKwToken = 10,
+    ContinueKwToken = 11,
+    AndKwToken = 12,
+    OrKwToken = 13,
+    EqKwToken = 14,
+    NeqKwToken = 15,
+    GrKwToken = 16,
+    GeKwToken = 17,
+    LsKwToken = 18,
+    LeKwToken = 19,
+    NullKwToken = 20,
+    TrueKwToken = 21,
+    FalseKwToken = 22,
+    StructKwToken = 23,
+    ImplKwToken = 24,
+    AccessModifierKwToken = 25,
+    IdentifierToken = 30,
+    NumberToken = 31,
+    StringToken = 32,
+    AssignOperatorToken = 40,
+    UnaryOperatorToken = 41,
+    BinaryOperatorToken = 42,
     CommaToken = 51,
-    SemicolonToken = 52,
-    LParenToken = 53,
-    RParenToken = 54,
-    LBracketToken = 55, #{}
-    RBracketToken = 56,
-    LSquareBracketToken = 57, #[]
-    RSquareBracketToken = 58,
-    QuoteToken = 59,
-    NumberToken = 101,
-    StringToken = 102,
-    StructKwToken = 200,
-    AccessModifierToken = 201,
-    ImplKwToken = 300,
-    ConstKwToken = 999,
-    LogKwToken = 9997,
-    LoglnKwToken = 9998,
-    EOFToken = 9999
+    ColonToken = 52,
+    SemicolonToken = 53,
+    LParenToken = 60,
+    RParenToken = 61,
+    LBracketToken = 62, #{}
+    RBracketToken = 63,
+    LSquareBracketToken = 64, #[]
+    RSquareBracketToken = 65,
+    QuoteToken = 66,
+    LogKwToken = 8000,
+    LoglnKwToken = 8001,
+    EOFToken = 9000
 
 SSKEYWORDS = {
     "log" : SSTokens.LogKwToken,
@@ -74,17 +75,7 @@ SSKEYWORDS = {
     "false": SSTokens.FalseKwToken,
     "null": SSTokens.NullKwToken,
     "struct": SSTokens.StructKwToken,
-    "public": SSTokens.AccessModifierToken,
-    "private": SSTokens.AccessModifierToken,
+    "public": SSTokens.AccessModifierKwToken,
+    "private": SSTokens.AccessModifierKwToken,
     "impl": SSTokens.ImplKwToken
 }
-
-class SSToken:
-    def __init__(self, sstype: SSTokens, value: str, line: int = 0, column: int = 0):
-        self.type: SSTokens = sstype
-        self.value: str = value
-        self.line: int = line
-        self.column: int = column
-
-    def __repr__(self) -> str:
-        return f"[{self.line}:{self.column}] {self.type} => {self.value}"

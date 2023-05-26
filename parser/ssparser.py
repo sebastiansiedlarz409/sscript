@@ -714,7 +714,7 @@ class SSParser:
                 raise SSParserException(SSTokens.LBracketToken, self.peak())
 
     def parseFieldDeclarationAssign(self) -> Node:
-        if self.peak().type == SSTokens.AccessModifierToken:
+        if self.peak().type == SSTokens.AccessModifierKwToken:
             kw = DeclareFieldAssignNode()
             kw.setAccess(self.get().value)
             if self.peak().type == SSTokens.LetKwToken or self.peak().type == SSTokens.ConstKwToken:
@@ -775,7 +775,7 @@ class SSParser:
                 raise SSParserException(SSTokens.IdentifierToken, self.peak())
             
     def parseMethodDefinition(self, struct: str) -> Node:
-        if self.peak().type == SSTokens.AccessModifierToken:
+        if self.peak().type == SSTokens.AccessModifierKwToken:
             f = MethodDeclarationNode()
             f.setStructName(struct)
             f.setAccess(self.get())    

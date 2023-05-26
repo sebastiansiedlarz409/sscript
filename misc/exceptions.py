@@ -1,4 +1,5 @@
 from lexer.tokens import *
+from lexer.token import *
 
 class SSException(Exception):
     def __init__ (self, message: str):

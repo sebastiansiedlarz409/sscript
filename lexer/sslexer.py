@@ -1,4 +1,5 @@
 from lexer.tokens import *
+from lexer.token import *
 from misc.exceptions import *
 
 import string
@@ -6,22 +7,23 @@ import string
 class SSLexer:
     def __init__(self):
         self.line: int = 1
-        self.column: int = 1
-        self.current: int = 1
-        self.chars: list[str] = [] 
+        self.column: int = 1 #current position in line
+        self.current: int = 1 #currently testing token start position
+        self.chars: list[str] = [] #list of characters from source
 
+    #return [length] characters from [offset] without removing them
     def peak(self, offset: int = 0, length: int = 1):
         return ''.join(self.chars[offset:offset+length])
 
+    #return [length] characters from [offset] and pop them from source
     def get(self, offset: int = 0, length: int = 1):
         ret = ''.join(self.chars[offset: offset+length])
-        for i in range(0, length): self.chars.pop(0)
+        for i in range(0, length): self.chars.pop(offset)
         self.column += length
         return ret
 
     def isalphabetic(self, char: str) -> bool:
-        chars = string.ascii_letters + "_"
-        return char in chars
+        return char in (string.ascii_letters + "_")
     
     def isnumber(self, char: str) -> bool:
         return char in string.digits
@@ -32,6 +34,7 @@ class SSLexer:
     def isbinnumber(self, char: str) -> bool:
         return char.lower() in ("01")
     
+    #if numeric literal was dectected, builts it and returns it
     def getNumericValue(self) -> str:
         value = ""
 
@@ -41,8 +44,7 @@ class SSLexer:
                 value+="0x"
                 self.get()
                 self.get()
-                while(len(self.chars) > 0 and (self.ishexnumber(self.peak()) or self.peak() == ".")):
-                    #get dot once
+                while(len(self.chars) > 0 and (self.ishexnumber(self.peak()))):
                     value+=self.peak()
                     self.get()
                 return value
@@ -53,23 +55,25 @@ class SSLexer:
                 value+="0b"
                 self.get()
                 self.get()
-                while(len(self.chars) > 0 and (self.isbinnumber(self.peak()) or self.peak() == ".")):
-                    #get dot once
+                while(len(self.chars) > 0 and (self.isbinnumber(self.peak()))):
                     value+=self.peak()
                     self.get()
                 return value
 
+        #if decimal
         dot = False
         while(len(self.chars) > 0 and (self.isnumber(self.peak()) or self.peak() == ".")):
+            #throw if there is more than one dot
             if self.peak() == "." and dot:
                 raise SSLexerException(self.peak(), self.line, self.column)
-            #get dot once
+            #mark first dot
             if self.peak() == ".":
                 dot = True
             value+=self.peak()
             self.get()
         return value
     
+    #builts and returns string literal without quotes
     def getStringValue(self) -> str:
         value = ""
         while self.peak() in string.printable and self.peak() != '"':
@@ -77,6 +81,7 @@ class SSLexer:
             self.get()
         return value
 
+    #tokenize source
     def tokenize(self, source: str) -> list[SSToken]:
         #buffer for tokens
         tokens = []
@@ -90,6 +95,8 @@ class SSLexer:
         self.current = 1
 
         while(len(self.chars) > 0):
+            #here analyze of new token begin
+            #align column pointers
             self.current = self.column
 
             if self.peak() in '\t\n\r ':
@@ -150,12 +157,12 @@ class SSLexer:
                         self.get()
                     continue
 
-                #build number token
+                #number token
                 if(self.isnumber(self.peak())):
                     value = self.getNumericValue()
                     tokens.append(SSToken(SSTokens.NumberToken, value,self.line, self.current))
 
-                #build identifier or keyword
+                #identifier or keyword
                 elif(self.isalphabetic(self.peak())):
                     value = ""
                     while(len(self.chars) > 0 and self.isalphabetic(self.peak())):
