@@ -1,6 +1,13 @@
 from lexer.tokens import *
-from parser.nodes import *
 from misc.exceptions import *
+from parser.nodes.conditionals import *
+from parser.nodes.expressions import *
+from parser.nodes.factors import *
+from parser.nodes.loops import *
+from parser.nodes.functions import *
+from parser.nodes.nodes import *
+from parser.nodes.oop import *
+from parser.nodes.variables import *
 
 class SSParser:
     def __init__(self):

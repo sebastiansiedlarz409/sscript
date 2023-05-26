@@ -1,5 +1,5 @@
 from enum import Enum
-from parser.nodes import *
+from parser.nodes.nodes import *
 
 class ValueTypes(Enum):
     Number = 0,

@@ -1,7 +1,14 @@
-from parser.nodes import *
 from runtime.values import *
 from runtime.ssscope import *
 from misc.exceptions import *
+from parser.nodes.conditionals import *
+from parser.nodes.expressions import *
+from parser.nodes.factors import *
+from parser.nodes.loops import *
+from parser.nodes.functions import *
+from parser.nodes.nodes import *
+from parser.nodes.oop import *
+from parser.nodes.variables import *
 
 class SSRuntime:
     def __init__(self):
