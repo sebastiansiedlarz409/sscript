@@ -128,36 +128,37 @@ class SSParser:
     
 
     def parseFunctionCall(self) -> Node:
-        if self.peak().type == SSTokens.IdentifierToken and self.peak(1).type == SSTokens.LParenToken:
-            c = FunctionCallNode()
-            c.setIdentifier(self.get().value)
-            self.get() #lparen
-            if self.peak().type == SSTokens.RParenToken:
-                self.get()
-                return c
-            params = []
-            child = self.parseUnaryExpression()
-            while child != None:
-                params.append(child)
-                if self.peak().type == SSTokens.RParenToken:
-                    self.get()
-                    break
-                elif self.peak().type == SSTokens.CommaToken:
-                    self.get()
-                else:
-                    raise SSParserException(SSTokens.CommaToken, self.peak())
-                child = self.parseUnaryExpression()
-            c.setParams(params)
-            
+        if self.peak().type != SSTokens.IdentifierToken or self.peak(1).type != SSTokens.LParenToken:
+            return
+        
+        identifier = self.get()
+        self.get() #lparen
+
+        c = FunctionCallNode()
+        c.setIdentifier(identifier.value)
+
+        if self.test(SSTokens.RParenToken):
+            self.get()
             return c
+        
+        params = []
+        child = self.parseExpression()
+        while child != None:
+            params.append(child)
+            if self.test(SSTokens.RParenToken):
+                break
+            elif self.expect(SSTokens.CommaToken):
+                pass
+            child = self.parseExpression()
+        c.setParams(params)
+        
+        return c
                     
     def parseFactor(self) -> Node:
         #check for exp inside paren
-        if self.peak().type == SSTokens.LParenToken:
-            self.get()
-            n = self.parseUnaryExpression()
-            if self.get().type != SSTokens.RParenToken:
-                raise SSParserException(SSTokens.RParenToken, self.peak())
+        if self.test(SSTokens.LParenToken):
+            n = self.parseExpression()
+            self.expect(SSTokens.RParenToken)
             return n
         
         #function call
@@ -166,30 +167,29 @@ class SSParser:
             return n
 
         #string
-        if self.peak().type == SSTokens.QuoteToken:
-            self.get()
+        if self.test(SSTokens.QuoteToken):
             n = StringNode()
             n.setValue(self.get().value)
-            if self.get().type != SSTokens.QuoteToken:
-                raise SSParserException(SSTokens.QuoteToken, self.peak())
+            self.expect(SSTokens.QuoteToken)
             return n
 
         #number token
-        if self.peak().type == SSTokens.NumberToken:
+        number = self.test(SSTokens.NumberToken)
+        if number:
             n = NumberNode()
-            n.setValue(self.get().value)
+            n.setValue(number.value)
             return n
         
         #identifier
-        if self.peak().type == SSTokens.IdentifierToken:
+        identifier = self.test(SSTokens.IdentifierToken)
+        if identifier:
             n = IdentifierNode()
-            n.setIdentifier(self.get().value)
+            n.setIdentifier(identifier.value)
             return n
         
         #null
-        if self.peak().type == SSTokens.NullKwToken:
+        if self.test(SSTokens.NullKwToken):
             n = NullNode()
-            self.get().value
             return n
         
         #true false
@@ -202,7 +202,7 @@ class SSParser:
             u = UnaryExpressionNode()
             u.setOperator(self.get().value)
 
-            child = self.parseLogicalExpression()
+            child = self.parseLogicalExpression() #for ex. -2
             
             u.setChild(child)
             return u
@@ -283,6 +283,11 @@ class SSParser:
             
             u.setChild(child)
             return u
+    
+    def parseExpression(self) -> Node:
+        node = self.parseUnaryExpression()
+        if node:
+            return node
         
         return self.parseLogicalExpression()
 
@@ -295,7 +300,7 @@ class SSParser:
             
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.AssignOperatorToken)
-        expression = self.parseUnaryExpression()
+        expression = self.parseExpression()
 
         v = DeclareVariableAssignNode()
         v.setIdentifier(identifier.value)
@@ -311,7 +316,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.AssignOperatorToken)
-        expression = self.parseUnaryExpression()
+        expression = self.parseExpression()
         
         v = VariableAssignNode()
         v.setIdentifier(identifier.value)
@@ -324,7 +329,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        expression = self.parseUnaryExpression()
+        expression = self.parseExpression()
         self.expect(SSTokens.RParenToken)
 
         log = LogNode()
@@ -337,7 +342,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        expression = self.parseUnaryExpression()
+        expression = self.parseExpression()
         self.expect(SSTokens.RParenToken)
 
         log = LoglnNode()
@@ -349,7 +354,7 @@ class SSParser:
         if not self.test(SSTokens.ReturnKwToken):
             return
         
-        expression = self.parseUnaryExpression()
+        expression = self.parseExpression()
 
         r = ReturnNode()
         if expression:
@@ -461,7 +466,7 @@ class SSParser:
         self.expect(SSTokens.LParenToken)
         sexpression = self.parseVariableDeclarationAssign()
         self.expect(SSTokens.SemicolonToken)
-        lexpression = self.parseUnaryExpression()
+        lexpression = self.parseExpression()
         self.expect(SSTokens.SemicolonToken)
         mexpression = self.parseVariableAssign()
         self.expect(SSTokens.RParenToken)
@@ -482,7 +487,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseUnaryExpression()
+        lexpression = self.parseExpression()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()
@@ -503,7 +508,7 @@ class SSParser:
         self.expect(SSTokens.RBracketToken)
         self.expect(SSTokens.WhileKwToken)
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseUnaryExpression()
+        lexpression = self.parseExpression()
         self.expect(SSTokens.RParenToken)
 
         do = DoWhileLoopNode()
@@ -517,7 +522,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseUnaryExpression()
+        lexpression = self.parseExpression()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()
@@ -540,7 +545,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseUnaryExpression()
+        lexpression = self.parseExpression()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()
@@ -580,7 +585,7 @@ class SSParser:
         identifier = self.expect(SSTokens.IdentifierToken)
         const = self.test(SSTokens.ConstKwToken)
         self.expect(SSTokens.AssignOperatorToken)
-        expression = self.parseUnaryExpression()
+        expression = self.parseExpression()
 
         field = DeclareFieldAssignNode()
         field.setAccess(access.value)
