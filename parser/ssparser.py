@@ -141,7 +141,6 @@ class SSParser:
         c.setIdentifier(identifier.value)
 
         if self.test(SSTokens.RParenToken):
-            self.get()
             return c
         
         params = []
@@ -413,6 +412,18 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            #continue kw
+            c = self.test(SSTokens.ContinueKwToken)
+            if c:
+                childs.append(ContinueNode())
+                continue
+
+            #break kw
+            b = self.test(SSTokens.BreakKwToken)
+            if b:
+                childs.append(BreakNode())
+                continue
+
             #testing only
             node = self.parseLog()
             if node != None:
@@ -463,6 +474,7 @@ class SSParser:
         func.setChild(body)
 
         return func
+
 
     def parseForLoop(self) -> Node:
         if not self.test(SSTokens.ForKwToken):

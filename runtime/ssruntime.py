@@ -47,11 +47,14 @@ class SSRuntime:
         return value
 
     def programNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        last = NullNode()
+        last = NullRuntimeValue()
         for child in node.children:
-            l = self.execute(child, scope)
-            if l != None:
-                last = l
+            try:
+                self.execute(child, scope)
+            except SSRuntimeReturn as r:
+                if r.value:
+                    last = r.value
+                break
         return last
 
     def binaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
@@ -107,13 +110,16 @@ class SSRuntime:
 
         ret = NullRuntimeValue()
         for child in function.body:
-            l = self.execute(child, functionScope)
-            if l != None:
-                ret = l
+            try:
+                self.execute(child, functionScope)
+            except SSRuntimeReturn as r:
+                if r.value:
+                    ret = r.value
         return ret
     
     def returnNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        return self.execute(node.value, scope)
+        expression = self.execute(node.value, scope)
+        raise SSRuntimeReturn(expression)
     
     def forLoopNode(self, node: Node, scope: SSRuntimeScope):
         loopScope = SSRuntimeScope()
@@ -130,12 +136,19 @@ class SSRuntime:
         test.setLChild(true)
         test.setRChild(node.logic)
 
-        while self.execute(test, loopScope).value == True:
-            loopBodyScope = SSRuntimeScope()
-            loopBodyScope.setParentScope(loopScope)
-            for c in node.body:
-                self.execute(c, loopBodyScope)
-            self.execute(node.mod, loopScope)
+        try:
+            while self.execute(test, loopScope).value == True:
+                try:
+                    loopBodyScope = SSRuntimeScope()
+                    loopBodyScope.setParentScope(loopScope)
+                    for c in node.body:
+                        self.execute(c, loopBodyScope)
+                    self.execute(node.mod, loopScope)
+                except SSRuntimeContinue:
+                    self.execute(node.mod, loopScope)
+                    continue
+        except SSRuntimeBreak:
+            return
 
     def whileLoopNode(self, node: Node, scope: SSRuntimeScope):
         loopScope = SSRuntimeScope()
@@ -150,11 +163,17 @@ class SSRuntime:
         test.setLChild(true)
         test.setRChild(node.logic)
 
-        while self.execute(test, loopScope).value == True:
-            loopBodyScope = SSRuntimeScope()
-            loopBodyScope.setParentScope(loopScope)
-            for c in node.body:
-                self.execute(c, loopBodyScope)
+        try:
+            while self.execute(test, loopScope).value == True:
+                try:
+                    loopBodyScope = SSRuntimeScope()
+                    loopBodyScope.setParentScope(loopScope)
+                    for c in node.body:
+                        self.execute(c, loopBodyScope)
+                except SSRuntimeContinue:
+                    continue
+        except SSRuntimeBreak:
+            return
 
     def dowhileLoopNode(self, node: Node, scope: SSRuntimeScope):
         loopScope = SSRuntimeScope()
@@ -171,14 +190,24 @@ class SSRuntime:
 
         loopBodyScope = SSRuntimeScope()
         loopBodyScope.setParentScope(loopScope)
-        for c in node.body:
-            self.execute(c, loopBodyScope)
-
-        while self.execute(test, loopScope).value == True:
-            loopBodyScope = SSRuntimeScope()
-            loopBodyScope.setParentScope(loopScope)
+        
+        try:            
             for c in node.body:
-                self.execute(c, loopBodyScope)
+                try:
+                    self.execute(c, loopBodyScope)
+                except SSRuntimeContinue:
+                    return
+
+            while self.execute(test, loopScope).value == True:
+                try:
+                    loopBodyScope = SSRuntimeScope()
+                    loopBodyScope.setParentScope(loopScope)
+                    for c in node.body:
+                        self.execute(c, loopBodyScope)
+                except SSRuntimeContinue:
+                    continue
+        except SSRuntimeBreak:
+            return
 
     def ifNode(self, node: Node, scope: SSRuntimeScope):
         #prepare test expression
@@ -258,6 +287,10 @@ class SSRuntime:
             self.whileLoopNode(node, scope)
         elif type(node).__name__ == "DoWhileLoopNode":
             self.dowhileLoopNode(node, scope)
+        elif type(node).__name__ == "ContinueNode":
+            raise SSRuntimeContinue()
+        elif type(node).__name__ == "BreakNode":
+            raise SSRuntimeBreak()
         elif type(node).__name__ == "IfNode":
             self.ifNode(node, scope)
         elif type(node).__name__ == "ElifNode":

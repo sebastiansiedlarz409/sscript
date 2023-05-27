@@ -296,7 +296,38 @@ def t17():
     result = execute(s, True)
     print("T17 NOT OK")
 
-#trow tests
+def t18():
+    s = ""
+    with open("tests\\t18.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "1":
+            print("T18 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T18 NOT OK")
+
+def t19():
+    s = ""
+    with open("tests\\t19.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "3":
+            print("T19 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T19 NOT OK")
+
 def t20():
     s = ""
     with open("tests\\t20.ss", "r") as f:
@@ -313,7 +344,6 @@ def t20():
             print("T20 NOT OK")
             print(x)
 
-#trow tests
 def t21():
     s = ""
     with open("tests\\t21.ss", "r") as f:
@@ -330,7 +360,6 @@ def t21():
             print("T21 NOT OK")
             print(x)
 
-#trow tests
 def t22():
     s = ""
     with open("tests\\t22.ss", "r") as f:
@@ -347,7 +376,6 @@ def t22():
             print("T22 NOT OK")
             print(x)
 
-#trow tests
 def t23():
     s = ""
     with open("tests\\t23.ss", "r") as f:
@@ -364,7 +392,6 @@ def t23():
             print("T23 NOT OK")
             print(x)
 
-#trow tests
 def t24():
     s = ""
     with open("tests\\t24.ss", "r") as f:
@@ -381,7 +408,6 @@ def t24():
             print("T24 NOT OK")
             print(x)
 
-#trow tests
 def t25():
     s = ""
     with open("tests\\t25.ss", "r") as f:
@@ -414,6 +440,54 @@ def t26():
             print("T26 NOT OK")
             print(x)
 
+def t30():
+    s = ""
+    with open("tests\\t30.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "13":
+            print("T30 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T30 NOT OK")
+
+def t31():
+    s = ""
+    with open("tests\\t31.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "0":
+            print("T31 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T31 NOT OK")
+
+def t32():
+    s = ""
+    with open("tests\\t32.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "3":
+            print("T32 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T32 NOT OK")
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -433,7 +507,8 @@ t14()
 t15()
 t16()
 t17()
-
+t18()
+t19()
 t20()
 t21()
 t22()
@@ -441,3 +516,6 @@ t23()
 t24()
 t25()
 t26()
+t30()
+t31()
+t32()

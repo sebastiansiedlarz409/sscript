@@ -26,6 +26,7 @@ class RuntimeValue:
 class NullRuntimeValue(RuntimeValue):
     def __init__(self):
         self.setType(ValueTypes.Null)
+        self.setValue("null")
 
 class NumberRuntimeValue(RuntimeValue):
     def __init__(self):

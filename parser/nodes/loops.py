@@ -1,5 +1,19 @@
 from parser.nodes.nodes import *
 
+class ContinueNode(Node):
+    def __init__(self):
+        pass
+
+    def __repr__(self) -> str:
+        return "continue"
+
+class BreakNode(Node):
+    def __init__(self):
+        pass
+    
+    def __repr__(self) -> str:
+        return "break"
+
 class ForLoopNode(Node):
     def __init(self):
         self.body: list[Node] = [] #body
