@@ -398,6 +398,22 @@ def t25():
             print("T25 NOT OK")
             print(x)
 
+def t26():
+    s = ""
+    with open("tests\\t26.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T26 NOT OK")
+        return
+    except SSParserUnexpectedException as x:
+        if x.got.value == "=" and x.got.line == 3 and x.got.column == 5:
+            print("T26 OK")
+        else:
+            print("T26 NOT OK")
+            print(x)
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -424,3 +440,4 @@ t22()
 t23()
 t24()
 t25()
+t26()
