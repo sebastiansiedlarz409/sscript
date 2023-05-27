@@ -19,3 +19,9 @@ class SSParserException(SSException):
         self.got = got
         message = f"SSParser: Expected {expected} but got {got.type} ({got.value}) at [{got.line}:{got.column}]"
         super().__init__(message)
+
+class SSParserUnexpectedException(SSException):
+    def __init__ (self, got: SSToken):
+        self.got = got
+        message = f"SSParser: Unexpected {got.type} ({got.value}) at [{got.line}:{got.column}]"
+        super().__init__(message)

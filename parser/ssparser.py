@@ -119,10 +119,13 @@ class SSParser:
             if node != None:
                 program.appendChild(node)
                 continue
+
             node = self.parseLogln()
             if node != None:
                 program.appendChild(node)
                 continue
+
+            raise SSParserUnexpectedException(self.peak())
 
         return program
     
@@ -420,6 +423,8 @@ class SSParser:
             if node != None:
                 childs.append(node)
                 continue
+            
+            raise SSParserUnexpectedException(self.peak())
 
         return childs
     
@@ -606,6 +611,9 @@ class SSParser:
             node = self.parseFieldDeclarationAssign()
             if node != None:
                 childs.append(node)
+                continue
+
+            raise SSParserUnexpectedException(self.peak())
             
         return childs   
 
@@ -661,6 +669,9 @@ class SSParser:
             node = self.parseMethodDefinition(struct)
             if node != None:
                 childs.append(node)
+                continue
+
+            raise SSParserUnexpectedException(self.peak())
             
         return childs 
 
