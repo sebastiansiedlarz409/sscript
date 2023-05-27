@@ -93,7 +93,7 @@ class MethodDeclarationNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier}("
+        ret = f"{self.access} {self.identifier}("
         for p in self.params:
             ret += f"[{p}]"
         ret+=f")\n"
