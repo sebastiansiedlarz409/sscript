@@ -35,3 +35,4 @@ except SSException as x:
     print()
     print()
     print(x)
+    raise x

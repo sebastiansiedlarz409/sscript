@@ -28,12 +28,16 @@ class SSParser:
     
     #return token but if not matching expected trow
     def expect(self, expected: SSTokens, offset: int = 0) -> SSToken:
+        if offset >= len(self.tokens):
+            raise SSParserException(expected, SSToken(SSTokens.EOFToken, "EOF"))
         if self.peak(offset).type != expected:
             raise SSParserException(expected, self.peak())
         return self.get(offset)
     
     #test if token matching expected, not throw
     def test(self, expected: SSTokens, offset: int = 0) -> SSTokens:
+        if offset >= len(self.tokens):
+            return None
         if self.peak(offset).type == expected:
             return self.get(offset)
         else:
@@ -90,6 +94,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
             
+            #pre or post fix
+            node = self.parsePrefixExpression()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse variable assign
             node = self.parseVariableAssign()
             if node != None:
@@ -286,8 +296,35 @@ class SSParser:
             u.setChild(child)
             return u
     
+    def parsePrefixExpression(self) -> Node:
+        #prefix ++a
+        operator = self.test(SSTokens.PrefixOperatorToken)
+        if operator:
+            identifer = self.expect(SSTokens.IdentifierToken)
+            i = IdentifierNode()
+            i.setIdentifier(identifer.value)
+            e = PrefixExpressionNode()
+            e.setChild(i)
+            e.setOperator(operator.value)
+            return e
+        
+        #postfix a++
+        operator = self.test(SSTokens.PrefixOperatorToken, 1)
+        if operator:
+            identifer = self.expect(SSTokens.IdentifierToken)
+            i = IdentifierNode()
+            i.setIdentifier(identifer.value)
+            e = PostfixExpressionNode()
+            e.setChild(i)
+            e.setOperator(operator.value)
+            return e
+
     def parseExpression(self) -> Node:
         node = self.parseUnaryExpression()
+        if node:
+            return node
+        
+        node = self.parsePrefixExpression()
         if node:
             return node
         

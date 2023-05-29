@@ -488,6 +488,54 @@ def t32():
     result = execute(s, True)
     print("T32 NOT OK")
 
+def t33():
+    s = ""
+    with open("tests\\t33.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "3":
+            print("T33 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T33 NOT OK")
+
+def t34():
+    s = ""
+    with open("tests\\t34.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "0":
+            print("T34 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T34 NOT OK")
+
+def t35():
+    s = ""
+    with open("tests\\t35.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "2":
+            print("T35 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T35 NOT OK")
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -519,3 +567,6 @@ t26()
 t30()
 t31()
 t32()
+t33()
+t34()
+t35()

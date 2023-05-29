@@ -33,6 +33,7 @@ class SSTokens(Enum):
     AssignOperatorToken = 40,
     UnaryOperatorToken = 41,
     BinaryOperatorToken = 42,
+    PrefixOperatorToken = 43,
     CommaToken = 51,
     ColonToken = 52,
     SemicolonToken = 53,

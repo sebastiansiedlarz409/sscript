@@ -1,10 +1,7 @@
 let a = 2
 let b = a++
-logln(b)
-logln(a)
 
 let c = 1
 let d = --c
-logln(d)
 
-return 0
+return a

@@ -11,6 +11,8 @@ from parser.nodes.nodes import *
 from parser.nodes.oop import *
 from parser.nodes.variables import *
 
+from copy import deepcopy
+
 class SSRuntime:
     def __init__(self):
         self.expressions = Expressions()
@@ -66,6 +68,27 @@ class SSRuntime:
         right = self.execute(node.rChild, scope)
 
         return self.expressions.binaryExpressionNode(node, left, right, scope)
+
+    def prefixExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        child = self.execute(node.child, scope)
+
+        if node.operator == "++":
+            child.value+=1
+        else:
+            child.value-=1
+
+        return child
+    
+    def postfixExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        child = self.execute(node.child, scope)
+        org = deepcopy(child)
+
+        if node.operator == "++":
+            child.value+=1
+        else:
+            child.value-=1
+
+        return org
 
     def unaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         child = self.execute(node.child, scope)
@@ -273,6 +296,10 @@ class SSRuntime:
             return self.identifierNode(node, scope)
         elif type(node).__name__ == "BinaryExpressionNode":
             return self.binaryExpressionNode(node, scope)
+        elif type(node).__name__ == "PrefixExpressionNode":
+            return self.prefixExpressionNode(node, scope)
+        elif type(node).__name__ == "PostfixExpressionNode":
+            return self.postfixExpressionNode(node, scope)
         elif type(node).__name__ == "UnaryExpressionNode":
             return self.unaryExpressionNode(node, scope)
         elif type(node).__name__ == "VariableAssignNode":
