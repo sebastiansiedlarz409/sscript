@@ -55,6 +55,10 @@ class SSRuntime:
                 if r.value:
                     last = r.value
                 break
+            except SSRuntimeContinue:
+                raise SSException(f"Keyword 'continue' cant be used outside loop")
+            except SSRuntimeBreak:
+                raise SSException(f"Keyword 'break' cant be used outside loop")
         return last
 
     def binaryExpressionNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
