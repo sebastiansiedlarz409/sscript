@@ -512,17 +512,30 @@ class SSParser:
 
         return func
 
+    def parseForLoopStarter(self) -> Node:
+        declaration = self.parseVariableDeclarationAssign()
+        if declaration:
+            return declaration
+        
+        return self.parseVariableAssign()
+    
+    def parseForLoopModifier(self) -> Node:
+        node = self.parsePrefixExpression()
+        if node:
+            return node
+        
+        return self.parseVariableAssign()
 
     def parseForLoop(self) -> Node:
         if not self.test(SSTokens.ForKwToken):
             return
         
         self.expect(SSTokens.LParenToken)
-        sexpression = self.parseVariableDeclarationAssign()
+        sexpression = self.parseForLoopStarter()
         self.expect(SSTokens.SemicolonToken)
         lexpression = self.parseExpression()
         self.expect(SSTokens.SemicolonToken)
-        mexpression = self.parseVariableAssign()
+        mexpression = self.parseForLoopModifier()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()

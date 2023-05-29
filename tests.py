@@ -536,6 +536,22 @@ def t35():
     result = execute(s, True)
     print("T35 NOT OK")
 
+def t36():
+    s = ""
+    with open("tests\\t36.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "10":
+            print("T36 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T36 NOT OK")
+
 print()
 print("TEST TEST TEST")
 t1()
@@ -570,3 +586,4 @@ t32()
 t33()
 t34()
 t35()
+t36()
