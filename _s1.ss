@@ -1,6 +1,5 @@
-let a = 0
-for(a = 0;a ls 10;a++){
-    logln(a)
-}
+let a = []
+let b = [1,2,3, "ASD"]
+a = [1]
 
-return a
+let c = b[0]

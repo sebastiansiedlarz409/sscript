@@ -165,6 +165,18 @@ class SSParser:
         c.setParams(params)
         
         return c
+    
+    def parseArrayReference(self) -> Node:
+        if self.test(SSTokens.LSquareBracketToken, 1):
+            identifier = self.expect(SSTokens.IdentifierToken)
+            index = self.parseExpression()
+            self.expect(SSTokens.RSquareBracketToken)
+
+            a = ArrayReferenceNode()
+            a.setIdentifier(identifier.value)
+            a.setIndex(index)
+
+            return a
                     
     def parseFactor(self) -> Node:
         #check for exp inside paren
@@ -173,10 +185,15 @@ class SSParser:
             self.expect(SSTokens.RParenToken)
             return n
         
+        #array indexer
+        node = self.parseArrayReference()
+        if node:
+            return node
+        
         #function call
-        n = self.parseFunctionCall()
-        if n != None:
-            return n
+        node = self.parseFunctionCall()
+        if node:
+            return node
 
         #string
         if self.test(SSTokens.QuoteToken):
@@ -330,6 +347,22 @@ class SSParser:
         
         return self.parseLogicalExpression()
 
+    def parseArray(self) -> Node:
+        children = []
+        
+        node = self.parseFactor()
+        while node:
+            children.append(node)
+
+            if not self.test(SSTokens.CommaToken):
+                break
+
+            node = self.parseFactor()
+        
+        a = ArrayNode()
+        a.setChildren(children)
+        return a
+
     def parseVariableDeclarationAssign(self) -> Node:
         t = self.test(SSTokens.LetKwToken)
         if not t:
@@ -340,10 +373,22 @@ class SSParser:
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
+        if expression:
+            v = DeclareVariableAssignNode()
+            v.setIdentifier(identifier.value)
+            v.setChild(expression)
+            if t.type == SSTokens.ConstKwToken:
+                v.isConst()
 
+            return v
+        
+        self.expect(SSTokens.LSquareBracketToken)
+        child = self.parseArray()
+        self.expect(SSTokens.RSquareBracketToken)
+        
         v = DeclareVariableAssignNode()
         v.setIdentifier(identifier.value)
-        v.setChild(expression)
+        v.setChild(child)
         if t.type == SSTokens.ConstKwToken:
             v.isConst()
 
@@ -356,10 +401,20 @@ class SSParser:
         
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
+        if expression:
+            v = DeclareVariableAssignNode()
+            v.setIdentifier(identifier.value)
+            v.setChild(expression)
+
+            return v
         
-        v = VariableAssignNode()
+        self.expect(SSTokens.LSquareBracketToken)
+        child = self.parseArray()
+        self.expect(SSTokens.RSquareBracketToken)
+        
+        v = DeclareVariableAssignNode()
         v.setIdentifier(identifier.value)
-        v.setChild(expression)
+        v.setChild(child)
 
         return v
 

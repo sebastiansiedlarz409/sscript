@@ -63,3 +63,34 @@ class PostfixExpressionNode(Node):
     def __repr__(self) -> str:
         ret = f"({self.child}){self.operator}"
         return ret
+    
+class ArrayNode(Node):
+    def __init__(self):
+        self.children: list[Node] = []
+
+    def setChildren(self, children: list[Node]):
+        self.children = children
+
+    def __repr__(self) -> str:
+        children = ""
+        for c in self.children:
+            children += f"{c}, "
+        if len(children) > 2:
+            children = children[0:len(children)-2]
+        ret = f"[{children}]"
+        return ret
+    
+class ArrayReferenceNode(Node):
+    def __init__(self):
+        self.identifier: str = None
+        self.index = None
+
+    def setIdentifier(self, identifier: str):
+        self.identifier = identifier
+    
+    def setIndex(self, index):
+        self.index = index
+
+    def __repr__(self) -> str:
+        ret = f"{self.identifier}[{self.index}]"
+        return ret
