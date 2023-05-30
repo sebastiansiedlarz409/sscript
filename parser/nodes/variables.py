@@ -32,8 +32,8 @@ class DeclareVariableAssignNode(Node):
 
     def __repr__(self) -> str:
         if self.const:
-            ret = f"(const) {self.identifier} <= {self.child}"
+            ret = f"const {self.identifier} <= {self.child}"
             return ret
         else:
-            ret = f"{self.identifier} <= {self.child}"
+            ret = f"let {self.identifier} <= {self.child}"
             return ret

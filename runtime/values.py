@@ -5,7 +5,8 @@ class ValueTypes(Enum):
     Number = 0,
     Null = 1,
     Bool = 2,
-    String = 3
+    String = 3,
+    Array = 4
 
 class RuntimeValue:
     def __init__(self):
@@ -35,6 +36,10 @@ class NumberRuntimeValue(RuntimeValue):
 class StringRuntimeValue(RuntimeValue):
     def __init__(self):
         self.setType(ValueTypes.String)
+
+class ArrayRuntimeValue(RuntimeValue):
+    def __init__(self):
+        self.setType(ValueTypes.Array)
 
 class BoolRuntimeValue(RuntimeValue):
     def __init__(self):

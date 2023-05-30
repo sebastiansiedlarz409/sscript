@@ -282,6 +282,24 @@ class SSRuntime:
         for c in node.body:
             self.execute(c, elseBodyScope)
 
+    def arrayNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        array = []
+        for c in node.children:
+            array.append(self.execute(c, scope))
+
+        a = ArrayRuntimeValue()
+        a.setValue(array)
+        return a
+    
+    def arrayReferenceNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        array = scope.peakValueSymbol(node.identifier)
+        
+        try:
+            value =  array.value[self.execute(node.index, scope).value]
+            return value
+        except IndexError:
+            raise SSException("SSRuntime: Array index error")
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -306,6 +324,10 @@ class SSRuntime:
             self.variableAssignNode(node, scope)
         elif type(node).__name__ == "DeclareVariableAssignNode":
             self.declareVariableAssignNode(node, scope)
+        elif type(node).__name__ == "ArrayNode":
+            return self.arrayNode(node, scope)
+        elif type(node).__name__ == "ArrayReferenceNode":
+            return self.arrayReferenceNode(node, scope)
         elif type(node).__name__ == "FunctionDeclarationNode":
             self.functionDeclarationNode(node, scope)
         elif type(node).__name__ == "FunctionCallNode":

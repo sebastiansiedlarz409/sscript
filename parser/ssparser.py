@@ -402,7 +402,7 @@ class SSParser:
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
         if expression:
-            v = DeclareVariableAssignNode()
+            v = VariableAssignNode()
             v.setIdentifier(identifier.value)
             v.setChild(expression)
 
@@ -412,7 +412,7 @@ class SSParser:
         child = self.parseArray()
         self.expect(SSTokens.RSquareBracketToken)
         
-        v = DeclareVariableAssignNode()
+        v = VariableAssignNode()
         v.setIdentifier(identifier.value)
         v.setChild(child)
 
