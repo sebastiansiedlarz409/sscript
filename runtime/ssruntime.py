@@ -296,6 +296,9 @@ class SSRuntime:
         value = self.execute(node.child, scope)
         index = self.execute(node.index, scope)
 
+        if index.value >= len(array.value):
+            raise SSException("SSRuntime: Index out of range")
+
         array.value[index.value] = value
     
     def arrayReferenceNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:

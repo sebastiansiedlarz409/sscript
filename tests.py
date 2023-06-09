@@ -596,6 +596,18 @@ def t39():
     result = execute(s, True)
     print("T39 NOT OK")
 
+def t40():
+    s = ""
+    with open("tests\\t40.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T40 NOT OK")
+        return
+    except SSException as x:
+        print("T40 OK")
+
 print()
 print("TEST TEST TEST")
 
