@@ -30,11 +30,11 @@ class FunctionRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
         self.value: RuntimeValue = None
     
-    def setValue(self, value: RuntimeValue):
+    def setValue(self, value: Node):
         self.value = value
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier} = () => {self.value}"
+        ret = f"{self.identifier} = {self.value}"
         return ret
     
 #scope
@@ -43,6 +43,8 @@ class SSRuntimeScope:
         #parent in type Runtimescope
         self.parent = None
         self.symbols: list[RuntimeIdentifier] = []
+        self.types: list[Node] = [] #list of variable declaration nodes
+        self.implementations: list[Node] = [] #list of function declaration nodes
 
     def setParentScope(self, parent):
         self.parent = parent
@@ -62,7 +64,7 @@ class SSRuntimeScope:
         return None
     
     #alway declare inside myself
-    def declareFunction(self, symbol: str, value: RuntimeValue):
+    def declareFunction(self, symbol: str, value: Node):
         #check if already symbol exists
         if self.checkIfFunctionExists(symbol, False) != None:
             raise SSException(f"SSRuntime: Function '{symbol}' has already been declared")
@@ -74,7 +76,7 @@ class SSRuntimeScope:
         self.symbols.append(s)
 
     #return function value
-    def peakFunctionSymbol(self, symbol: str) -> RuntimeValue:
+    def peakFunctionSymbol(self, symbol: str) -> Node:
         #check if already symbol exists
         s = self.checkIfFunctionExists(symbol, True)
         if s == None:

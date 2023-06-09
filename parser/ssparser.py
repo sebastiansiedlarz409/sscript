@@ -771,7 +771,7 @@ class SSParser:
 
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.LParenToken)
-        parent = self.expect(SSTokens.IdentifierToken)
+        parent = self.test(SSTokens.IdentifierToken)
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseStructBody()
@@ -779,7 +779,8 @@ class SSParser:
 
         struct = StructNode()
         struct.setName(identifier.value)
-        struct.setParent(parent.value)
+        if parent:
+            struct.setParent(parent.value)
         struct.setBody(body)
 
         return struct
@@ -829,7 +830,7 @@ class SSParser:
 
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.LParenToken)
-        parent = self.expect(SSTokens.IdentifierToken)
+        parent = self.test(SSTokens.IdentifierToken)
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseImplBody(identifier)
@@ -837,7 +838,8 @@ class SSParser:
 
         impl = ImplNode()
         impl.setName(identifier.value)
-        impl.setParent(parent.value)
+        if parent:
+            impl.setParent(parent.value)
         impl.setBody(body)
 
         return impl

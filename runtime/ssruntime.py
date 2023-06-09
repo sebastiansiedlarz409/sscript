@@ -117,11 +117,7 @@ class SSRuntime:
         print(f"{exp}")
 
     def functionDeclarationNode(self, node: Node, scope: SSRuntimeScope):
-        f = FunctionRuntimeValue()
-        f.setParams(node.params)
-        f.setBody(node.child)
-
-        scope.declareFunction(node.identifier, f)
+        scope.declareFunction(node.identifier, node)
 
     def functionCallNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         function = scope.peakFunctionSymbol(node.identifier)
@@ -136,7 +132,7 @@ class SSRuntime:
             functionScope.declareValueSymbol(function.params[i].identifier, exp)
 
         ret = NullRuntimeValue()
-        for child in function.body:
+        for child in function.child:
             try:
                 self.execute(child, functionScope)
             except SSRuntimeReturn as r:
@@ -309,6 +305,9 @@ class SSRuntime:
             return value
         except IndexError:
             raise SSException("SSRuntime: Array index error")
+        
+    def structNode(self, node: Node, scope: SSRuntimeScope):
+        pass
 
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
@@ -366,6 +365,8 @@ class SSRuntime:
             self.logNode(node, scope)
         elif type(node).__name__ == "LoglnNode":
             self.loglnNode(node, scope)
+        elif type(node).__name__ == "StructNode":
+            self.structNode(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":

@@ -23,7 +23,7 @@ class FunctionCallNode(Node):
         self.params = param
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier}("
+        ret = f"func {self.identifier}("
         for c in self.params:
             ret += f"{c},"
         ret = ret[:len(ret)-1] + ")" if ret[len(ret)-1] == "," else ret + ")"
