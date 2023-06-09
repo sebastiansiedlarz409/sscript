@@ -580,6 +580,22 @@ def t38():
     except SSException as x:
         print("T38 OK")
 
+def t39():
+    s = ""
+    with open("tests\\t39.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "88":
+            print("T39 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T39 NOT OK")
+
 print()
 print("TEST TEST TEST")
 

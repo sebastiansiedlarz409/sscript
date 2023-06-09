@@ -291,6 +291,13 @@ class SSRuntime:
         a.setValue(array)
         return a
     
+    def arrayElementOverrideNode(self, node: Node, scope: SSRuntimeScope):
+        array = scope.peakValueSymbol(node.identifier)
+        value = self.execute(node.child, scope)
+        index = self.execute(node.index, scope)
+
+        array.value[index.value] = value
+    
     def arrayReferenceNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         array = scope.peakValueSymbol(node.identifier)
         
@@ -328,6 +335,8 @@ class SSRuntime:
             return self.arrayNode(node, scope)
         elif type(node).__name__ == "ArrayReferenceNode":
             return self.arrayReferenceNode(node, scope)
+        elif type(node).__name__ == "ArrayElementOverrideNode":
+            self.arrayElementOverrideNode(node, scope)
         elif type(node).__name__ == "FunctionDeclarationNode":
             self.functionDeclarationNode(node, scope)
         elif type(node).__name__ == "FunctionCallNode":
