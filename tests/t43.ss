@@ -1,7 +1,3 @@
-struct Figura(){
-    public let field = 0
-}
-
 struct Rectangle(Figura){
     public let a = 0
     public let b = 0

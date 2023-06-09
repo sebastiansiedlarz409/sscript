@@ -41,6 +41,10 @@ class TypeRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
         self.struct: Node = None
         self.impl: Node = None
+        self.parent = None #self
+
+    def setParent(self, parent):
+        self.parent = parent
     
     def setFields(self, struct: Node):
         self.struct = struct
@@ -78,6 +82,13 @@ class SSRuntimeScope:
         if self.checkIfTypeExists(symbol) != None:
             raise SSException(f"SSRuntime: Type '{symbol}' has already been declared")
         
+        #find parent
+        parent = None
+        if value.parent:
+            parent = self.checkIfTypeExists(value.parent)
+            if not parent:
+                raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
+        
         scope = self
         #find root
         while scope.parent:
@@ -86,6 +97,8 @@ class SSRuntimeScope:
         t = TypeRuntimeIdentifier()
         t.setIdentifier(symbol)
         t.setFields(value)
+        if parent:
+            t.setParent(parent)
 
         scope.types.append(t)
 
@@ -108,6 +121,14 @@ class SSRuntimeScope:
         
         struct = self.checkIfTypeExists(symbol)
         struct.setImpl(value)
+        
+        if value.parent:
+            parent = self.checkIfTypeExists(value.parent)
+            if not parent:
+                raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
+
+        if value.parent != struct.parent.identifier:
+            raise SSException(f"SSRuntime: Parent has to be the same for type and implementation")
 
     #check if function exist in myself or in my ancestor
     #if exist returns it

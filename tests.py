@@ -632,6 +632,18 @@ def t42():
     except SSException as x:
         print("T42 OK")
 
+def t43():
+    s = ""
+    with open("tests\\t43.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T43 NOT OK")
+        return
+    except SSException as x:
+        print("T43 OK")
+
 print()
 print("TEST TEST TEST")
 
