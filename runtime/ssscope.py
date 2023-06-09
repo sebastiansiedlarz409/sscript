@@ -37,6 +37,17 @@ class FunctionRuntimeIdentifier(RuntimeIdentifier):
         ret = f"{self.identifier} = {self.value}"
         return ret
     
+class TypeRuntimeIdentifier(RuntimeIdentifier):
+    def __init__(self):
+        self.value: RuntimeValue = None
+    
+    def setValue(self, value: Node):
+        self.value = value
+
+    def __repr__(self) -> str:
+        ret = f"{self.identifier} = {self.value}"
+        return ret
+    
 #scope
 class SSRuntimeScope:
     def __init__(self): 
@@ -49,6 +60,33 @@ class SSRuntimeScope:
     def setParentScope(self, parent):
         self.parent = parent
 
+    def checkIfTypeExists(self, symbol: str):
+        scope = self
+        #find root
+        while scope.parent:
+            scope = scope.parent
+
+        test = [x for x in self.types if x.identifier == symbol]
+        if len(test) == 1:
+            return test[0]
+        
+
+    #olawys declare in the root scope
+    def declareType(self, symbol: str, value: Node):
+        if self.checkIfTypeExists(symbol) != None:
+            raise SSException(f"SSRuntime: Type '{symbol}' has already been declared")
+        
+        scope = self
+        #find root
+        while scope.parent:
+            scope = scope.parent
+
+        t = TypeRuntimeIdentifier()
+        t.setIdentifier(symbol)
+        t.setValue(value)
+
+        scope.types.append(t)
+
     #check if function exist in myself or in my ancestor
     #if exist returns it
     #otherwise returns None
@@ -60,8 +98,6 @@ class SSRuntimeScope:
         if par:
             if self.parent != None:
                 return self.parent.checkIfFunctionExists(symbol, True)
-        
-        return None
     
     #alway declare inside myself
     def declareFunction(self, symbol: str, value: Node):
@@ -95,8 +131,6 @@ class SSRuntimeScope:
         if par:
             if self.parent != None:
                 return self.parent.checkIfSymbolExists(symbol, True)
-        
-        return None
 
     #alway declare inside myself
     def declareValueSymbol(self, symbol: str, value: RuntimeValue):

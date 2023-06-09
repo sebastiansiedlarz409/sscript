@@ -307,7 +307,7 @@ class SSRuntime:
             raise SSException("SSRuntime: Array index error")
         
     def structNode(self, node: Node, scope: SSRuntimeScope):
-        pass
+        scope.declareType(node.name, node)
 
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
