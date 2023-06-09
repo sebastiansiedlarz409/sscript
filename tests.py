@@ -552,38 +552,38 @@ def t36():
     result = execute(s, True)
     print("T36 NOT OK")
 
+def t37():
+    s = ""
+    with open("tests\\t37.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "3":
+            print("T37 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T37 NOT OK")
+
+def t38():
+    s = ""
+    with open("tests\\t38.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T38 NOT OK")
+        return
+    except SSException as x:
+        print("T38 OK")
+
 print()
 print("TEST TEST TEST")
-t1()
-t2()
-t3()
-t4()
-t5()
-t6()
-t7()
-t8()
-t9()
-t10()
-t11()
-t12()
-t13()
-t14()
-t15()
-t16()
-t17()
-t18()
-t19()
-t20()
-t21()
-t22()
-t23()
-t24()
-t25()
-t26()
-t30()
-t31()
-t32()
-t33()
-t34()
-t35()
-t36()
+
+tests = list(filter(lambda x: str(x).startswith("t"), dir()))
+tests.sort(key = lambda x: int(x[1:]))
+for t in tests:
+    globals()[t]()
