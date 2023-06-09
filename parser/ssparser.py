@@ -100,6 +100,13 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            
+            #array item assing
+            node = self.parseArrayElementOverride()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse variable assign
             node = self.parseVariableAssign()
             if node != None:
@@ -417,6 +424,24 @@ class SSParser:
         v.setChild(child)
 
         return v
+    
+    def parseArrayElementOverride(self) -> Node:
+        if not self.test(SSTokens.LSquareBracketToken, 1):
+            return
+        
+        identifier = self.expect(SSTokens.IdentifierToken)
+        index = self.parseExpression()
+        self.expect(SSTokens.RSquareBracketToken)
+
+        self.expect(SSTokens.AssignOperatorToken)
+        expression = self.parseExpression()
+
+        v = ArrayElementOverrideNode()
+        v.setIdentifier(identifier.value)
+        v.setIndex(index)
+        v.setChild(expression)
+
+        return v
 
     def parseLog(self) -> Node:
         if not self.test(SSTokens.LogKwToken):
@@ -464,6 +489,12 @@ class SSParser:
             
             #parse declaration variable assign
             node = self.parseVariableDeclarationAssign()
+            if node != None:
+                childs.append(node)
+                continue
+
+            #array item assing
+            node = self.parseArrayElementOverride()
             if node != None:
                 childs.append(node)
                 continue

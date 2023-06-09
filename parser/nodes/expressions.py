@@ -88,9 +88,28 @@ class ArrayReferenceNode(Node):
     def setIdentifier(self, identifier: str):
         self.identifier = identifier
     
-    def setIndex(self, index):
+    def setIndex(self, index: Node):
         self.index = index
 
     def __repr__(self) -> str:
         ret = f"{self.identifier}[{self.index}]"
+        return ret
+    
+class ArrayElementOverrideNode(Node):
+    def __init__(self):
+        self.identifier: str = None
+        self.index = None
+        self.child = None
+
+    def setIdentifier(self, identifier: str):
+        self.identifier = identifier
+    
+    def setIndex(self, index: Node):
+        self.index = index
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def __repr__(self) -> str:
+        ret = f"{self.identifier}[{self.index}] = {self.child}"
         return ret
