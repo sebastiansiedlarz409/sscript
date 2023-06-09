@@ -28,7 +28,7 @@ class ValueRuntimeIdentifier(RuntimeIdentifier):
     
 class FunctionRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
-        self.value: RuntimeValue = None
+        self.value: Node = None
     
     def setValue(self, value: Node):
         self.value = value
@@ -39,13 +39,17 @@ class FunctionRuntimeIdentifier(RuntimeIdentifier):
     
 class TypeRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
-        self.value: RuntimeValue = None
+        self.struct: Node = None
+        self.impl: Node = None
     
-    def setValue(self, value: Node):
-        self.value = value
+    def setFields(self, struct: Node):
+        self.struct = struct
+
+    def setImpl(self, impl: Node):
+        self.impl = impl
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier} = {self.value}"
+        ret = f"{self.struct}\n{self.impl}"
         return ret
     
 #scope
@@ -54,8 +58,7 @@ class SSRuntimeScope:
         #parent in type Runtimescope
         self.parent = None
         self.symbols: list[RuntimeIdentifier] = []
-        self.types: list[Node] = [] #list of variable declaration nodes
-        self.implementations: list[Node] = [] #list of function declaration nodes
+        self.types: list[Node] = [] #list of variable declaration nodes and function declaration nodes
 
     def setParentScope(self, parent):
         self.parent = parent
@@ -70,7 +73,6 @@ class SSRuntimeScope:
         if len(test) == 1:
             return test[0]
         
-
     #olawys declare in the root scope
     def declareType(self, symbol: str, value: Node):
         if self.checkIfTypeExists(symbol) != None:
@@ -83,9 +85,29 @@ class SSRuntimeScope:
 
         t = TypeRuntimeIdentifier()
         t.setIdentifier(symbol)
-        t.setValue(value)
+        t.setFields(value)
 
         scope.types.append(t)
+
+    #olawys declare in the root scope
+    def declareTypeImpl(self, symbol: str, value: Node):
+        struct = self.checkIfTypeExists(symbol)
+        if struct != None:
+            if struct.impl != None:
+                raise SSException(f"SSRuntime: Type '{symbol}' has already been implemented")
+        else: #declare empty type
+            scope = self
+            #find root
+            while scope.parent:
+                scope = scope.parent
+
+            t = TypeRuntimeIdentifier()
+            t.setIdentifier(symbol)
+
+            scope.types.append(t)
+        
+        struct = self.checkIfTypeExists(symbol)
+        struct.setImpl(value)
 
     #check if function exist in myself or in my ancestor
     #if exist returns it

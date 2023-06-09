@@ -309,6 +309,9 @@ class SSRuntime:
     def structNode(self, node: Node, scope: SSRuntimeScope):
         scope.declareType(node.name, node)
 
+    def implNode(self, node: Node, scope: SSRuntimeScope):
+        scope.declareTypeImpl(node.name, node)
+
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
@@ -367,6 +370,8 @@ class SSRuntime:
             self.loglnNode(node, scope)
         elif type(node).__name__ == "StructNode":
             self.structNode(node, scope)
+        elif type(node).__name__ == "ImplNode":
+            self.implNode(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":
