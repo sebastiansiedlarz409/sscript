@@ -133,3 +133,22 @@ class StructMemberAccess(Node):
     def __repr__(self) -> str:
         ret = f"{self.struct}.{self.member}"
         return ret
+    
+class StructMemberWrite(Node):
+    def __init__(self):
+        self.struct: str = None
+        self.member: str = None
+        self.child: Node = None
+
+    def setStruct(self, struct: str):
+        self.struct = struct
+
+    def setMember(self, member: str):
+        self.member = member
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def __repr__(self) -> str:
+        ret = f"{self.struct}.{self.member} = {self.child}"
+        return ret

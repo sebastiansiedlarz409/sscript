@@ -107,6 +107,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            #parse struct member assign
+            node = self.parseStructMemberWrite()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #parse variable assign
             node = self.parseVariableAssign()
             if node != None:
@@ -184,17 +190,6 @@ class SSParser:
             a.setIndex(index)
 
             return a
-        
-    def parseStructMemberAccess(self):
-        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
-            identifier = self.expect(SSTokens.IdentifierToken)
-            self.expect(SSTokens.DotToken)
-            member = self.expect(SSTokens.IdentifierToken)
-
-            v = StructMemberAccess()
-            v.setStruct(identifier.value)
-            v.setMember(member.value)
-            return v
                     
     def parseFactor(self) -> Node:
         #check for exp inside paren
@@ -551,6 +546,12 @@ class SSParser:
                 childs.append(node)
                 continue
             
+            #parse struct member assign
+            node = self.parseStructMemberWrite()
+            if node != None:
+                childs.append(node)
+                continue
+
             #parse variable assign
             node = self.parseVariableAssign()
             if node != None:
@@ -895,3 +896,30 @@ class SSParser:
         impl.setBody(body)
 
         return impl
+    
+    def parseStructMemberAccess(self):
+        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
+            identifier = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.DotToken)
+            member = self.expect(SSTokens.IdentifierToken)
+
+            v = StructMemberAccess()
+            v.setStruct(identifier.value)
+            v.setMember(member.value)
+            return v
+        
+    def parseStructMemberWrite(self):
+        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
+            identifier = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.DotToken)
+            member = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.AssignOperatorToken)
+
+            expression = self.parseExpression()
+
+            if expression:
+                v = StructMemberWrite()
+                v.setStruct(identifier.value)
+                v.setMember(member.value)
+                v.setChild(expression)
+                return v
