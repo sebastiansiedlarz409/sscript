@@ -1,18 +1,18 @@
-<h2 align="left">SScript - programming language written for fun</h2>
+# SScript - programming language written for fun
 
-<h3>Supported stuff:</h3>
+## Supported stuff:
 * variables (let) and constant (const)
 * basic arithmetic operations (+-/*%) and some binary operations (|&^<<>>)
 * logic operations (eq, neq, gr, ge, ls, le)
 * operators like ++ --
+* support for () and proper order of operations
 * functions and returning
 * loops: for, while, do..while
 * loops flow instructions: break, continue
 * conditionals: if, else if, else
 * arrays declaration, array element read and override
 
-<h1></h1>
-<h4>Basic types</h4>
+## Basic types
 
 ```
 let a = "A"
@@ -24,8 +24,7 @@ let e = 99
 return c + b + a + d + e
 ```
 
-<h1></h1>
-<h4>Loops</h4>
+## Loops
 
 ```
 let i = 0
@@ -44,8 +43,7 @@ for(let j = 0;j le 10;j++){
 }
 ```
 
-<h1></h1>
-<h4>Conditional instructions</h4>
+## Conditional instructions
 
 ```
 let a = 2
@@ -65,8 +63,7 @@ else{
 }
 ```
 
-<h1></h1>
-<h4>Functions</h4>
+## Functions
 
 ```
 func pow(a, b){
@@ -82,8 +79,7 @@ func pow(a, b){
 logln(pow(2, 9))
 ```
 
-<h1></h1>
-<h4>Arrays</h4>
+## Arrays
 
 
 ```
