@@ -122,13 +122,15 @@ class SSRuntimeScope:
         struct = self.checkIfTypeExists(symbol)
         struct.setImpl(value)
         
+        #check if inherit
         if value.parent:
             parent = self.checkIfTypeExists(value.parent)
             if not parent:
                 raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
-
-        if value.parent != struct.parent.identifier:
-            raise SSException(f"SSRuntime: Parent has to be the same for type and implementation")
+    
+            #check if inherit type is same as coresponding struct
+            if value.parent != struct.parent.identifier:
+                raise SSException(f"SSRuntime: Parent has to be the same for type and implementation")
 
     #check if function exist in myself or in my ancestor
     #if exist returns it
