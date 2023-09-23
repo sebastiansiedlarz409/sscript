@@ -223,11 +223,6 @@ class SSParser:
             n.setIdentifier(identifier.value)
             return n
         
-        #null
-        if self.test(SSTokens.NullKwToken):
-            n = NullNode()
-            return n
-        
         #true false
         if self.peak().type == SSTokens.TrueKwToken or self.peak().type == SSTokens.FalseKwToken:
             n = BoolNode()
@@ -243,31 +238,42 @@ class SSParser:
             u.setChild(child)
             return u
 
+        #null
+        if self.test(SSTokens.NullKwToken):
+            n = NullNode()
+            return n
+        
         return None
 
     def parseMulArithmeticExpression(self) -> Node:
         left = self.parseFactor()
-        while self.peak().value in "*/%":
-            operator = self.get().value #operator
-            right = self.parseFactor()
-            temp = BinaryExpressionNode()
-            temp.lChild = left
-            temp.rChild = right
-            temp.operator = operator
-            left = temp
+        if left:
+            while self.peak().value in "*/%":
+                operator = self.get().value #operator
+                right = self.parseFactor()
+                if not right:
+                    raise SSParserUnexpectedException(self.peak())
+                temp = BinaryExpressionNode()
+                temp.lChild = left
+                temp.rChild = right
+                temp.operator = operator
+                left = temp
 
-        return left
+            return left
 
     def parseAddArithmeticExpression(self) -> Node:
         left = self.parseMulArithmeticExpression()
-        while self.peak().value in "+-":
-            operator = self.get().value #operator
-            right = self.parseMulArithmeticExpression()
-            temp = BinaryExpressionNode()
-            temp.lChild = left
-            temp.rChild = right
-            temp.operator = operator
-            left = temp
+        if left:
+            while self.peak().value in "+-":
+                operator = self.get().value #operator
+                right = self.parseMulArithmeticExpression()
+                if not right:
+                    raise SSParserUnexpectedException(self.peak())
+                temp = BinaryExpressionNode()
+                temp.lChild = left
+                temp.rChild = right
+                temp.operator = operator
+                left = temp
 
         return left
 
