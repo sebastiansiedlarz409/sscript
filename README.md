@@ -1,5 +1,16 @@
 <h2 align="left">SScript - programming language written for fun</h2>
 
+<h3>Supported stuff:</h3>
+- variables (let) and constant (const)
+- basic arithmetic operations (+-/*%) and some binary operations (|&^<<>>)
+- logic operations (eq, neq, gr, ge, ls, le)
+- operators like ++ --
+- functions and returning
+- loops: for, while, do..while
+- loops flow instructions: break, continue
+- conditionals: if, else if, else
+- arrays declaration, array element read and override
+
 <h1></h1>
 <h4>Basic types</h4>
 
