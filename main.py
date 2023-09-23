@@ -17,7 +17,7 @@ try:
     # tokenize
     print("Lexer:")
     tokens = lexer.tokenize(source)
-    #for t in tokens: print(t)
+    for t in tokens: print(t)
     print()
 
     # parse

@@ -38,6 +38,7 @@ class SSTokens(Enum):
     CommaToken = 51,
     ColonToken = 52,
     SemicolonToken = 53,
+    DotToken = 54,
     LParenToken = 60,
     RParenToken = 61,
     LBracketToken = 62, #{}

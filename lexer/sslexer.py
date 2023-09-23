@@ -104,6 +104,9 @@ class SSLexer:
                     self.line+=1
                     self.column=0
                 self.get()
+            elif self.peak() == '.':
+                tokens.append(SSToken(SSTokens.DotToken, self.peak(),self.line, self.current))
+                self.get()
             elif self.peak() == '(':
                 tokens.append(SSToken(SSTokens.LParenToken, self.peak(),self.line, self.current))
                 self.get()

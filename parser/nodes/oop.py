@@ -118,3 +118,18 @@ class StructAllocNode(Node):
     def __repr__(self) -> str:
         ret = f"alloc({self.struct}, {self.count})"
         return ret
+    
+class StructMemberAccess(Node):
+    def __init__(self):
+        self.struct: str = None
+        self.member: str = None
+
+    def setStruct(self, struct: str):
+        self.struct = struct
+
+    def setMember(self, member: str):
+        self.member = member
+
+    def __repr__(self) -> str:
+        ret = f"{self.struct}.{self.member}"
+        return ret

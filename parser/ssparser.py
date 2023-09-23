@@ -184,6 +184,17 @@ class SSParser:
             a.setIndex(index)
 
             return a
+        
+    def parseStructMemberAccess(self):
+        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
+            identifier = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.DotToken)
+            member = self.expect(SSTokens.IdentifierToken)
+
+            v = StructMemberAccess()
+            v.setStruct(identifier.value)
+            v.setMember(member.value)
+            return v
                     
     def parseFactor(self) -> Node:
         #check for exp inside paren
@@ -215,7 +226,13 @@ class SSParser:
             n = NumberNode()
             n.setValue(number.value)
             return n
-        
+
+        #struct.field
+        #struct.method()
+        structMember = self.parseStructMemberAccess()
+        if structMember:
+            return structMember
+
         #identifier
         identifier = self.test(SSTokens.IdentifierToken)
         if identifier:

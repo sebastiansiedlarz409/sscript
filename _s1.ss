@@ -3,3 +3,4 @@ struct Figura(){
 }
 
 let a = alloc(Figura, 1)
+let b = 2 + a.field
