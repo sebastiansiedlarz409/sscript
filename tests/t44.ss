@@ -1,0 +1,1 @@
+let obj = alloc(Figura, 1)

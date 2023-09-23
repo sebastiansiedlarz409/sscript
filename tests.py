@@ -4,6 +4,8 @@ from parser.ssparser import *
 from runtime.ssscope import *
 from runtime.ssruntime import *
 
+import sys
+
 def execute(source, db = False):
     lexer = SSLexer()
     parser = SSParser()
@@ -35,6 +37,8 @@ def t1():
             print("T1 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -51,6 +55,8 @@ def t2():
             print("T2 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -67,6 +73,8 @@ def t3():
             print("T3 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -83,6 +91,8 @@ def t4():
             print("T4 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -99,6 +109,8 @@ def t5():
             print("T5 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -115,6 +127,8 @@ def t6():
             print("T6 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -131,6 +145,8 @@ def t7():
             print("T7 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -147,6 +163,8 @@ def t8():
             print("T8 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -163,6 +181,8 @@ def t9():
             print("T9 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -179,6 +199,8 @@ def t10():
             print("T10 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -195,6 +217,8 @@ def t11():
             print("T11 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -211,6 +235,8 @@ def t12():
             print("T12 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -227,6 +253,8 @@ def t13():
             print("T13 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -243,6 +271,8 @@ def t14():
             print("T14 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -259,6 +289,8 @@ def t15():
             print("T15 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -275,6 +307,8 @@ def t16():
             print("T16 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -291,6 +325,8 @@ def t17():
             print("T17 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -307,6 +343,8 @@ def t18():
             print("T18 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -323,6 +361,8 @@ def t19():
             print("T19 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -338,6 +378,8 @@ def t20():
         print("T20 NOT OK")
         return
     except SSLexerException as x:
+        if errors:
+            raise x
         if x.got == '`' and x.line == 2 and x.column == 1:
             print("T20 OK")
         else:
@@ -354,6 +396,8 @@ def t21():
         print("T21 NOT OK")
         return
     except SSLexerException as x:
+        if errors:
+            raise x
         if x.got == '.' and x.line == 1 and x.column == 12:
             print("T21 OK")
         else:
@@ -370,6 +414,8 @@ def t22():
         print("T22 NOT OK")
         return
     except SSLexerException as x:
+        if errors:
+            raise x
         if x.got == '~' and x.line == 1 and x.column == 42:
             print("T22 OK")
         else:
@@ -386,6 +432,8 @@ def t23():
         print("T23 NOT OK")
         return
     except SSParserException as x:
+        if errors:
+            raise x
         if x.got.type == SSTokens.NumberToken and x.got.line == 1 and x.got.column == 16:
             print("T23 OK")
         else:
@@ -402,6 +450,8 @@ def t24():
         print("T24 NOT OK")
         return
     except SSParserException as x:
+        if errors:
+            raise x
         if x.expected == SSTokens.IdentifierToken and x.got.line == 1 and x.got.column == 6:
             print("T24 OK")
         else:
@@ -418,6 +468,8 @@ def t25():
         print("T25 NOT OK")
         return
     except SSParserException as x:
+        if errors:
+            raise x
         if x.expected == SSTokens.SemicolonToken and x.got.line == 3 and x.got.column == 23:
             print("T25 OK")
         else:
@@ -434,6 +486,8 @@ def t26():
         print("T26 NOT OK")
         return
     except SSParserUnexpectedException as x:
+        if errors:
+            raise x
         if x.got.value == "=" and x.got.line == 3 and x.got.column == 5:
             print("T26 OK")
         else:
@@ -451,6 +505,8 @@ def t30():
             print("T30 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -467,6 +523,8 @@ def t31():
             print("T31 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -483,6 +541,8 @@ def t32():
             print("T32 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -499,6 +559,8 @@ def t33():
             print("T33 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -515,6 +577,8 @@ def t34():
             print("T34 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -531,6 +595,8 @@ def t35():
             print("T35 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -547,6 +613,8 @@ def t36():
             print("T36 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -563,6 +631,8 @@ def t37():
             print("T37 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -578,6 +648,8 @@ def t38():
         print("T38 NOT OK")
         return
     except SSException as x:
+        if errors:
+            raise x
         print("T38 OK")
 
 def t39():
@@ -591,6 +663,8 @@ def t39():
             print("T39 OK")
             return
     except Exception as x:
+        if errors:
+            raise x
         print(x)
 
     result = execute(s, True)
@@ -606,6 +680,8 @@ def t40():
         print("T40 NOT OK")
         return
     except SSException as x:
+        if errors:
+            raise x
         print("T40 OK")
 
 def t41():
@@ -618,6 +694,8 @@ def t41():
         print("T41 NOT OK")
         return
     except SSException as x:
+        if errors:
+            raise x
         print("T41 OK")
 
 def t42():
@@ -630,6 +708,8 @@ def t42():
         print("T42 NOT OK")
         return
     except SSException as x:
+        if errors:
+            raise x
         print("T42 OK")
 
 def t43():
@@ -642,12 +722,46 @@ def t43():
         print("T43 NOT OK")
         return
     except SSException as x:
+        if errors:
+            raise x
         print("T43 OK")
+
+def t44():
+    s = ""
+    with open("tests\\t44.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T44 OK")
+        return
+    except SSException as x:
+        if errors:
+            raise x
+        print("T44 OK")
 
 print()
 print("TEST TEST TEST")
 
+entry_to_execute = -1
+errors = 0
+
 tests = list(filter(lambda x: str(x).startswith("t"), dir()))
 tests.sort(key = lambda x: int(x[1:]))
-for t in tests:
-    globals()[t]()
+
+#-t 44 -e 1
+if "-t" in sys.argv:
+    index = sys.argv.index("-t")
+    if len(sys.argv) >= index + 2:
+        entry_to_execute = int(sys.argv[index+1])
+
+if "-e" in sys.argv:
+    index = sys.argv.index("-e")
+    if len(sys.argv) >= index + 2:
+        errors = int(sys.argv[index+1])
+
+if entry_to_execute == -1:
+    for t in tests:
+        globals()[t]()
+else:
+    globals()[(list(filter(lambda x: str(x) == f"t{entry_to_execute}", tests)))[0]]()
