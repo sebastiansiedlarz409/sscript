@@ -69,7 +69,7 @@ class SSRuntimeScope:
 
     def checkIfTypeExists(self, symbol: str):
         scope = self
-        #find root
+        #find root due to root type allocation
         while scope.parent:
             scope = scope.parent
 
@@ -90,7 +90,7 @@ class SSRuntimeScope:
                 raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
         
         scope = self
-        #find root
+        #find root (always declare in root scope)
         while scope.parent:
             scope = scope.parent
 
@@ -102,7 +102,7 @@ class SSRuntimeScope:
 
         scope.types.append(t)
 
-    #olawys declare in the root scope
+    #alawys declare in the root scope
     def declareTypeImpl(self, symbol: str, value: Node):
         struct = self.checkIfTypeExists(symbol)
         if struct != None:
@@ -110,7 +110,7 @@ class SSRuntimeScope:
                 raise SSException(f"SSRuntime: Type '{symbol}' has already been implemented")
         else: #declare empty type
             scope = self
-            #find root
+            #find root (always declare in root scope)
             while scope.parent:
                 scope = scope.parent
 

@@ -27,6 +27,7 @@ class SSTokens(Enum):
     StructKwToken = 23,
     ImplKwToken = 24,
     AccessModifierKwToken = 25,
+    AllocKwToken = 26,
     IdentifierToken = 30,
     NumberToken = 31,
     StringToken = 32,
@@ -78,5 +79,6 @@ SSKEYWORDS = {
     "struct": SSTokens.StructKwToken,
     "public": SSTokens.AccessModifierKwToken,
     "private": SSTokens.AccessModifierKwToken,
-    "impl": SSTokens.ImplKwToken
+    "impl": SSTokens.ImplKwToken,
+    "alloc": SSTokens.AllocKwToken
 }

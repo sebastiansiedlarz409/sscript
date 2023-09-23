@@ -369,6 +369,24 @@ class SSParser:
         a = ArrayNode()
         a.setChildren(children)
         return a
+    
+    def parseAlloc(self):
+        if not self.test(SSTokens.AllocKwToken):
+            return
+        
+        self.expect(SSTokens.LParenToken)
+        identifier = self.expect(SSTokens.IdentifierToken)
+        self.expect(SSTokens.CommaToken)
+        expression = self.parseExpression()
+        
+        if expression:
+            self.expect(SSTokens.RParenToken)
+
+            v = StructAllocNode()
+            v.setStructName(identifier.value)
+            v.setCount(expression)
+
+            return v
 
     def parseVariableDeclarationAssign(self) -> Node:
         t = self.test(SSTokens.LetKwToken)
@@ -379,6 +397,17 @@ class SSParser:
             
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.AssignOperatorToken)
+
+        alloc = self.parseAlloc()
+        if alloc:
+            v = DeclareVariableAssignNode()
+            v.setIdentifier(identifier.value)
+            v.setChild(alloc)
+            if t.type == SSTokens.ConstKwToken:
+                v.isConst()
+            
+            return v
+
         expression = self.parseExpression()
         if expression:
             v = DeclareVariableAssignNode()

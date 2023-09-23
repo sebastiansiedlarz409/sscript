@@ -2,13 +2,6 @@ struct Figura(){
     public let field = 0
 }
 
-struct Rectangle(Figura){
-    public let a = 0
-    public let b = 0
-}
+let a = alloc(Figura, 1)
 
-impl Rectangle(){
-    public func Field(){
-        field = a * b
-    }
-}
+let b = alloc(Figura, 2 +)
