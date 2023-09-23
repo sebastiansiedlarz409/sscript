@@ -26,7 +26,7 @@ class SSParser:
     def peak(self, offset: int = 0) -> SSToken:
         return self.tokens[offset]
     
-    #return token but if not matching expected trow
+    #return token but if not matching throws
     def expect(self, expected: SSTokens, offset: int = 0) -> SSToken:
         if offset >= len(self.tokens):
             raise SSParserException(expected, SSToken(SSTokens.EOFToken, "EOF"))
@@ -34,7 +34,7 @@ class SSParser:
             raise SSParserException(expected, self.peak())
         return self.get(offset)
     
-    #test if token matching expected, not throw
+    #test if token matching expected, not throw, move poiter only when token match
     def test(self, expected: SSTokens, offset: int = 0) -> SSTokens:
         if offset >= len(self.tokens):
             return None

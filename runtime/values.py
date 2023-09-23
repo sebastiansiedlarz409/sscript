@@ -8,6 +8,9 @@ class ValueTypes(Enum):
     String = 3,
     Array = 4
 
+#runtime values are used as result
+#when runtime evaluate each node
+#used only in runtime
 class RuntimeValue:
     def __init__(self):
         self.type: ValueTypes = None

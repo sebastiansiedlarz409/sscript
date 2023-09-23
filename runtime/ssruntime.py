@@ -15,8 +15,11 @@ from copy import deepcopy
 
 class SSRuntime:
     def __init__(self):
+        #its just helper class created only because
+        #i dont want make this file billion line long
         self.expressions = Expressions()
     
+    #every possible node comming from parse has dedicated metod
     def boolNode(self, node: Node) -> RuntimeValue:
         value = BoolRuntimeValue()
         value.setValue(True if node.value == "true" else False)
@@ -24,6 +27,8 @@ class SSRuntime:
 
     def numberNode(self, node: Node) -> RuntimeValue:
         value = NumberRuntimeValue()
+        
+        #try to handle diffrent numeric system base on prefix
         if node.number[0:2] == "0x":
             value.setValue(float(int(node.number, 16)))
         elif node.number[0:2] == "0b":
@@ -167,9 +172,11 @@ class SSRuntime:
                     for c in node.body:
                         self.execute(c, loopBodyScope)
                     self.execute(node.mod, loopScope)
+                #special exception created to break or continue loop
                 except SSRuntimeContinue:
                     self.execute(node.mod, loopScope)
                     continue
+        #special exception created to break or continue loop
         except SSRuntimeBreak:
             return
 
@@ -193,8 +200,10 @@ class SSRuntime:
                     loopBodyScope.setParentScope(loopScope)
                     for c in node.body:
                         self.execute(c, loopBodyScope)
+                #special exception created to break or continue loop
                 except SSRuntimeContinue:
                     continue
+        #special exception created to break or continue loop
         except SSRuntimeBreak:
             return
 
@@ -227,8 +236,10 @@ class SSRuntime:
                     loopBodyScope.setParentScope(loopScope)
                     for c in node.body:
                         self.execute(c, loopBodyScope)
+                #special exception created to break or continue loop
                 except SSRuntimeContinue:
                     continue
+        #special exception created to break or continue loop
         except SSRuntimeBreak:
             return
 
@@ -312,6 +323,7 @@ class SSRuntime:
     def implNode(self, node: Node, scope: SSRuntimeScope):
         scope.declareTypeImpl(node.name, node)
 
+    #state machine for each type of node
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
         if type(node).__name__ == "NullNode":
