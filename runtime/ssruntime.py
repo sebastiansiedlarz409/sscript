@@ -333,11 +333,12 @@ class SSRuntime:
         symbol = StructRuntimeValue()
         symbol.setStruct(struct.name) #set type/struct name
 
-        parent = scope.peakTypeSymbol(struct.parent)
-        if parent:
-            for child in parent.body:
-                if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
-                    symbol.allocField(child.identifier, child.const, self.execute(child, scope))
+        if struct.parent:
+            parent = scope.peakTypeSymbol(struct.parent)
+            if parent:
+                for child in parent.body:
+                    if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
+                        symbol.allocField(child.identifier, child.const, self.execute(child, scope))
 
         for child in struct.body:
             if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
@@ -352,6 +353,14 @@ class SSRuntime:
         if not member:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' has not '{node.member}' field")
         return member
+    
+    def structMemberWrite(self, node: Node, scope: SSRuntimeScope):
+        symbol = scope.peakValueSymbol(node.symbol)
+
+        if symbol.isConst(node.member):
+            raise SSException(f"SSRuntime: Field '{node.member}' is constant")
+        
+        symbol.overrideField(node.member, self.execute(node.child, scope))
 
     #state machine for each type of node
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
@@ -420,6 +429,8 @@ class SSRuntime:
             return self.declareFieldAssignNode(node, scope)
         elif type(node).__name__ == "StructMemberAccess":
             return self.structMemberAccess(node, scope)
+        elif type(node).__name__ == "StructMemberWrite":
+            self.structMemberWrite(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":

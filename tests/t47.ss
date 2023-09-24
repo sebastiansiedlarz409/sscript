@@ -1,5 +1,5 @@
 struct Figure(){
-    let field = 2;
+    let field = 2
 }
 
 struct Rectangle(Figure){

@@ -8,4 +8,4 @@ struct Kolo(Figura){
 
 let a = alloc Kolo
 a.field = 10
-logln(a)
+return a.field

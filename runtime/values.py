@@ -69,6 +69,12 @@ class StructRuntimeValue(RuntimeValue):
     def allocField(self, name: str, const: bool, value: RuntimeValue):
         self.data[name] = [value, const]
 
+    def overrideField(self, name: str, value: RuntimeValue):
+        self.data[name][0] = value
+
+    def isConst(self, name: str):
+        return self.data[name][1]
+
     def peakField(self, name: str):
         try:
             return self.data[name][0]

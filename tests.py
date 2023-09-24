@@ -698,6 +698,21 @@ def t47():
     except SSException as x:
         print("T47 NOT OK")
 
+def t48():
+    s = ""
+    with open("tests\\t48.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "10":
+            print("T48 OK")
+        else:
+            print("T48 NOT OK")
+        return
+    except SSException as x:
+        print("T48 NOT OK")
+
 print()
 print("TEST TEST TEST")
 
