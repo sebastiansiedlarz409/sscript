@@ -333,6 +333,12 @@ class SSRuntime:
         symbol = StructRuntimeValue()
         symbol.setStruct(struct.name) #set type/struct name
 
+        parent = scope.peakTypeSymbol(struct.parent)
+        if parent:
+            for child in parent.body:
+                if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
+                    symbol.allocField(child.identifier, child.const, self.execute(child, scope))
+
         for child in struct.body:
             if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
                 symbol.allocField(child.identifier, child.const, self.execute(child, scope))
@@ -344,7 +350,7 @@ class SSRuntime:
 
         member = symbol.peakField(node.member)
         if not member:
-            raise SSException(f"SSRuntime: Struct {node.symbol} has not {node.member} field")
+            raise SSException(f"SSRuntime: Struct '{node.symbol}' has not '{node.member}' field")
         return member
 
     #state machine for each type of node

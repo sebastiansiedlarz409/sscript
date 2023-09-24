@@ -56,11 +56,15 @@ class BoolRuntimeValue(RuntimeValue):
 class StructRuntimeValue(RuntimeValue):
     def __init__(self):
         self.struct: str = None #type of struct
+        self.parent: str = None
         self.data: dict = {}
         self.setType(ValueTypes.Struct)
 
     def setStruct(self, struct: str):
         self.struct = struct
+
+    def setParent(self, parent: str):
+        self.parent = parent
 
     def allocField(self, name: str, const: bool, value: RuntimeValue):
         self.data[name] = [value, const]
@@ -68,7 +72,7 @@ class StructRuntimeValue(RuntimeValue):
     def peakField(self, name: str):
         try:
             return self.data[name][0]
-        except IndexError:
+        except KeyError:
             return None
 
     def __repr__(self):

@@ -41,9 +41,9 @@ class TypeRuntimeIdentifier(RuntimeIdentifier):
     def __init__(self):
         self.struct: Node = None
         self.impl: Node = None
-        self.parent = None #self
+        self.parent: str = None
 
-    def setParent(self, parent):
+    def setParent(self, parent: str):
         self.parent = parent
     
     def setFields(self, struct: Node):
@@ -98,7 +98,7 @@ class SSRuntimeScope:
         t.setIdentifier(symbol)
         t.setFields(value)
         if parent:
-            t.setParent(parent)
+            t.setParent(parent.struct.name)
 
         scope.types.append(t)
 
