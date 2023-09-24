@@ -335,12 +335,17 @@ class SSRuntime:
 
         for child in struct.body:
             if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
-                if child.access == "public":
-                    symbol.allocPublicField(child.identifier, child.const, self.execute(child, scope))
-                else:
-                    symbol.allocPrivateField(child.identifier, child.const, self.execute(child, scope))
+                symbol.allocField(child.identifier, child.const, self.execute(child, scope))
 
         return symbol
+    
+    def structMemberAccess(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        symbol = scope.peakValueSymbol(node.symbol)
+
+        member = symbol.peakField(node.member)
+        if not member:
+            raise SSException(f"SSRuntime: Struct {node.symbol} has not {node.member} field")
+        return member
 
     #state machine for each type of node
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
@@ -407,6 +412,8 @@ class SSRuntime:
             return self.structAllocNode(node, scope)
         elif type(node).__name__ == "DeclareFieldAssignNode":
             return self.declareFieldAssignNode(node, scope)
+        elif type(node).__name__ == "StructMemberAccess":
+            return self.structMemberAccess(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":

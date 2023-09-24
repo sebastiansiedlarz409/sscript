@@ -774,18 +774,15 @@ class SSParser:
         return e
 
     def parseFieldDeclarationAssign(self) -> Node:
-        access = self.test(SSTokens.AccessModifierKwToken)
-        if not access:
+        if not self.test(SSTokens.LetKwToken):
             return
         
-        self.expect(SSTokens.LetKwToken)
         identifier = self.expect(SSTokens.IdentifierToken)
         const = self.test(SSTokens.ConstKwToken)
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
 
         field = DeclareFieldAssignNode()
-        field.setAccess(access.value)
         field.setIdentifier(identifier.value)
         if const:
             field.isConst()
@@ -830,11 +827,9 @@ class SSParser:
         return struct
             
     def parseMethodDefinition(self, struct: str) -> Node:
-        access = self.test(SSTokens.AccessModifierKwToken)
-        if not access:
+        if not self.test(SSTokens.FuncKwToken):
             return
         
-        self.expect(SSTokens.FuncKwToken)
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.LParenToken)
         params = self.parseFunctionParams()
@@ -844,7 +839,6 @@ class SSParser:
         self.expect(SSTokens.RBracketToken)
 
         met = MethodDeclarationNode()
-        met.setAccess(access.value)
         met.setIdentifier(identifier.value)
         met.setStructName(struct)
         met.setParams(params)
@@ -895,7 +889,7 @@ class SSParser:
             member = self.expect(SSTokens.IdentifierToken)
 
             v = StructMemberAccess()
-            v.setStruct(identifier.value)
+            v.setSymbol(identifier.value)
             v.setMember(member.value)
             return v
         
@@ -910,7 +904,7 @@ class SSParser:
 
             if expression:
                 v = StructMemberWrite()
-                v.setStruct(identifier.value)
+                v.setSymbol(identifier.value)
                 v.setMember(member.value)
                 v.setChild(expression)
                 return v

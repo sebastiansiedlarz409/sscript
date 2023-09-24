@@ -1,8 +1,8 @@
 struct Figura(){
-    public let field = 0
-    private let asd = 1
-    private let qwe = -1
+    let field = 0
+    let asd = 1
+    let qwe = -1
 }
 
 let a = alloc Figura
-logln(a)
+logln(a.field)

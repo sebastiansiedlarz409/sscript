@@ -45,7 +45,6 @@ class ImplNode(Node):
 class DeclareFieldAssignNode(Node):
     def __init__(self):
         self.identifier: str = None
-        self.access: str = None
         self.child: Node = None
         self.const: bool = False
 
@@ -55,33 +54,26 @@ class DeclareFieldAssignNode(Node):
     def setChild(self, child: Node):
         self.child = child
 
-    def setAccess(self, access: Node):
-        self.access = access
-
     def isConst(self):
         self.const = True
 
     def __repr__(self) -> str:
         if self.const:
-            ret = f"{self.access} (const) {self.identifier} <= {self.child}"
+            ret = f"(const) {self.identifier} <= {self.child}"
             return ret
         else:
-            ret = f"{self.access} {self.identifier} <= {self.child}"
+            ret = f"{self.identifier} <= {self.child}"
             return ret
         
 class MethodDeclarationNode(Node):
     def __init__(self):
         self.struct: str = None
         self.identifier: str = None
-        self.access: str = None
         self.params: list[Node] = [] #params
         self.child: list[Node] = [] #body
 
     def setStructName(self, name: str):
         self.struct = name
-
-    def setAccess(self, access: Node):
-        self.access = access
 
     def setIdentifier(self, identifier: str):
         self.identifier = identifier
@@ -117,27 +109,27 @@ class StructAllocNode(Node):
     
 class StructMemberAccess(Node):
     def __init__(self):
-        self.struct: str = None
+        self.symbol: str = None
         self.member: str = None
 
-    def setStruct(self, struct: str):
-        self.struct = struct
+    def setSymbol(self, symbol: str):
+        self.symbol = symbol
 
     def setMember(self, member: str):
         self.member = member
 
     def __repr__(self) -> str:
-        ret = f"{self.struct}.{self.member}"
+        ret = f"{self.symbol}.{self.member}"
         return ret
     
 class StructMemberWrite(Node):
     def __init__(self):
-        self.struct: str = None
+        self.symbol: str = None
         self.member: str = None
         self.child: Node = None
 
-    def setStruct(self, struct: str):
-        self.struct = struct
+    def setSymbol(self, symbol: str):
+        self.symbol = symbol
 
     def setMember(self, member: str):
         self.member = member
@@ -146,5 +138,5 @@ class StructMemberWrite(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.struct}.{self.member} = {self.child}"
+        ret = f"{self.symbol}.{self.member} = {self.child}"
         return ret

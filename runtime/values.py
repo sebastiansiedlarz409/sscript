@@ -56,19 +56,21 @@ class BoolRuntimeValue(RuntimeValue):
 class StructRuntimeValue(RuntimeValue):
     def __init__(self):
         self.struct: str = None #type of struct
-        self.publicData: dict = {}
-        self.privateData: dict = {}
+        self.data: dict = {}
         self.setType(ValueTypes.Struct)
 
     def setStruct(self, struct: str):
         self.struct = struct
 
-    def allocPublicField(self, name: str, const: bool, value: RuntimeValue):
-        self.publicData[name] = [value, const]
+    def allocField(self, name: str, const: bool, value: RuntimeValue):
+        self.data[name] = [value, const]
 
-    def allocPrivateField(self, name: str, const: bool, value: RuntimeValue):
-        self.privateData[name] = [value, const]
+    def peakField(self, name: str):
+        try:
+            return self.data[name][0]
+        except IndexError:
+            return None
 
     def __repr__(self):
-        ret = f"{self.struct.upper()}:{self.publicData}-{self.privateData}"
+        ret = f"{self.struct.upper()}:{self.data}"
         return ret
