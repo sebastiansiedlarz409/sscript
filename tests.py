@@ -33,12 +33,10 @@ def t1():
         result = execute(s)
         if result == "0":
             print("T1 OK")
-            return
+        else:
+            print("T1 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T1 NOT OK")
+        print("T1 NOT OK")
 
 def t2():
     s = ""
@@ -49,12 +47,10 @@ def t2():
         result = execute(s)
         if result == "false":
             print("T2 OK")
-            return
+        else:
+            print("T2 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T2 NOT OK")
+        print("T2 NOT OK")
 
 def t3():
     s = ""
@@ -65,12 +61,10 @@ def t3():
         result = execute(s)
         if result == "EBAtrue99":
             print("T3 OK")
-            return
+        else:
+            print("T3 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T3 NOT OK")
+        print("T3 NOT OK")
 
 def t4():
     s = ""
@@ -81,12 +75,10 @@ def t4():
         result = execute(s)
         if result == "true":
             print("T4 OK")
-            return
+        else:
+            print("T4 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T4 NOT OK")
+        print("T4 NOT OK")
 
 def t5():
     s = ""
@@ -97,12 +89,10 @@ def t5():
         result = execute(s)
         if result == "100":
             print("T5 OK")
-            return
+        else:
+            print("T5 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T5 NOT OK")
+        print("T5 NOT OK")
 
 def t6():
     s = ""
@@ -113,12 +103,10 @@ def t6():
         result = execute(s)
         if result == "512":
             print("T6 OK")
-            return
+        else:
+            print("T6 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T6 NOT OK")
+        print("T6 NOT OK")
 
 def t7():
     s = ""
@@ -129,12 +117,10 @@ def t7():
         result = execute(s)
         if result == "10":
             print("T7 OK")
-            return
+        else:
+            print("T7 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T7 NOT OK")
+        print("T7 NOT OK")
 
 def t8():
     s = ""
@@ -145,12 +131,10 @@ def t8():
         result = execute(s)
         if result == "false":
             print("T8 OK")
-            return
+        else:
+            print("T8 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T8 NOT OK")
+        print("T8 NOT OK")
 
 def t9():
     s = ""
@@ -161,12 +145,10 @@ def t9():
         result = execute(s)
         if result == "false":
             print("T9 OK")
-            return
+        else:
+            print("T9 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T9 NOT OK")
+        print("T9 NOT OK")
 
 def t10():
     s = ""
@@ -177,12 +159,10 @@ def t10():
         result = execute(s)
         if result == "-9":
             print("T10 OK")
-            return
+        else:
+            print("T10 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T10 NOT OK")
+        print("T10 NOT OK")
 
 def t11():
     s = ""
@@ -193,12 +173,10 @@ def t11():
         result = execute(s)
         if result == "2":
             print("T11 OK")
-            return
+        else:
+            print("T11 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T11 NOT OK")
+        print("T11 NOT OK")
 
 def t12():
     s = ""
@@ -209,12 +187,10 @@ def t12():
         result = execute(s)
         if result == "-1":
             print("T12 OK")
-            return
+        else:
+            print("T12 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T12 NOT OK")
+        print("T12 NOT OK")
 
 def t13():
     s = ""
@@ -225,12 +201,10 @@ def t13():
         result = execute(s)
         if result == "null":
             print("T13 OK")
-            return
+        else:
+            print("T13 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T13 NOT OK")
+        print("T13 NOT OK")
 
 def t14():
     s = ""
@@ -241,12 +215,10 @@ def t14():
         result = execute(s)
         if result == "4":
             print("T14 OK")
-            return
+        else:
+            print("T14 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T14 NOT OK")
+        print("T14 NOT OK")
 
 def t15():
     s = ""
@@ -257,12 +229,10 @@ def t15():
         result = execute(s)
         if result == "255":
             print("T15 OK")
-            return
+        else:    
+            print("T15 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T15 NOT OK")
+        print("T15 NOT OK")
 
 def t16():
     s = ""
@@ -273,12 +243,10 @@ def t16():
         result = execute(s)
         if result == "20":
             print("T16 OK")
-            return
+        else:
+            print("T16 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T16 NOT OK")
+        print("T16 NOT OK")
 
 def t17():
     s = ""
@@ -289,12 +257,10 @@ def t17():
         result = execute(s)
         if result == "40":
             print("T17 OK")
-            return
+        else:
+            print("T17 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T17 NOT OK")
+        print("T17 NOT OK")
 
 def t18():
     s = ""
@@ -305,12 +271,10 @@ def t18():
         result = execute(s)
         if result == "1":
             print("T18 OK")
-            return
+        else:
+            print("T18 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T18 NOT OK")
+        print("T18 NOT OK")
 
 def t19():
     s = ""
@@ -321,12 +285,10 @@ def t19():
         result = execute(s)
         if result == "3":
             print("T19 OK")
-            return
+        else:    
+            print("T19 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T19 NOT OK")
+        print("T19 NOT OK")
 
 def t20():
     s = ""
@@ -334,15 +296,13 @@ def t20():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T20 NOT OK")
-        return
     except SSLexerException as x:
         if x.got == '`' and x.line == 2 and x.column == 1:
             print("T20 OK")
         else:
             print("T20 NOT OK")
-            print(x)
 
 def t21():
     s = ""
@@ -350,15 +310,13 @@ def t21():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T21 NOT OK")
-        return
     except SSLexerException as x:
         if x.got == '.' and x.line == 1 and x.column == 12:
             print("T21 OK")
         else:
             print("T21 NOT OK")
-            print(x)
 
 def t22():
     s = ""
@@ -366,15 +324,13 @@ def t22():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T22 NOT OK")
-        return
     except SSLexerException as x:
         if x.got == '~' and x.line == 1 and x.column == 42:
             print("T22 OK")
         else:
             print("T22 NOT OK")
-            print(x)
 
 def t23():
     s = ""
@@ -382,15 +338,13 @@ def t23():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T23 NOT OK")
-        return
     except SSParserException as x:
         if x.got.type == SSTokens.NumberToken and x.got.line == 1 and x.got.column == 16:
             print("T23 OK")
         else:
             print("T23 NOT OK")
-            print(x)
 
 def t24():
     s = ""
@@ -398,15 +352,13 @@ def t24():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T24 NOT OK")
-        return
     except SSParserException as x:
         if x.expected == SSTokens.IdentifierToken and x.got.line == 1 and x.got.column == 6:
             print("T24 OK")
         else:
             print("T24 NOT OK")
-            print(x)
 
 def t25():
     s = ""
@@ -414,15 +366,13 @@ def t25():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T25 NOT OK")
-        return
     except SSParserException as x:
         if x.expected == SSTokens.SemicolonToken and x.got.line == 3 and x.got.column == 23:
             print("T25 OK")
         else:
             print("T25 NOT OK")
-            print(x)
 
 def t26():
     s = ""
@@ -430,15 +380,13 @@ def t26():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T26 NOT OK")
-        return
     except SSParserUnexpectedException as x:
         if x.got.value == "=" and x.got.line == 3 and x.got.column == 5:
             print("T26 OK")
         else:
             print("T26 NOT OK")
-            print(x)
 
 def t27():
     s = ""
@@ -446,9 +394,8 @@ def t27():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T27 NOT OK")
-        return
     except SSParserException as x:
         print("T27 OK")
 
@@ -461,12 +408,10 @@ def t28():
         result = execute(s)
         if result == "1":
             print("T28 OK")
-            return
+        else:
+            print("T28 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T28 NOT OK")
+        print("T28 NOT OK")
 
 def t29():
     s = ""
@@ -477,12 +422,10 @@ def t29():
         result = execute(s)
         if result == "0":
             print("T29 OK")
-            return
+        else:
+            print("T29 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T29 NOT OK")
+        print("T29 NOT OK")
 
 def t30():
     s = ""
@@ -493,12 +436,10 @@ def t30():
         result = execute(s)
         if result == "13":
             print("T30 OK")
-            return
+        else:    
+            print("T30 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T30 NOT OK")
+        print("T30 NOT OK")
 
 def t31():
     s = ""
@@ -509,12 +450,10 @@ def t31():
         result = execute(s)
         if result == "0":
             print("T31 OK")
-            return
+        else:    
+            print("T31 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T31 NOT OK")
+        print("T31 NOT OK")
 
 def t32():
     s = ""
@@ -525,12 +464,10 @@ def t32():
         result = execute(s)
         if result == "3":
             print("T32 OK")
-            return
+        else:
+            print("T32 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T32 NOT OK")
+        print("T32 NOT OK")
 
 def t33():
     s = ""
@@ -541,12 +478,10 @@ def t33():
         result = execute(s)
         if result == "3":
             print("T33 OK")
-            return
+        else:
+            print("T33 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T33 NOT OK")
+        print("T33 NOT OK")
 
 def t34():
     s = ""
@@ -557,12 +492,10 @@ def t34():
         result = execute(s)
         if result == "0":
             print("T34 OK")
-            return
+        else:
+            print("T34 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T34 NOT OK")
+        print("T34 NOT OK")
 
 def t35():
     s = ""
@@ -573,12 +506,10 @@ def t35():
         result = execute(s)
         if result == "2":
             print("T35 OK")
-            return
+        else:
+            print("T35 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T35 NOT OK")
+        print("T35 NOT OK")
 
 def t36():
     s = ""
@@ -589,12 +520,10 @@ def t36():
         result = execute(s)
         if result == "10":
             print("T36 OK")
-            return
+        else:
+            print("T36 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T36 NOT OK")
+        print("T36 NOT OK")
 
 def t37():
     s = ""
@@ -605,12 +534,10 @@ def t37():
         result = execute(s)
         if result == "3":
             print("T37 OK")
-            return
+        else:
+            print("T37 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T37 NOT OK")
+        print("T37 NOT OK")
 
 def t38():
     s = ""
@@ -618,9 +545,8 @@ def t38():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T38 NOT OK")
-        return
     except SSException as x:
         print("T38 OK")
 
@@ -633,12 +559,10 @@ def t39():
         result = execute(s)
         if result == "88":
             print("T39 OK")
-            return
+        else:
+            print("T39 NOT OK")
     except Exception as x:
-        print(x)
-
-    result = execute(s, True)
-    print("T39 NOT OK")
+        print("T39 NOT OK")
 
 def t40():
     s = ""
@@ -646,9 +570,8 @@ def t40():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T40 NOT OK")
-        return
     except SSException as x:
         print("T40 OK")
 
@@ -658,9 +581,8 @@ def t41():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T41 NOT OK")
-        return
     except SSException as x:
         print("T41 OK")
 
@@ -670,9 +592,8 @@ def t42():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T42 NOT OK")
-        return
     except SSException as x:
         print("T42 OK")
 
@@ -682,9 +603,8 @@ def t43():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T43 NOT OK")
-        return
     except SSException as x:
         print("T43 OK")
 
@@ -694,9 +614,8 @@ def t44():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T44 OK")
-        return
     except SSException as x:
         print("T44 NOT OK")
 
@@ -706,9 +625,8 @@ def t45():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T45 OK")
-        return
     except SSException as x:
         print("T45 NOT OK")
 
@@ -723,7 +641,6 @@ def t46():
             print("T46 OK")
         else:
             print("T46 NOT OK")
-        return
     except SSException as x:
         print("T46 NOT OK")
 
@@ -738,7 +655,6 @@ def t47():
             print("T47 OK")
         else:
             print("T47 NOT OK")
-        return
     except SSException as x:
         print("T47 NOT OK")
 
@@ -753,7 +669,6 @@ def t48():
             print("T48 OK")
         else:
             print("T48 NOT OK")
-        return
     except SSException as x:
         print("T48 NOT OK")
 
@@ -768,7 +683,6 @@ def t49():
             print("T49 OK")
         else:
             print("T49 NOT OK")
-        return
     except SSException as x:
         print("T49 NOT OK")
 
@@ -778,9 +692,8 @@ def t50():
         s = f.read()
 
     try:
-        result = execute(s)
+        execute(s)
         print("T50 NOT OK")
-        return
     except SSException as x:
         print("T50 OK")
 
