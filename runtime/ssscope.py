@@ -46,7 +46,7 @@ class TypeRuntimeIdentifier(RuntimeIdentifier):
     def setParent(self, parent: str):
         self.parent = parent
     
-    def setFields(self, struct: Node):
+    def setStruct(self, struct: Node):
         self.struct = struct
 
     def setImpl(self, impl: Node):
@@ -77,7 +77,7 @@ class SSRuntimeScope:
         if len(test) == 1:
             return test[0]
         
-    #olawys declare in the root scope
+    #alawys declare in the root scope
     def declareType(self, symbol: str, value: Node):
         if self.checkIfTypeExists(symbol) != None:
             raise SSException(f"SSRuntime: Type '{symbol}' has already been declared")
@@ -96,7 +96,7 @@ class SSRuntimeScope:
 
         t = TypeRuntimeIdentifier()
         t.setIdentifier(symbol)
-        t.setFields(value)
+        t.setStruct(value)
         if parent:
             t.setParent(parent.struct.name)
 

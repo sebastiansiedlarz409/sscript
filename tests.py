@@ -440,6 +440,50 @@ def t26():
             print("T26 NOT OK")
             print(x)
 
+def t27():
+    s = ""
+    with open("tests\\t27.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T27 NOT OK")
+        return
+    except SSParserException as x:
+        print("T27 OK")
+
+def t28():
+    s = ""
+    with open("tests\\t28.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "1":
+            print("T28 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T28 NOT OK")
+
+def t29():
+    s = ""
+    with open("tests\\t29.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "0":
+            print("T29 OK")
+            return
+    except Exception as x:
+        print(x)
+
+    result = execute(s, True)
+    print("T29 NOT OK")
+
 def t30():
     s = ""
     with open("tests\\t30.ss", "r") as f:
@@ -712,6 +756,33 @@ def t48():
         return
     except SSException as x:
         print("T48 NOT OK")
+
+def t49():
+    s = ""
+    with open("tests\\t49.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "Koko":
+            print("T49 OK")
+        else:
+            print("T49 NOT OK")
+        return
+    except SSException as x:
+        print("T49 NOT OK")
+
+def t50():
+    s = ""
+    with open("tests\\t50.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T50 NOT OK")
+        return
+    except SSException as x:
+        print("T50 OK")
 
 print()
 print("TEST TEST TEST")

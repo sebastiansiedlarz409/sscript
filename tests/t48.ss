@@ -1,11 +1,11 @@
-struct Figura(){
+struct Figure(){
     let field = 0
 }
 
-struct Kolo(Figura){
-    let promien = -1
+struct Circle(Figure){
+    let r = -1
 }
 
-let a = alloc Kolo
+let a = alloc Circle
 a.field = 10
 return a.field

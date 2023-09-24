@@ -1,4 +1,4 @@
-struct Rectangle(Figura){
+struct Rectangle(Figure){
     public let a = 0
     public let b = 0
 }
