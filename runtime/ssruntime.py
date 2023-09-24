@@ -323,6 +323,25 @@ class SSRuntime:
     def implNode(self, node: Node, scope: SSRuntimeScope):
         scope.declareTypeImpl(node.name, node)
 
+    def declareFieldAssignNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        return self.execute(node.child, scope)
+
+    def structAllocNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        #get struct node
+        struct = scope.peakTypeSymbol(node.struct)
+
+        symbol = StructRuntimeValue()
+        symbol.setStruct(struct.name) #set type/struct name
+
+        for child in struct.body:
+            if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
+                if child.access == "public":
+                    symbol.allocPublicField(child.identifier, self.execute(child, scope))
+                else:
+                    symbol.allocPrivateField(child.identifier, self.execute(child, scope))
+
+        return symbol
+
     #state machine for each type of node
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
 
@@ -384,6 +403,10 @@ class SSRuntime:
             self.structNode(node, scope)
         elif type(node).__name__ == "ImplNode":
             self.implNode(node, scope)
+        elif type(node).__name__ == "StructAllocNode":
+            return self.structAllocNode(node, scope)
+        elif type(node).__name__ == "DeclareFieldAssignNode":
+            return self.declareFieldAssignNode(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":

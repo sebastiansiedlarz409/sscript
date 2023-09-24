@@ -62,7 +62,7 @@ class SSRuntimeScope:
         #parent in type Runtimescope
         self.parent = None
         self.symbols: list[RuntimeIdentifier] = []
-        self.types: list[Node] = [] #list of variable declaration nodes and function declaration nodes
+        self.types: list[RuntimeIdentifier] = []
 
     def setParentScope(self, parent):
         self.parent = parent
@@ -73,7 +73,7 @@ class SSRuntimeScope:
         while scope.parent:
             scope = scope.parent
 
-        test = [x for x in self.types if x.identifier == symbol]
+        test = [x for x in self.types if x.identifier == symbol.upper()]
         if len(test) == 1:
             return test[0]
         
@@ -127,10 +127,17 @@ class SSRuntimeScope:
             parent = self.checkIfTypeExists(value.parent)
             if not parent:
                 raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
-    
+
             #check if inherit type is same as coresponding struct
             if value.parent != struct.parent.identifier:
                 raise SSException(f"SSRuntime: Parent has to be the same for type and implementation")
+    
+    #return struct node from main scope
+    def peakTypeSymbol(self, symbol: str) -> Node:
+        struct = self.checkIfTypeExists(symbol)
+        if not struct:
+            raise SSException(f"SSRuntime: Struct '{symbol}' has not been declered yet")
+        return struct.struct
 
     #check if function exist in myself or in my ancestor
     #if exist returns it

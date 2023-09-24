@@ -392,19 +392,10 @@ class SSParser:
         if not self.test(SSTokens.AllocKwToken):
             return
         
-        self.expect(SSTokens.LParenToken)
         identifier = self.expect(SSTokens.IdentifierToken)
-        self.expect(SSTokens.CommaToken)
-        expression = self.parseExpression()
-        
-        if expression:
-            self.expect(SSTokens.RParenToken)
-
-            v = StructAllocNode()
-            v.setStructName(identifier.value)
-            v.setCount(expression)
-
-            return v
+        v = StructAllocNode()
+        v.setStructName(identifier.value)
+        return v
 
     def parseVariableDeclarationAssign(self) -> Node:
         t = self.test(SSTokens.LetKwToken)

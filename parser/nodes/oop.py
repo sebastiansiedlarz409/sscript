@@ -107,16 +107,12 @@ class MethodDeclarationNode(Node):
 class StructAllocNode(Node):
     def __init__(self):
         self.struct: str = None
-        self.count: Node = None
     
     def setStructName(self, name: str):
         self.struct = name
-        
-    def setCount(self, count: Node):
-        self.count = count
 
     def __repr__(self) -> str:
-        ret = f"alloc({self.struct}, {self.count})"
+        ret = f"alloc {self.struct}"
         return ret
     
 class StructMemberAccess(Node):

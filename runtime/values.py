@@ -6,7 +6,8 @@ class ValueTypes(Enum):
     Null = 1,
     Bool = 2,
     String = 3,
-    Array = 4
+    Array = 4,
+    Struct = 5
 
 #runtime values are used as result
 #when runtime evaluate each node
@@ -50,4 +51,24 @@ class BoolRuntimeValue(RuntimeValue):
 
     def __repr__(self):
         ret = f"{str(self.value).lower()}"
+        return ret
+    
+class StructRuntimeValue(RuntimeValue):
+    def __init__(self):
+        self.struct: str = None #type of struct
+        self.publicData: dict = {}
+        self.privateData: dict = {}
+        self.setType(ValueTypes.Struct)
+
+    def setStruct(self, struct: str):
+        self.struct = struct
+
+    def allocPublicField(self, name: str, value: RuntimeValue):
+        self.publicData[name] = value
+
+    def allocPrivateField(self, name: str, value: RuntimeValue):
+        self.privateData[name] = value
+
+    def __repr__(self):
+        ret = f"{self.struct.upper()}:{self.publicData}-{self.privateData}"
         return ret

@@ -644,6 +644,45 @@ def t43():
     except SSException as x:
         print("T43 OK")
 
+def t44():
+    s = ""
+    with open("tests\\t44.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T44 OK")
+        return
+    except SSException as x:
+        print("T44 NOT OK")
+
+def t45():
+    s = ""
+    with open("tests\\t45.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        print("T45 OK")
+        return
+    except SSException as x:
+        print("T45 NOT OK")
+
+def t46():
+    s = ""
+    with open("tests\\t46.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "1":
+            print("T46 OK")
+        else:
+            print("T46 NOT OK")
+        return
+    except SSException as x:
+        print("T46 NOT OK")
+
 print()
 print("TEST TEST TEST")
 
