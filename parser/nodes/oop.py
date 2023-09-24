@@ -85,7 +85,7 @@ class MethodDeclarationNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.access} {self.identifier}("
+        ret = f"{self.identifier}("
         for p in self.params:
             ret += f"[{p}]"
         ret+=f")\n"
@@ -111,6 +111,7 @@ class StructMemberAccess(Node):
     def __init__(self):
         self.symbol: str = None
         self.member: str = None
+        self.child: Node = None
 
     def setSymbol(self, symbol: str):
         self.symbol = symbol
@@ -118,8 +119,13 @@ class StructMemberAccess(Node):
     def setMember(self, member: str):
         self.member = member
 
+    def setChild(self, child: Node):
+        self.child = child
+
     def __repr__(self) -> str:
         ret = f"{self.symbol}.{self.member}"
+        if type(self.child).__name__ == "StructMemberAccess":
+            ret += f".{self.child}"
         return ret
     
 class StructMemberWrite(Node):
@@ -139,4 +145,19 @@ class StructMemberWrite(Node):
 
     def __repr__(self) -> str:
         ret = f"{self.symbol}.{self.member} = {self.child}"
+        return ret
+    
+class FieldAssignNode(Node):
+    def __init__(self):
+        self.identifier: str = None
+        self.child: Node = None
+
+    def setIdentifier(self, identifier: str):
+        self.identifier = identifier
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def __repr__(self) -> str:
+        ret = f"self.{self.identifier} <= {self.child}"
         return ret

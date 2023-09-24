@@ -12,6 +12,7 @@ from parser.nodes.variables import *
 class SSParser:
     def __init__(self):
         self.tokens = []
+        self.oop = False
 
     def iseof(self, offset: int = 0) -> bool:
         return self.tokens[offset].type == SSTokens.EOFToken
@@ -227,6 +228,12 @@ class SSParser:
         structMember = self.parseStructMemberAccess()
         if structMember:
             return structMember
+        
+        #method access to struct field
+        if self.oop:
+            node = self.parseStructMemberAccess()
+            if node:
+                return node
 
         #identifier
         identifier = self.test(SSTokens.IdentifierToken)
@@ -549,6 +556,13 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            if self.oop:
+                #parse struct field assign
+                node = self.parseStructFieldAssign()
+                if node != None:
+                    childs.append(node)
+                    continue
+
             #parse for loop
             node = self.parseForLoop()
             if node != None:
@@ -861,7 +875,9 @@ class SSParser:
         params = self.parseFunctionParams()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
+        self.oop = True #enable some elements for oop
         body = self.parseBody()
+        self.oop = False #disable some elements for oop
         self.expect(SSTokens.RBracketToken)
 
         met = MethodDeclarationNode()
@@ -917,6 +933,17 @@ class SSParser:
             v = StructMemberAccess()
             v.setSymbol(identifier.value)
             v.setMember(member.value)
+
+            return v
+        
+        if self.test(SSTokens.SelfKwToken):
+            self.expect(SSTokens.DotToken)
+            member = self.expect(SSTokens.IdentifierToken)
+
+            v = StructMemberAccess()
+            v.setSymbol("self")
+            v.setMember(member.value)
+
             return v
         
     def parseStructMemberWrite(self):
@@ -934,3 +961,32 @@ class SSParser:
                 v.setMember(member.value)
                 v.setChild(expression)
                 return v
+            
+    #special copy for impl methods
+    #duo to self kw syntax
+    def parseStructFieldAssign(self) -> Node:
+        if not self.test(SSTokens.SelfKwToken):
+            return
+        
+        self.expect(SSTokens.DotToken)
+
+        identifier = self.expect(SSTokens.IdentifierToken)
+        
+        self.expect(SSTokens.AssignOperatorToken)
+        expression = self.parseExpression()
+        if expression:
+            v = FieldAssignNode()
+            v.setIdentifier(identifier.value)
+            v.setChild(expression)
+
+            return v
+        
+        self.expect(SSTokens.LSquareBracketToken)
+        child = self.parseArray()
+        self.expect(SSTokens.RSquareBracketToken)
+        
+        v = FieldAssignNode()
+        v.setIdentifier(identifier.value)
+        v.setChild(child)
+
+        return v

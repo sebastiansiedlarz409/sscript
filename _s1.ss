@@ -1,13 +1,11 @@
-struct B(){
-
+struct Rectangle(){
+    let field = 0
+    let a = 2
+    let b = 3
 }
 
-struct A(){
-    const a = 10
-    let b = 11
-    let c = [1,2]
-    let d = alloc B
+impl Rectangle(){
+    func calcField(){
+        self.field = self.a + self.b
+    }
 }
-
-let obj = alloc A
-logln(obj.d)

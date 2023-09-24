@@ -28,6 +28,7 @@ class SSTokens(Enum):
     ImplKwToken = 24,
     AccessModifierKwToken = 25,
     AllocKwToken = 26,
+    SelfKwToken = 27,
     IdentifierToken = 30,
     NumberToken = 31,
     StringToken = 32,
@@ -81,5 +82,6 @@ SSKEYWORDS = {
     "public": SSTokens.AccessModifierKwToken,
     "private": SSTokens.AccessModifierKwToken,
     "impl": SSTokens.ImplKwToken,
-    "alloc": SSTokens.AllocKwToken
+    "alloc": SSTokens.AllocKwToken,
+    "self": SSTokens.SelfKwToken
 }
