@@ -782,13 +782,37 @@ class SSParser:
         
         identifier = self.expect(SSTokens.IdentifierToken)
         self.expect(SSTokens.AssignOperatorToken)
+
+        alloc = self.parseAlloc()
+        if alloc:
+            field = DeclareFieldAssignNode()
+            field.setIdentifier(identifier.value)
+            field.setChild(alloc)
+            if t.type == SSTokens.ConstKwToken:
+                field.isConst()
+            
+            return field
+
         expression = self.parseExpression()
 
+        if expression:
+            field = DeclareFieldAssignNode()
+            field.setIdentifier(identifier.value)
+            field.setChild(expression)
+            if t.type == SSTokens.ConstKwToken:
+                field.isConst()
+
+            return field
+        
+        self.expect(SSTokens.LSquareBracketToken)
+        child = self.parseArray()
+        self.expect(SSTokens.RSquareBracketToken)
+        
         field = DeclareFieldAssignNode()
         field.setIdentifier(identifier.value)
+        field.setChild(child)
         if t.type == SSTokens.ConstKwToken:
             field.isConst()
-        field.setChild(expression)
 
         return field
 
