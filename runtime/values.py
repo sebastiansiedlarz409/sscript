@@ -63,11 +63,11 @@ class StructRuntimeValue(RuntimeValue):
     def setStruct(self, struct: str):
         self.struct = struct
 
-    def allocPublicField(self, name: str, value: RuntimeValue):
-        self.publicData[name] = value
+    def allocPublicField(self, name: str, const: bool, value: RuntimeValue):
+        self.publicData[name] = [value, const]
 
-    def allocPrivateField(self, name: str, value: RuntimeValue):
-        self.privateData[name] = value
+    def allocPrivateField(self, name: str, const: bool, value: RuntimeValue):
+        self.privateData[name] = [value, const]
 
     def __repr__(self):
         ret = f"{self.struct.upper()}:{self.publicData}-{self.privateData}"

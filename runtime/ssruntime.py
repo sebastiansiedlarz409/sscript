@@ -336,9 +336,9 @@ class SSRuntime:
         for child in struct.body:
             if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
                 if child.access == "public":
-                    symbol.allocPublicField(child.identifier, self.execute(child, scope))
+                    symbol.allocPublicField(child.identifier, child.const, self.execute(child, scope))
                 else:
-                    symbol.allocPrivateField(child.identifier, self.execute(child, scope))
+                    symbol.allocPrivateField(child.identifier, child.const, self.execute(child, scope))
 
         return symbol
 
