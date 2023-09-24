@@ -774,17 +774,19 @@ class SSParser:
         return e
 
     def parseFieldDeclarationAssign(self) -> Node:
-        if not self.test(SSTokens.LetKwToken):
-            return
+        t = self.test(SSTokens.LetKwToken)
+        if not t:
+            t = self.test(SSTokens.ConstKwToken)
+            if not t:
+                return
         
         identifier = self.expect(SSTokens.IdentifierToken)
-        const = self.test(SSTokens.ConstKwToken)
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
 
         field = DeclareFieldAssignNode()
         field.setIdentifier(identifier.value)
-        if const:
+        if t.type == SSTokens.ConstKwToken:
             field.isConst()
         field.setChild(expression)
 

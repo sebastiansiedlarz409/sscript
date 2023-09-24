@@ -1,6 +1,3 @@
-struct Animal(){
-    
+struct A(){
+    const a = 10
 }
-
-let animal = alloc Animal
-return animal.name

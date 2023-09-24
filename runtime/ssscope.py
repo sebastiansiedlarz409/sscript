@@ -129,8 +129,8 @@ class SSRuntimeScope:
                 raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
 
             #check if inherit type is same as coresponding struct
-            if value.parent != struct.parent.identifier:
-                raise SSException(f"SSRuntime: Parent has to be the same for type and implementation")
+            if value.parent != struct.parent:
+                raise SSException(f"SSRuntime: Parent has to be the same for struct and implementation")
     
     #return struct node from main scope
     def peakTypeSymbol(self, symbol: str) -> Node:
