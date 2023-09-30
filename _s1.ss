@@ -1,16 +1,7 @@
-struct Rectangle(){
-    let field = 0
-    let a = 2
-    let b = 3
-}
+let a = "A"
+let b = "B"
+let c = "E"
+let d = true
+let e = 99
 
-impl Rectangle(){
-    func calcField(count){
-        logln("Licze pole")
-        self.field = self.a*self.b*count
-    }
-}
-
-let rect = alloc Rectangle
-rect.calcField(2)
-logln(rect.field)
+return c + b + a + d + e
