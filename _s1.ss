@@ -6,6 +6,10 @@ struct Rectangle(){
 
 impl Rectangle(){
     func calcField(){
-        self.field = self.a + self.b
+        self.field = 1
     }
 }
+
+let rect = alloc Rectangle
+rect.calcField()
+logln(rect.field)

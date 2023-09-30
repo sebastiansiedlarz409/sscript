@@ -108,6 +108,12 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            #parse impl member call
+            node = self.parseImplMemberCall()
+            if node != None:
+                program.appendChild(node)
+                continue
+            
             #parse struct member assign
             node = self.parseStructMemberWrite()
             if node != None:
@@ -544,6 +550,12 @@ class SSParser:
                 childs.append(node)
                 continue
             
+            #parse impl member calls
+            node = self.parseImplMemberCall()
+            if node != None:
+                childs.append(node)
+                continue
+
             #parse struct member assign
             node = self.parseStructMemberWrite()
             if node != None:
@@ -961,6 +973,32 @@ class SSParser:
                 v.setMember(member.value)
                 v.setChild(expression)
                 return v
+            
+    def parseImplMemberCall(self):
+        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken and self.peak(3).type == SSTokens.LParenToken:
+            identifier = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.DotToken)
+            member = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.LParenToken)
+            self.expect(SSTokens.RParenToken)
+
+            v = ImplMemberCall()
+            v.setSymbol(identifier.value)
+            v.setMember(member.value)
+
+            return v
+        
+        if self.peak().type == SSTokens.SelfKwToken and self.peak(3).type == SSTokens.LParenToken:
+            self.expect(SSTokens.DotToken)
+            member = self.expect(SSTokens.IdentifierToken)
+            self.expect(SSTokens.LParenToken)
+            self.expect(SSTokens.RParenToken)
+
+            v = ImplMemberCall()
+            v.setSymbol("self")
+            v.setMember(member.value)
+
+            return v
             
     #special copy for impl methods
     #duo to self kw syntax
