@@ -347,20 +347,25 @@ class SSRuntime:
         return symbol
     
     def structMemberAccess(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        symbol = scope.peakValueSymbol(node.symbol)
+        obj = scope.peakValueSymbol(node.symbol) #get object
 
-        member = symbol.peakField(node.member)
+        member = obj.peakField(node.member)
         if not member:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' has not '{node.member}' field")
         return member
     
     def structMemberWrite(self, node: Node, scope: SSRuntimeScope):
-        symbol = scope.peakValueSymbol(node.symbol)
+        obj = scope.peakValueSymbol(node.symbol) #get obj
 
-        if symbol.isConst(node.member):
+        if obj.isConst(node.member):
             raise SSException(f"SSRuntime: Field '{node.member}' is constant")
         
-        symbol.overrideField(node.member, self.execute(node.child, scope))
+        obj.overrideField(node.member, self.execute(node.child, scope))
+
+    def implMemberCall(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
+        obj = scope.peakValueSymbol(node.symbol) #get object
+
+        return None
 
     #state machine for each type of node
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
@@ -431,6 +436,8 @@ class SSRuntime:
             return self.structMemberAccess(node, scope)
         elif type(node).__name__ == "StructMemberWrite":
             self.structMemberWrite(node, scope)
+        elif type(node).__name__ == "ImplMemberCall":
+            self.implMemberCall(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":

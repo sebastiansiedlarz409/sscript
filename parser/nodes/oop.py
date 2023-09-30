@@ -147,21 +147,6 @@ class StructMemberWrite(Node):
         ret = f"{self.symbol}.{self.member} = {self.child}"
         return ret
     
-class FieldAssignNode(Node):
-    def __init__(self):
-        self.identifier: str = None
-        self.child: Node = None
-
-    def setIdentifier(self, identifier: str):
-        self.identifier = identifier
-
-    def setChild(self, child: Node):
-        self.child = child
-
-    def __repr__(self) -> str:
-        ret = f"self.{self.identifier} <= {self.child}"
-        return ret
-    
 class ImplMemberCall(Node):
     def __init__(self):
         self.symbol: str = None

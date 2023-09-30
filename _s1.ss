@@ -7,6 +7,7 @@ struct Rectangle(){
 impl Rectangle(){
     func calcField(){
         self.field = 1
+        logln("Licze pole")
     }
 }
 

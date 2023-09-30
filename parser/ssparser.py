@@ -113,7 +113,7 @@ class SSParser:
             if node != None:
                 program.appendChild(node)
                 continue
-            
+
             #parse struct member assign
             node = self.parseStructMemberWrite()
             if node != None:
@@ -1013,8 +1013,9 @@ class SSParser:
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
         if expression:
-            v = FieldAssignNode()
-            v.setIdentifier(identifier.value)
+            v = StructMemberWrite()
+            v.setSymbol("self")
+            v.setMember(identifier.value)
             v.setChild(expression)
 
             return v
@@ -1023,8 +1024,9 @@ class SSParser:
         child = self.parseArray()
         self.expect(SSTokens.RSquareBracketToken)
         
-        v = FieldAssignNode()
-        v.setIdentifier(identifier.value)
+        v = StructMemberWrite()
+        v.setSymbol("self")
+        v.setMember(identifier.value)
         v.setChild(child)
 
         return v
