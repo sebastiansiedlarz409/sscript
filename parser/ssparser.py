@@ -100,7 +100,6 @@ class SSParser:
             if node != None:
                 program.appendChild(node)
                 continue
-
             
             #array item assing
             node = self.parseArrayElementOverride()
@@ -231,12 +230,18 @@ class SSParser:
 
         #struct.field
         #struct.method()
+        methodCall = self.parseImplMemberCall()
+        if methodCall:
+            return methodCall
         structMember = self.parseStructMemberAccess()
         if structMember:
             return structMember
         
         #method access to struct field
         if self.oop:
+            node = self.parseImplMemberCall()
+            if node:
+                return node
             node = self.parseStructMemberAccess()
             if node:
                 return node

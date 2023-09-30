@@ -472,7 +472,7 @@ class SSRuntime:
         elif type(node).__name__ == "StructMemberWrite":
             self.structMemberWrite(node, scope)
         elif type(node).__name__ == "ImplMemberCall":
-            self.implMemberCall(node, scope)
+            return self.implMemberCall(node, scope)
         elif type(node).__name__ == "ProgramNode":
             return self.programNode(node, scope)
         elif type(node).__name__ == "NoneType":
