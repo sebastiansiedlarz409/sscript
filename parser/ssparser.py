@@ -1007,6 +1007,7 @@ class SSParser:
             return v
         
         if self.peak().type == SSTokens.SelfKwToken and self.peak(3).type == SSTokens.LParenToken:
+            self.expect(SSTokens.SelfKwToken)
             self.expect(SSTokens.DotToken)
             member = self.expect(SSTokens.IdentifierToken)
             self.expect(SSTokens.LParenToken)

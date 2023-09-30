@@ -725,6 +725,34 @@ def t52():
     except SSException as x:
         print("T52 NOT OK")
 
+def t53():
+    s = ""
+    with open("tests\\t53.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "Field is equal to: 18":
+            print("T53 OK")
+        else:
+            print("T53 NOT OK")
+    except SSException as x:
+        print("T53 NOT OK")
+
+def t54():
+    s = ""
+    with open("tests\\t54.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "Field is equal to: 18":
+            print("T54 OK")
+        else:
+            print("T54 NOT OK")
+    except SSException as x:
+        print("T54 NOT OK")
+
 print()
 print("TEST TEST TEST")
 

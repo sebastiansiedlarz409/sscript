@@ -73,7 +73,7 @@ class SSRuntimeScope:
         while scope.parent:
             scope = scope.parent
 
-        test = [x for x in self.types if x.identifier == symbol.upper()]
+        test = [x for x in scope.types if x.identifier == symbol.upper()]
         if len(test) == 1:
             return test[0]
         

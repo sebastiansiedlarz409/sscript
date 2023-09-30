@@ -163,5 +163,13 @@ class ImplMemberCall(Node):
         self.params = params
 
     def __repr__(self) -> str:
-        ret = f"{self.symbol}.{self.member}()"
+        ret = f"{self.symbol}.{self.member}("
+        if len(self.params) == 0:
+            ret += ")"
+        else:
+            for p in self.params:
+                ret += f"{p}"
+                ret += ","
+            ret = ret[:-1]
+            ret += ")"
         return ret

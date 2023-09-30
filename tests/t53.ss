@@ -12,12 +12,8 @@ impl Rectangle(Figure){
         self.field = self.a*self.b*count
         return self.field
     }
-
-    func toString(){
-        return "Field is equal to: " + self.calcField(3)
-    }
 }
 
 let rect = alloc Rectangle
 
-return rect.toString()
+return "Field is equal to: " + rect.calcField(3)
