@@ -151,12 +151,16 @@ class ImplMemberCall(Node):
     def __init__(self):
         self.symbol: str = None
         self.member: str = None
+        self.params: list[Node] = []
 
     def setSymbol(self, symbol: str):
         self.symbol = symbol
 
     def setMember(self, member: str):
         self.member = member
+
+    def setParams(self, params: list[Node]):
+        self.params = params
 
     def __repr__(self) -> str:
         ret = f"{self.symbol}.{self.member}()"

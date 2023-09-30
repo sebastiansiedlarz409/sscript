@@ -5,12 +5,12 @@ struct Rectangle(){
 }
 
 impl Rectangle(){
-    func calcField(){
-        self.field = 1
+    func calcField(count){
         logln("Licze pole")
+        self.field = self.a*self.b*count
     }
 }
 
 let rect = alloc Rectangle
-rect.calcField()
+rect.calcField(2)
 logln(rect.field)

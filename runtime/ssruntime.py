@@ -375,14 +375,22 @@ class SSRuntime:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' has not any implementation")
 
         #get method from implementation
-        method = [x for x in impl.body if x.identifier == node.member][0]
+        methods = [x for x in impl.body if x.identifier == node.member]
+        if len(methods) == 0:
+            raise SSException(f"SSRuntime: Struct '{node.symbol}' has not {node.member} method")
+        method = methods[0]
 
         #here check params
+        if len(method.params) != len(node.params):
+            raise SSException(f"SSRuntime: Method '{node.symbol}' expect {len(method.params)} params, but {len(node.params)} was given")
 
         methodScope = SSRuntimeScope()
         methodScope.setParentScope(scope)
         #here eval params
         methodScope.declareValueSymbol("self", selfObj) #here insert self hidden param
+        for i in range(0, len(node.params)):
+            exp = self.execute(node.params[i], scope) #eval param with global scope
+            methodScope.declareValueSymbol(method.params[i].identifier, exp)
 
         #execute body
         ret = NullRuntimeValue()

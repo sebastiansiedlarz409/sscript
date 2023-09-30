@@ -980,24 +980,50 @@ class SSParser:
             self.expect(SSTokens.DotToken)
             member = self.expect(SSTokens.IdentifierToken)
             self.expect(SSTokens.LParenToken)
-            self.expect(SSTokens.RParenToken)
 
             v = ImplMemberCall()
             v.setSymbol(identifier.value)
             v.setMember(member.value)
 
+            if self.test(SSTokens.RParenToken):
+                return v
+        
+            params = []
+            child = self.parseExpression()
+            while child != None:
+                params.append(child)
+                if self.test(SSTokens.RParenToken):
+                    break
+                elif self.expect(SSTokens.CommaToken):
+                    pass
+                child = self.parseExpression()
+            v.setParams(params)
+            
             return v
         
         if self.peak().type == SSTokens.SelfKwToken and self.peak(3).type == SSTokens.LParenToken:
             self.expect(SSTokens.DotToken)
             member = self.expect(SSTokens.IdentifierToken)
             self.expect(SSTokens.LParenToken)
-            self.expect(SSTokens.RParenToken)
-
+            
             v = ImplMemberCall()
             v.setSymbol("self")
             v.setMember(member.value)
 
+            if self.test(SSTokens.RParenToken):
+                return v
+        
+            params = []
+            child = self.parseExpression()
+            while child != None:
+                params.append(child)
+                if self.test(SSTokens.RParenToken):
+                    break
+                elif self.expect(SSTokens.CommaToken):
+                    pass
+                child = self.parseExpression()
+            v.setParams(params)
+            
             return v
             
     #special copy for impl methods
