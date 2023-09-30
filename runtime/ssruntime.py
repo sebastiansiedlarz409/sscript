@@ -127,15 +127,18 @@ class SSRuntime:
     def functionCallNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         function = scope.peakFunctionSymbol(node.identifier)
 
+        #check if params count is ok
         if len(function.params) != len(node.params):
             raise SSException(f"SSRuntime: Function '{node.identifier}' expect {len(function.params)} params, but {len(node.params)} was given")
 
         functionScope = SSRuntimeScope()
         functionScope.setParentScope(scope) #create scope for function
+        #eval params
         for i in range(0, len(node.params)):
             exp = self.execute(node.params[i], scope) #eval param with global scope
             functionScope.declareValueSymbol(function.params[i].identifier, exp)
 
+        #execute body
         ret = NullRuntimeValue()
         for child in function.child:
             try:
@@ -363,9 +366,33 @@ class SSRuntime:
         obj.overrideField(node.member, self.execute(node.child, scope))
 
     def implMemberCall(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        obj = scope.peakValueSymbol(node.symbol) #get object
+        selfObj = scope.peakValueSymbol(node.symbol) #get struct object
 
-        return None
+        #get impl from scope
+        struct = scope.checkIfTypeExists(selfObj.struct) #get struct by struct name
+        impl = struct.impl
+        if not impl:
+            raise SSException(f"SSRuntime: Struct '{node.symbol}' has not any implementation")
+
+        #get method from implementation
+        method = [x for x in impl.body if x.identifier == node.member][0]
+
+        #here check params
+
+        methodScope = SSRuntimeScope()
+        methodScope.setParentScope(scope)
+        #here eval params
+        methodScope.declareValueSymbol("self", selfObj) #here insert self hidden param
+
+        #execute body
+        ret = NullRuntimeValue()
+        for child in method.child:
+            try:
+                self.execute(child, methodScope)
+            except SSRuntimeReturn as r:
+                if r.value:
+                    ret = r.value
+        return ret
 
     #state machine for each type of node
     def execute(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
