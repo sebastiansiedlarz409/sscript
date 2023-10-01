@@ -789,6 +789,20 @@ def t57():
     except SSException as x:
         print("T57 NOT OK")
 
+def t58():
+    s = ""
+    with open("tests\\t58.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "24 6":
+            print("T58 OK")
+        else:
+            print("T58 NOT OK")
+    except SSException as x:
+        print("T58 NOT OK")
+
 print()
 print("TEST TEST TEST")
 

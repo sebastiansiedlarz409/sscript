@@ -338,12 +338,15 @@ class SSRuntime:
         if struct.parent:
             symbol.setParent(struct.parent)
 
-        if struct.parent:
-            parent = scope.peakTypeSymbol(struct.parent)
+        #get and alloc all fields (multilevel inheritance)
+        tempParent = struct.parent
+        while tempParent:
+            parent = scope.peakTypeSymbol(tempParent)
             if parent:
                 for child in parent.body:
                     if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
                         symbol.allocField(child.identifier, child.const, self.execute(child, scope))
+            tempParent = parent.parent
 
         for child in struct.body:
             if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
