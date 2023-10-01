@@ -24,16 +24,7 @@ impl Rectangle(Figure){
     }
 }
 
-struct Box(Rectangle){
-    let height = 4
-}
+let rect = alloc Rectangle
+rect.calcField(1)
 
-impl Box(Rectangle){
-    func calcCapacity(){
-        self.calcField(1)
-        return self.height * self.getField()
-    }
-}
-
-let b = alloc Box
-return b.calcCapacity() + " " + b.getField()
+return rect.toString()

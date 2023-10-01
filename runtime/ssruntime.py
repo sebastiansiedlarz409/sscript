@@ -335,6 +335,8 @@ class SSRuntime:
 
         symbol = StructRuntimeValue()
         symbol.setStruct(struct.name) #set type/struct name
+        if struct.parent:
+            symbol.setParent(struct.parent)
 
         if struct.parent:
             parent = scope.peakTypeSymbol(struct.parent)
@@ -368,17 +370,33 @@ class SSRuntime:
     def implMemberCall(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         selfObj = scope.peakValueSymbol(node.symbol) #get struct object
 
-        #get impl from scope
+        #list of methods in type (include multilevel inheritance)
+        objMethods = {}
+
+        #get all method from called type
         struct = scope.checkIfTypeExists(selfObj.struct) #get struct by struct name
         impl = struct.impl
-        if not impl:
+        if impl:
+            for method in impl.body:
+                objMethods[method.identifier] = method
+        parent = selfObj.parent
+        while parent:
+            struct = scope.checkIfTypeExists(parent) #get struct by struct name
+            impl = struct.impl
+            if impl:
+                for method in impl.body:
+                    if not method.identifier in objMethods.keys(): #add if note exist (child impl override base impl)
+                        objMethods[method.identifier] = method
+            parent = struct.parent
+
+        #if there is 0 methods
+        if len(objMethods) == 0:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' type of {selfObj.struct} has not any implementation")
 
-        #get method from implementation
-        methods = [x for x in impl.body if x.identifier == node.member]
-        if len(methods) == 0:
+        #get method from above dict
+        if not node.member in objMethods.keys():
             raise SSException(f"SSRuntime: Struct '{node.symbol}' type of {selfObj.struct} has not '{node.member}' method")
-        method = methods[0]
+        method = objMethods[node.member]
 
         #here check params
         if len(method.params) != len(node.params):
