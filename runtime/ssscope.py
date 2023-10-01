@@ -3,6 +3,7 @@
 
 from runtime.values import *
 from misc.exceptions import *
+from parser.nodes.oop import StructNode
 
 class RuntimeIdentifier:
     def __init__(self):
@@ -114,8 +115,15 @@ class SSRuntimeScope:
             while scope.parent:
                 scope = scope.parent
 
+            #empty struct
+            s = StructNode()
+            s.setName(symbol)
+
             t = TypeRuntimeIdentifier()
             t.setIdentifier(symbol)
+            t.setStruct(s)
+            if value.parent:
+                t.setParent(value.parent)
 
             scope.types.append(t)
         

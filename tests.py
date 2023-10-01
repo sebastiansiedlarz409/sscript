@@ -803,6 +803,48 @@ def t58():
     except SSException as x:
         print("T58 NOT OK")
 
+def t59():
+    s = ""
+    with open("tests\\t59.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "6":
+            print("T59 OK")
+        else:
+            print("T59 NOT OK")
+    except SSException as x:
+        print("T59 NOT OK")
+
+def t60():
+    s = ""
+    with open("tests\\t60.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "24":
+            print("T60 OK")
+        else:
+            print("T60 NOT OK")
+    except SSException as x:
+        print("T60 NOT OK")
+
+def t61():
+    s = ""
+    with open("tests\\t61.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "Im child":
+            print("T61 OK")
+        else:
+            print("T61 NOT OK")
+    except SSException as x:
+        print("T61 NOT OK")
+
 print()
 print("TEST TEST TEST")
 

@@ -4,7 +4,7 @@ impl Base(){
     }
 }
 
-impl Child(Base){
+impl Child(){
     func toString(){
         return "Im child"
     }
