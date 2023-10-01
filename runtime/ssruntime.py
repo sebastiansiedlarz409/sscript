@@ -372,17 +372,17 @@ class SSRuntime:
         struct = scope.checkIfTypeExists(selfObj.struct) #get struct by struct name
         impl = struct.impl
         if not impl:
-            raise SSException(f"SSRuntime: Struct '{node.symbol}' has not any implementation")
+            raise SSException(f"SSRuntime: Struct '{node.symbol}' type of {selfObj.struct} has not any implementation")
 
         #get method from implementation
         methods = [x for x in impl.body if x.identifier == node.member]
         if len(methods) == 0:
-            raise SSException(f"SSRuntime: Struct '{node.symbol}' has not {node.member} method")
+            raise SSException(f"SSRuntime: Struct '{node.symbol}' type of {selfObj.struct} has not '{node.member}' method")
         method = methods[0]
 
         #here check params
         if len(method.params) != len(node.params):
-            raise SSException(f"SSRuntime: Method '{node.symbol}' expect {len(method.params)} params, but {len(node.params)} was given")
+            raise SSException(f"SSRuntime: Method '{node.member}' from {selfObj.struct} impl expect {len(method.params)} params, but {len(node.params)} was given")
 
         methodScope = SSRuntimeScope()
         methodScope.setParentScope(scope)

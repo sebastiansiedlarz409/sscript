@@ -2,12 +2,6 @@ struct Figure(){
     let field = 0
 }
 
-impl Figure(){
-    func getField(){
-        return self.field
-    }
-}
-
 struct Rectangle(Figure){
     let a = 2
     let b = 3
@@ -20,11 +14,10 @@ impl Rectangle(Figure){
     }
 
     func toString(){
-        return "Field is equal to: " + self.getField()
+        return "Field is equal to: " + self.calcField(3,4)
     }
 }
 
 let rect = alloc Rectangle
-rect.getField(1)
 
 return rect.toString()
