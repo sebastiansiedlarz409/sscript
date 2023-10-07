@@ -357,7 +357,11 @@ class SSRuntime:
     def structMemberAccess(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
         obj = scope.peakValueSymbol(node.symbol) #get object
 
-        member = obj.peakField(node.member)
+        if type(node.member).__name__ == "StructMemberAccess": #when member is call to another object field (composite)
+            member = self.execute(node.member, scope)
+        else: #when call to own field
+            member = obj.peakField(node.member)
+             
         if not member:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' has not '{node.member}' field")
         return member

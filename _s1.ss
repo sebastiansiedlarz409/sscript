@@ -1,14 +1,10 @@
-impl Base(){
-    func toString(){
-        return "Im base"
-    }
+struct A(){
+    let fieldA = 10
 }
 
-impl Child(Base){
-    func toString(){
-        return "Im child"
-    }
+struct B(){
+    let a = alloc A
 }
 
-let obj = alloc Child
-return obj.toString()
+let b = alloc B
+return b.a.fieldA

@@ -945,21 +945,31 @@ class SSParser:
         if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
             identifier = self.expect(SSTokens.IdentifierToken)
             self.expect(SSTokens.DotToken)
-            member = self.expect(SSTokens.IdentifierToken)
 
             v = StructMemberAccess()
             v.setSymbol(identifier.value)
-            v.setMember(member.value)
+
+            member = self.parseStructMemberAccess()
+            if member:
+                v.setMember(member)
+            else:
+                member = self.expect(SSTokens.IdentifierToken)
+                v.setMember(member.value)
 
             return v
         
         if self.test(SSTokens.SelfKwToken):
             self.expect(SSTokens.DotToken)
-            member = self.expect(SSTokens.IdentifierToken)
 
             v = StructMemberAccess()
             v.setSymbol("self")
-            v.setMember(member.value)
+
+            member = self.parseStructMemberAccess()
+            if member:
+                v.setMember(member)
+            else:
+                member = self.expect(SSTokens.IdentifierToken)
+                v.setMember(member.value)
 
             return v
         
