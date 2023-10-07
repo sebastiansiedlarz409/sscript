@@ -977,15 +977,23 @@ class SSParser:
         if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
             identifier = self.expect(SSTokens.IdentifierToken)
             self.expect(SSTokens.DotToken)
-            member = self.expect(SSTokens.IdentifierToken)
+            
+            v = StructMemberWrite()
+            v.setSymbol(identifier.value)
+
+            member = self.parseStructMemberWrite()
+            if member:
+                v.setMember(member)
+                return v
+            else:
+                member = self.expect(SSTokens.IdentifierToken)
+                v.setMember(member.value)
+
             self.expect(SSTokens.AssignOperatorToken)
 
             expression = self.parseExpression()
 
             if expression:
-                v = StructMemberWrite()
-                v.setSymbol(identifier.value)
-                v.setMember(member.value)
                 v.setChild(expression)
                 return v
             

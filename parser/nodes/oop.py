@@ -144,7 +144,10 @@ class StructMemberWrite(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.symbol}.{self.member} = {self.child}"
+        if self.child:
+            ret = f"{self.symbol}.{self.member} = {self.child}"
+        else:
+            ret = f"{self.symbol}.{self.member}"
         return ret
     
 class ImplMemberCall(Node):

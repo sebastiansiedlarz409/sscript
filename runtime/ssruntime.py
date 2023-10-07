@@ -370,8 +370,16 @@ class SSRuntime:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' has not '{node.member}' field")
         return member
     
-    def structMemberWrite(self, node: Node, scope: SSRuntimeScope):
-        obj = scope.peakValueSymbol(node.symbol) #get obj
+    def structMemberWrite(self, node: Node, scope: SSRuntimeScope, parent = None):
+        if type(node.member).__name__ == "StructMemberWrite": #when member is call to another object field (composite)
+            obj = scope.peakValueSymbol(node.symbol) #get obj
+            self.structMemberWrite(node.member, scope, obj)
+            return
+        else:
+            if parent: #composition
+                obj = parent.peakField(node.symbol)
+            else:
+                obj = scope.peakValueSymbol(node.symbol) #get obj
 
         if obj.isConst(node.member):
             raise SSException(f"SSRuntime: Field '{node.member}' is constant")

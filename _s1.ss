@@ -7,4 +7,7 @@ struct B(){
 }
 
 let b = alloc B
+
+b.a.fieldA = 11
+
 return b.a.fieldA
