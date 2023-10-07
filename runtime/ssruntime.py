@@ -344,7 +344,7 @@ class SSRuntime:
             parent = scope.peakTypeSymbol(tempParent)
             if parent:
                 for child in parent.body:
-                    if type(child).__name__ == "DeclareFieldAssignNode": #in case i add something other in future
+                    if type(child).__name__ == "DeclareFieldAssignNode": #check in case i add something other in future
                         symbol.allocField(child.identifier, child.const, self.execute(child, scope))
             tempParent = parent.parent
 
@@ -354,14 +354,18 @@ class SSRuntime:
 
         return symbol
     
-    def structMemberAccess(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        obj = scope.peakValueSymbol(node.symbol) #get object
-
+    def structMemberAccess(self, node: Node, scope: SSRuntimeScope, parent = None) -> RuntimeValue:
         if type(node.member).__name__ == "StructMemberAccess": #when member is call to another object field (composite)
-            member = self.execute(node.member, scope)
+            obj = scope.peakValueSymbol(node.symbol) #get object
+            member = self.structMemberAccess(node.member, scope, obj)
         else: #when call to own field
-            member = obj.peakField(node.member)
-             
+            if parent: #if composition dont scan global scope for object but parent object
+                childObj = parent.peakField(node.symbol)
+                member = childObj.peakField(node.member)
+            else:
+                obj = scope.peakValueSymbol(node.symbol) #get object
+                member = obj.peakField(node.member)
+
         if not member:
             raise SSException(f"SSRuntime: Struct '{node.symbol}' has not '{node.member}' field")
         return member
