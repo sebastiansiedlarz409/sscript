@@ -301,8 +301,10 @@ class SSRuntime:
         a.setValue(array)
         return a
     
-    def arrayElementOverrideNode(self, node: Node, scope: SSRuntimeScope):
-        array = scope.peakValueSymbol(node.identifier)
+    def arrayElementOverrideNode(self, node: Node, scope: SSRuntimeScope, array: RuntimeValue = None):
+        if not array:
+            array = scope.peakValueSymbol(node.identifier)
+
         value = self.execute(node.child, scope)
         index = self.execute(node.index, scope)
 
@@ -311,8 +313,9 @@ class SSRuntime:
 
         array.value[index.value] = value
     
-    def arrayReferenceNode(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        array = scope.peakValueSymbol(node.identifier)
+    def arrayReferenceNode(self, node: Node, scope: SSRuntimeScope, array: RuntimeValue = None) -> RuntimeValue:
+        if not array:
+            array = scope.peakValueSymbol(node.identifier)
         
         try:
             value =  array.value[self.execute(node.index, scope).value]
@@ -354,10 +357,14 @@ class SSRuntime:
 
         return symbol
     
-    def structMemberAccess(self, node: Node, scope: SSRuntimeScope, parent = None) -> RuntimeValue:
+    def structMemberAccess(self, node: Node, scope: SSRuntimeScope, parent: RuntimeValue = None) -> RuntimeValue:
         if type(node.member).__name__ == "StructMemberAccess": #when member is call to another object field (composite)
             obj = scope.peakValueSymbol(node.symbol) #get object
             member = self.structMemberAccess(node.member, scope, obj)
+        elif type(node.member).__name__ == "ArrayReferenceNode":
+            obj = scope.peakValueSymbol(node.symbol) #get object
+            member = obj.peakField(node.member.identifier)
+            return self.arrayReferenceNode(node.member, scope, member)
         else: #when call to own field
             if parent: #if composition dont scan global scope for object but parent object
                 childObj = parent.peakField(node.symbol)
@@ -375,6 +382,11 @@ class SSRuntime:
             obj = scope.peakValueSymbol(node.symbol) #get obj
             self.structMemberWrite(node.member, scope, obj)
             return
+        elif type(node.member).__name__ == "ArrayElementOverrideNode":
+            obj = scope.peakValueSymbol(node.symbol) #get object
+            member = obj.peakField(node.member.identifier)
+            self.arrayElementOverrideNode(node.member, scope, member)
+            return 
         else:
             if parent: #composition
                 obj = parent.peakField(node.symbol)

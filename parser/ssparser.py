@@ -952,9 +952,15 @@ class SSParser:
             member = self.parseStructMemberAccess()
             if member:
                 v.setMember(member)
-            else:
-                member = self.expect(SSTokens.IdentifierToken)
-                v.setMember(member.value)
+                return v
+            
+            member = self.parseArrayReference()
+            if member:
+                v.setMember(member)
+                return v
+
+            member = self.expect(SSTokens.IdentifierToken)
+            v.setMember(member.value)
 
             return v
         
@@ -967,9 +973,15 @@ class SSParser:
             member = self.parseStructMemberAccess()
             if member:
                 v.setMember(member)
-            else:
-                member = self.expect(SSTokens.IdentifierToken)
-                v.setMember(member.value)
+                return v
+            
+            member = self.parseArrayReference()
+            if member:
+                v.setMember(member)
+                return v
+
+            member = self.expect(SSTokens.IdentifierToken)
+            v.setMember(member.value)
 
             return v
         
@@ -985,9 +997,14 @@ class SSParser:
             if member:
                 v.setMember(member)
                 return v
-            else:
-                member = self.expect(SSTokens.IdentifierToken)
-                v.setMember(member.value)
+            
+            member = self.parseArrayElementOverride()
+            if member:
+                v.setMember(member)
+                return v
+
+            member = self.expect(SSTokens.IdentifierToken)
+            v.setMember(member.value)
 
             self.expect(SSTokens.AssignOperatorToken)
 

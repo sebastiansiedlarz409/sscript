@@ -3,5 +3,4 @@ struct B(){
 }
 
 let b = alloc B
-b.a[0] = 2
 return b.a[0]
