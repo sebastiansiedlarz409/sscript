@@ -14,11 +14,7 @@ impl C(){
     func getElement(index){
         return self.b.a.numbers[index]
     }
-    func setElement(index, value){
-        self.b.a.numbers[index] = value
-    }
 }
 
 let c = alloc C
-c.setElement(1,4)
 return c.getElement(1)

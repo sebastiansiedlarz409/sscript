@@ -1075,13 +1075,19 @@ class SSParser:
         
         self.expect(SSTokens.DotToken)
 
+        v = StructMemberWrite()
+        v.setSymbol("self")
+
+        member = self.parseStructMemberWrite()
+        if member:
+            v.setMember(member)
+            return v   
+
         identifier = self.expect(SSTokens.IdentifierToken)
         
         self.expect(SSTokens.AssignOperatorToken)
         expression = self.parseExpression()
         if expression:
-            v = StructMemberWrite()
-            v.setSymbol("self")
             v.setMember(identifier.value)
             v.setChild(expression)
 
