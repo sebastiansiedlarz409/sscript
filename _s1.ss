@@ -1,7 +1,11 @@
+struct A(){
+    let numbers = [1,2,3]
+}
+
 struct B(){
-    let a = [1,2,3]
+    let a = alloc A
 }
 
 let b = alloc B
-b.a[0] = 2
-return b.a[0]
+b.a.numbers[0] = 3
+return b.a.numbers[0]

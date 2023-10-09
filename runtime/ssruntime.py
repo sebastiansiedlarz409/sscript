@@ -358,19 +358,20 @@ class SSRuntime:
         return symbol
     
     def structMemberAccess(self, node: Node, scope: SSRuntimeScope, parent: RuntimeValue = None) -> RuntimeValue:
-        if type(node.member).__name__ == "StructMemberAccess": #when member is call to another object field (composite)
+        if parent:
+            obj = parent.peakField(node.symbol)
+        else:
             obj = scope.peakValueSymbol(node.symbol) #get object
+            
+        if type(node.member).__name__ == "StructMemberAccess": #when member is call to another object field (composite)
             member = self.structMemberAccess(node.member, scope, obj)
         elif type(node.member).__name__ == "ArrayReferenceNode":
-            obj = scope.peakValueSymbol(node.symbol) #get object
             member = obj.peakField(node.member.identifier)
             return self.arrayReferenceNode(node.member, scope, member)
         else: #when call to own field
             if parent: #if composition dont scan global scope for object but parent object
-                childObj = parent.peakField(node.symbol)
-                member = childObj.peakField(node.member)
+                member = obj.peakField(node.member)
             else:
-                obj = scope.peakValueSymbol(node.symbol) #get object
                 member = obj.peakField(node.member)
 
         if not member:
@@ -378,21 +379,19 @@ class SSRuntime:
         return member
     
     def structMemberWrite(self, node: Node, scope: SSRuntimeScope, parent = None):
-        if type(node.member).__name__ == "StructMemberWrite": #when member is call to another object field (composite)
+        if parent: #composition
+            obj = parent.peakField(node.symbol)
+        else:
             obj = scope.peakValueSymbol(node.symbol) #get obj
+
+        if type(node.member).__name__ == "StructMemberWrite": #when member is call to another object field (composite)
             self.structMemberWrite(node.member, scope, obj)
             return
         elif type(node.member).__name__ == "ArrayElementOverrideNode":
-            obj = scope.peakValueSymbol(node.symbol) #get object
             member = obj.peakField(node.member.identifier)
             self.arrayElementOverrideNode(node.member, scope, member)
             return 
-        else:
-            if parent: #composition
-                obj = parent.peakField(node.symbol)
-            else:
-                obj = scope.peakValueSymbol(node.symbol) #get obj
-
+        
         if obj.isConst(node.member):
             raise SSException(f"SSRuntime: Field '{node.member}' is constant")
         
