@@ -365,6 +365,8 @@ class SSRuntime:
             
         if type(node.member).__name__ == "StructMemberAccess": #when member is call to another object field (composite)
             member = self.structMemberAccess(node.member, scope, obj)
+        elif type(node.member).__name__ == "ImplMemberCall":
+            member = self.implMemberCall(node, scope, obj)
         elif type(node.member).__name__ == "ArrayReferenceNode":
             member = obj.peakField(node.member.identifier)
             return self.arrayReferenceNode(node.member, scope, member)
@@ -397,8 +399,20 @@ class SSRuntime:
         
         obj.overrideField(node.member, self.execute(node.child, scope))
 
-    def implMemberCall(self, node: Node, scope: SSRuntimeScope) -> RuntimeValue:
-        selfObj = scope.peakValueSymbol(node.symbol) #get struct object
+    def implMemberCall(self, node: Node, scope: SSRuntimeScope, parent: RuntimeValue = None) -> RuntimeValue:
+        symbol = None #for errors
+        methodToCall = None
+        methodToCallParams = []
+        if parent:
+            selfObj = parent.peakField(node.member.symbol)
+            symbol = node.member.symbol
+            methodToCall = node.member.member
+            methodToCallParams = node.member.params
+        else:
+            selfObj = scope.peakValueSymbol(node.symbol) #get struct object
+            symbol = node.symbol
+            methodToCall = node.member
+            methodToCallParams = node.params
 
         #list of methods in type (include multilevel inheritance)
         objMethods = {}
@@ -421,23 +435,23 @@ class SSRuntime:
 
         #if there is 0 methods
         if len(objMethods) == 0:
-            raise SSException(f"SSRuntime: Struct '{node.symbol}' type of {selfObj.struct} has not any implementation")
+            raise SSException(f"SSRuntime: Struct '{symbol}' type of {selfObj.struct} has not any implementation")
 
         #get method from above dict
-        if not node.member in objMethods.keys():
-            raise SSException(f"SSRuntime: Struct '{node.symbol}' type of {selfObj.struct} has not '{node.member}' method")
-        method = objMethods[node.member]
+        if not methodToCall in objMethods.keys():
+            raise SSException(f"SSRuntime: Struct '{symbol}' type of {selfObj.struct} has not '{methodToCall}' method")
+        method = objMethods[methodToCall]
 
         #here check params
-        if len(method.params) != len(node.params):
-            raise SSException(f"SSRuntime: Method '{node.member}' from {selfObj.struct} impl expect {len(method.params)} params, but {len(node.params)} was given")
+        if len(method.params) != len(methodToCallParams):
+            raise SSException(f"SSRuntime: Method '{node.member}' from {selfObj.struct} impl expect {len(methodToCallParams)} params, but {len(node.params)} was given")
 
         methodScope = SSRuntimeScope()
         methodScope.setParentScope(scope)
         #here eval params
         methodScope.declareValueSymbol("self", selfObj) #here insert self hidden param
-        for i in range(0, len(node.params)):
-            exp = self.execute(node.params[i], scope) #eval param with global scope
+        for i in range(0, len(methodToCallParams)):
+            exp = self.execute(methodToCallParams[i], scope) #eval param with global scope
             methodScope.declareValueSymbol(method.params[i].identifier, exp)
 
         #execute body

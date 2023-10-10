@@ -971,6 +971,20 @@ def t70():
     except SSException as x:
         print("T70 NOT OK")
 
+def t71():
+    s = ""
+    with open("tests\\t71.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "1":
+            print("T71 OK")
+        else:
+            print("T71 NOT OK")
+    except SSException as x:
+        print("T71 NOT OK")
+
 print()
 print("TEST TEST TEST")
 

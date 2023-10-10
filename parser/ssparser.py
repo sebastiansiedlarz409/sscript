@@ -949,6 +949,11 @@ class SSParser:
             v = StructMemberAccess()
             v.setSymbol(identifier.value)
 
+            member = self.parseImplMemberCall()
+            if member:
+                v.setMember(member)
+                return v
+
             member = self.parseStructMemberAccess()
             if member:
                 v.setMember(member)
@@ -969,6 +974,11 @@ class SSParser:
 
             v = StructMemberAccess()
             v.setSymbol("self")
+
+            member = self.parseImplMemberCall()
+            if member:
+                v.setMember(member)
+                return v
 
             member = self.parseStructMemberAccess()
             if member:
