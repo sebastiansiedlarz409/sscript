@@ -1,86 +1,76 @@
 from enum import Enum
-from parser.nodes.nodes import *
 
-class ValueTypes(Enum):
-    Number = 0,
-    Null = 1,
-    Bool = 2,
-    String = 3,
-    Array = 4,
-    Struct = 5
+#parser nodes
+from parser.nodes.nodes import *
 
 #runtime values are used as result
 #when runtime evaluate each node
-#used only in runtime
+#value member contains python value
 class RuntimeValue:
-    def __init__(self):
-        self.type: ValueTypes = None
-        self.value = None
-
-    def setType(self, t: ValueTypes):
-        self.type = t
-
-    def setValue(self, value):
+    def __init__(self, value = None):
         self.value = value
 
     def __repr__(self):
-        ret = f"{self.value}"
+        ret = f"{self.value if self.value is not None else 'null'}"
         return ret
-
 
 class NullRuntimeValue(RuntimeValue):
     def __init__(self):
-        self.setType(ValueTypes.Null)
-        self.setValue("null")
+        super().__init__(None)
 
 class NumberRuntimeValue(RuntimeValue):
-    def __init__(self):
-        self.setType(ValueTypes.Number)
+    def __init__(self, value = None):
+        super().__init__(value)
 
 class StringRuntimeValue(RuntimeValue):
-    def __init__(self):
-        self.setType(ValueTypes.String)
+    def __init__(self, value = None):
+        super().__init__(value)
 
 class ArrayRuntimeValue(RuntimeValue):
-    def __init__(self):
-        self.setType(ValueTypes.Array)
+    def __init__(self, value = None):
+        super().__init__(value)
 
 class BoolRuntimeValue(RuntimeValue):
-    def __init__(self):
-        self.setType(ValueTypes.Bool)
+    def __init__(self, value = None):
+        super().__init__(value)
 
     def __repr__(self):
         ret = f"{str(self.value).lower()}"
         return ret
     
 class StructRuntimeValue(RuntimeValue):
-    def __init__(self):
-        self.struct: str = None #type of struct
-        self.parent: str = None
-        self.data: dict = {}
-        self.setType(ValueTypes.Struct)
+    def __init__(self, structName: str = None, parentName: str = None):
+        self.structName: str = structName
+        self.parent: str = parentName
+        self.data: dict = {} #{key: [value, isConst],...}
 
-    def setStruct(self, struct: str):
-        self.struct = struct
-
-    def setParent(self, parent: str):
-        self.parent = parent
-
-    def allocField(self, name: str, const: bool, value: RuntimeValue):
-        self.data[name] = [value, const]
+    def createField(self, name: str, isConst: bool, value: RuntimeValue):
+        if name in self.data.keys():
+            return None
+        
+        self.data[name] = [value, isConst]
 
     def overrideField(self, name: str, value: RuntimeValue):
+        if name in self.data.keys():
+            return None
+        
+        if self.isConst(name):
+            return None
+        
         self.data[name][0] = value
 
     def isConst(self, name: str):
+        if name not in self.data.keys():
+            return None
+        
         return self.data[name][1]
 
     def peakField(self, name: str):
-        try:
-            return self.data[name][0]
-        except KeyError:
+        if name not in self.data.keys():
             return None
+        
+        return self.data[name][0]
 
     def __repr__(self):
-        ret = f"{self.struct.upper()}:{self.data}"
+        ret = f"{self.structName.upper()}->{self.data}"
         return ret

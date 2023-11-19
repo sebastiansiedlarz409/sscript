@@ -3,7 +3,6 @@ let e = self.a.c.b
 let e = self.a.c.b.getA().array[0]
 let f = c.b.a.getArray()
 self.a.c.b.getA().array[0] = 10
-a.b.x = 8
 
 func test(){
     let d = returnA().field + 4

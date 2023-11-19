@@ -1,241 +1,227 @@
-#every scope has list of identifiers
-#identifier can be value type (variables, consts) or function type (functions)
-
+#runtime values for struct and variable allocation
 from runtime.values import *
+
+#exceptions
 from misc.exceptions import *
+
+#parser node
 from parser.nodes.oop import StructNode
 
-class RuntimeIdentifier:
-    def __init__(self):
-        self.identifier: str = None
+class ScopeVariable:
+    def __init__(self, name: str = None, value: RuntimeValue = None, isConst: bool = False):
+        self.name: str = name
+        self.isConst: bool = isConst
+        self.value: RuntimeValue = value
 
-    def setIdentifier(self, identifier: str):
-        self.identifier = identifier
-
-class ValueRuntimeIdentifier(RuntimeIdentifier):
-    def __init__(self):
-        self.value: RuntimeValue = None
-        self.const: bool = False
-
-    def setValue(self, value: RuntimeValue):
-        self.value = value
-
-    def isConst(self):
-        self.const = True
-
-    def __repr__(self) -> str:
-        ret = f"{self.identifier} = {self.value}"
-        return ret
+    def setConst(self):
+        self.isConst = True
     
-class FunctionRuntimeIdentifier(RuntimeIdentifier):
-    def __init__(self):
-        self.value: Node = None
-    
-    def setValue(self, value: Node):
-        self.value = value
+class ScopeFunction:
+    def __init__(self, name: str = None, params: list[Node] = [], body: list[Node] = []):
+        self.name: str = name
+        self.params: list[Node] = params
+        self.body: list[Node] = body
 
-    def __repr__(self) -> str:
-        ret = f"{self.identifier} = {self.value}"
-        return ret
-    
-class TypeRuntimeIdentifier(RuntimeIdentifier):
-    def __init__(self):
-        self.struct: Node = None
-        self.impl: Node = None
-        self.parent: str = None
-
-    def setParent(self, parent: str):
-        self.parent = parent
-    
-    def setStruct(self, struct: Node):
-        self.struct = struct
-
-    def setImpl(self, impl: Node):
-        self.impl = impl
-
-    def __repr__(self) -> str:
-        ret = f"{self.struct}\n{self.impl}"
-        return ret
+class ScopeType:
+    def __init__(self, name: str = None, parentName: str = None, fields: list[Node] = [], methods: list[Node] = []):
+        self.name: str = name
+        self.parent: str = parentName #its only for impl validation purpose
+        self.fields: list[Node] = fields
+        self.methods: list[Node] = fields
+        self.impl: bool = False
     
 #scope
 class SSRuntimeScope:
-    def __init__(self): 
-        #parent in type Runtimescope
-        self.parent = None
-        self.symbols: list[RuntimeIdentifier] = []
-        self.types: list[RuntimeIdentifier] = []
+    def __init__(self, parent = None):
+        self.parentScope = parent #parent scope
+        self.variables: list[ScopeVariable] = []
+        self.functions: list[ScopeFunction] = []
+        self.types: list[ScopeType] = []
 
-    def setParentScope(self, parent):
-        self.parent = parent
+    #VARIABLE SECTION
 
-    def checkIfTypeExists(self, symbol: str):
-        scope = self
-        #find root due to root type allocation
-        while scope.parent:
-            scope = scope.parent
+    #check if variable exists
+    #check self and higher level scopes if checkParent is true
+    #if exist returns it
+    #otherwise returns None
+    def checkIfVariableExist(self, name: str, checkParent: bool) -> ScopeVariable:
+        test = [x for x in self.variables if x.name == name]
 
-        test = [x for x in scope.types if x.identifier == symbol.upper()]
+        #there should be allways one var with given name but lets check it
         if len(test) == 1:
             return test[0]
+        elif len(test) > 1:
+            #this should never happend
+            raise SSException(f"SSRuntime: Identifier '{name}' found multiple times")
+        
+        #check parent scope
+        if checkParent:
+            if self.parentScope:
+                return self.parentScope.checkIfVariableExist(name, True)
+
+    #alway declare inside myself
+    def declareVariable(self, name: str, value: RuntimeValue):
+        #check if already symbol exists
+        if self.checkIfVariableExist(name, False) != None:
+            raise SSException(f"SSRuntime: Identifier '{name}' has already been declared")
+        
+        var = ScopeVariable(name, value)
+
+        self.variables.append(var)
+
+    #alway declare inside myself
+    def declareConstant(self, name: str, value: RuntimeValue):
+        #check if already symbol exists
+        if self.checkIfVariableExist(name, False) != None:
+            raise SSException(f"SSRuntime: Identifier '{name}' has already been declared")
+        
+        var = ScopeVariable(name, value)
+
+        self.variables.append(var)
+    
+    #override can reassign in myself or in my ancestor
+    def assignVariable(self, name: str, value: RuntimeValue):
+        #check if variable exist
+        var = self.checkIfVariableExist(name, True)
+        if var == None:
+            raise SSException(f"SSRuntime: Identifier '{name}' has not been declered yet")
+        
+        #throw if try to override constant
+        if var.isConst:
+            raise SSException(f"SSRuntime: Identifier '{name}' is constant")
+
+        #override 
+        var.value = value
+
+    #return symbol value
+    #it checks all scope above as well
+    def getVariableValue(self, name: str) -> ScopeVariable:
+        #check if already symbol exists
+        var = self.checkIfVariableExist(name, True)
+        if var == None:
+            raise SSException(f"SSRuntime: Identifier '{name}' has not been declered yet")
+        
+        return var
+    
+    #VARIABLE SECTION ENDS
+
+    #FUNCTION SECTION
+
+    #check if function exists
+    #check self and higher level scopes if checkParent is true
+    #if exist returns it
+    #otherwise returns None
+    def checkIfFunctionExists(self, name: str, checkParent: bool) -> ScopeFunction:
+        test = [x for x in self.functions if x.name == name]
+
+        #there should be always 1 but check
+        if len(test) == 1:
+            return test[0]
+        elif len(test) > 1:
+            raise SSException(f"SSRuntime: Function '{name}' found multiple times")
+        
+        if checkParent:
+            if self.parent != None:
+                return self.parent.checkIfFunctionExists(name, True)
+    
+    #alway declare inside myself
+    def declareFunction(self, name: str, params: list[Node], body: list[Node]):
+        #check if already symbol exists
+        if self.checkIfFunctionExists(name, False) != None:
+            raise SSException(f"SSRuntime: Function '{name}' has already been declared")
+        
+        func = ScopeFunction(name, params, body)
+
+        self.functions.append(func)
+
+    #return function value
+    def getFunction(self, name: str) -> ScopeFunction:
+        #check if already symbol exists
+        func = self.checkIfFunctionExists(name, True)
+        if func == None:
+            raise SSException(f"SSRuntime: Function '{name}' has not been declered yet")
+        
+        return func
+
+    #FUNCTION SECTION ENDS
+
+    #STRUCT AND IMPL SECTION
+
+    def getRootScope(self):
+        #find root scope
+        scope = self
+        while scope.parentScope:
+            scope = scope.parentScope
+
+        return scope
+
+    def checkIfTypeExists(self, name: str) -> ScopeType:
+        root = self.getRootScope()        
+        test = [x for x in root.types if x.name == name.upper()]
+
+        #there always should be 1 by check
+        if len(test) == 1:
+            return test[0]
+        elif len(test) > 1:
+            raise SSException(f"SSRuntime: Type '{name}' found multiple times")
         
     #alawys declare in the root scope
-    def declareType(self, symbol: str, value: Node):
-        if self.checkIfTypeExists(symbol) != None:
-            raise SSException(f"SSRuntime: Type '{symbol}' has already been declared")
+    def declareStruct(self, name: str, parent: str = None, fields: list[Node] = []):
+        if self.checkIfTypeExists(name) != None:
+            raise SSException(f"SSRuntime: Type '{name}' has already been declared")
         
-        #find parent
-        parent = None
-        if value.parent:
-            parent = self.checkIfTypeExists(value.parent)
-            if not parent:
-                raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
-        
-        scope = self
-        #find root (always declare in root scope)
-        while scope.parent:
-            scope = scope.parent
-
-        t = TypeRuntimeIdentifier()
-        t.setIdentifier(symbol)
-        t.setStruct(value)
         if parent:
-            t.setParent(parent.struct.name)
+            if self.checkIfTypeExists(parent) == None:
+                raise SSException(f"SSRuntime: Parent type '{parent}' has not been declared yet")
+        
+        #get parent
+        if parent:
+            parent = self.peakTypeSymbol(parent)
+
+        #get root scope        
+        scope = self.getRootScope()
+
+        methods = []
+        if parent:
+            fields += parent.fields
+            methods += parent.methods
+        
+        t = ScopeType(name, parent, fields, methods)
 
         scope.types.append(t)
 
     #alawys declare in the root scope
-    def declareTypeImpl(self, symbol: str, value: Node):
-        struct = self.checkIfTypeExists(symbol)
-        if struct != None:
-            if struct.impl != None:
-                raise SSException(f"SSRuntime: Type '{symbol}' has already been implemented")
-        else: #declare empty type
-            scope = self
-            #find root (always declare in root scope)
-            while scope.parent:
-                scope = scope.parent
+    def declareStructImpl(self, name: str, parent: str = None, methods: list[Node] = []):
+        struct = self.checkIfTypeExists(name)
 
-            #empty struct
-            s = StructNode()
-            s.setName(symbol)
+        #if struct not exist declare
+        if struct == None:
+            self.declareStruct(name, parent, [])
+            struct = self.peakTypeSymbol(name)
 
-            t = TypeRuntimeIdentifier()
-            t.setIdentifier(symbol)
-            t.setStruct(s)
-            if value.parent:
-                t.setParent(value.parent)
-
-            scope.types.append(t)
+        #if already has implementation throw
+        if struct.impl:
+            raise SSException(f"SSRuntime: Type '{name}' has already been implemented")
         
-        struct = self.checkIfTypeExists(symbol)
-        struct.setImpl(value)
-        
-        #check if inherit
-        if value.parent:
-            parent = self.checkIfTypeExists(value.parent)
-            if not parent:
-                raise SSException(f"SSRuntime: Parent type '{value.parent}' has not been declared yet")
+        if parent:
+            if self.checkIfTypeExists(parent) == None:
+                raise SSException(f"SSRuntime: Parent type '{parent}' has not been declared yet")
+            else:
+                if parent != struct.parent:
+                    raise SSException(f"SSRuntime: Parent has to be the same for struct and implementation")
 
-            #check if inherit type is same as coresponding struct
-            if value.parent != struct.parent:
-                raise SSException(f"SSRuntime: Parent has to be the same for struct and implementation")
+        struct.impl = True #mark as struct with impl
+
+        if parent:
+            parent = self.peakTypeSymbol(parent)
+            struct.methods += parent.methods
+        struct.methods += methods #IMPORTANT OTDER IN CONTEXT OF OVERRIDE
     
     #return struct node from main scope
-    def peakTypeSymbol(self, symbol: str) -> Node:
-        struct = self.checkIfTypeExists(symbol)
-        if not struct:
-            raise SSException(f"SSRuntime: Struct '{symbol}' has not been declered yet")
-        return struct.struct
+    def peakTypeSymbol(self, name: str) -> ScopeType:
+        t = self.checkIfTypeExists(name)
+        if not t:
+            raise SSException(f"SSRuntime: Struct '{name}' has not been declered yet")
+        return t
 
-    #check if function exist in myself or in my ancestor
-    #if exist returns it
-    #otherwise returns None
-    def checkIfFunctionExists(self, symbol: str, par: bool) -> RuntimeIdentifier:
-        test = [x for x in self.symbols if x.identifier == symbol and isinstance(x, FunctionRuntimeIdentifier)]
-        if len(test) == 1:
-            return test[0]
-        
-        if par:
-            if self.parent != None:
-                return self.parent.checkIfFunctionExists(symbol, True)
-    
-    #alway declare inside myself
-    def declareFunction(self, symbol: str, value: Node):
-        #check if already symbol exists
-        if self.checkIfFunctionExists(symbol, False) != None:
-            raise SSException(f"SSRuntime: Function '{symbol}' has already been declared")
-        
-        s = FunctionRuntimeIdentifier()
-        s.setIdentifier(symbol)
-        s.setValue(value)
-
-        self.symbols.append(s)
-
-    #return function value
-    def peakFunctionSymbol(self, symbol: str) -> Node:
-        #check if already symbol exists
-        s = self.checkIfFunctionExists(symbol, True)
-        if s == None:
-            raise SSException(f"SSRuntime: Function '{symbol}' has not been declered yet")
-        
-        return s.value
-
-    #check if symbol exist in myself or in my ancestor
-    #if exist returns it
-    #otherwise returns None
-    def checkIfSymbolExists(self, symbol: str, par: bool) -> RuntimeIdentifier:
-        test = [x for x in self.symbols if x.identifier == symbol and isinstance(x, ValueRuntimeIdentifier)]
-        if len(test) == 1:
-            return test[0]
-        
-        if par:
-            if self.parent != None:
-                return self.parent.checkIfSymbolExists(symbol, True)
-
-    #alway declare inside myself
-    def declareValueSymbol(self, symbol: str, value: RuntimeValue):
-        #check if already symbol exists
-        if self.checkIfSymbolExists(symbol, False) != None:
-            raise SSException(f"SSRuntime: Identifier '{symbol}' has already been declared")
-        
-        s = ValueRuntimeIdentifier()
-        s.setIdentifier(symbol)
-        s.setValue(value)
-
-        self.symbols.append(s)
-
-    #alway declare inside myself
-    def declareValueConstSymbol(self, symbol: str, value: RuntimeValue):
-        #check if already symbol exists
-        if self.checkIfSymbolExists(symbol, False) != None:
-            raise SSException(f"SSRuntime: Identifier '{symbol}' has already been declared")
-        
-        s = ValueRuntimeIdentifier()
-        s.setIdentifier(symbol)
-        s.setValue(value)
-        s.isConst()
-
-        self.symbols.append(s)
-    
-    #override can reassign in myself or in my ancestor
-    def assignValueSymbol(self, symbol: str, value: RuntimeValue):
-        #check if already symbol exists
-        s = self.checkIfSymbolExists(symbol, True)
-        if s == None:
-            raise SSException(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
-        
-        #throw if try to override constant
-        if s.const:
-            raise SSException(f"SSRuntime: Identifier '{symbol}' is constant")
-
-        #override 
-        s.setValue(value)
-
-    #return symbol value
-    def peakValueSymbol(self, symbol: str) -> RuntimeValue:
-        #check if already symbol exists
-        s = self.checkIfSymbolExists(symbol, True)
-        if s == None:
-            raise SSException(f"SSRuntime: Identifier '{symbol}' has not been declered yet")
-        
-        return s.value
+    #STRUCT AND IMPL SECTION ENDS

@@ -59,12 +59,36 @@ class SSParser:
                 program.appendChild(node)
                 continue
 
+            #array item assing
+            node = self.parseArrayElementOverride()
+            if node != None:
+                program.appendChild(node)
+                continue
+            
+            #parse variable assign
+            node = self.parseVariableAssign()
+            if node != None:
+                program.appendChild(node)
+                continue
+
+            #struct member write
+            node = self.parseStructMemberWrite()
+            if node != None:
+                program.appendChild(node)
+                continue
+
+            #struct member call
+            node = self.parseStructMemberAccess()
+            if node != None:
+                program.appendChild(node)
+                continue
+
             #function calls
             node = self.parseFunctionCall()
             if node != None:
                 program.appendChild(node)
                 continue
-            
+
             #parse for loop
             node = self.parseForLoop()
             if node != None:
@@ -97,30 +121,6 @@ class SSParser:
             
             #pre or post fix
             node = self.parsePrefixExpression()
-            if node != None:
-                program.appendChild(node)
-                continue
-            
-            #array item assing
-            node = self.parseArrayElementOverride()
-            if node != None:
-                program.appendChild(node)
-                continue
-
-            #parse impl member call
-            node = self.parseImplMemberCall()
-            if node != None:
-                program.appendChild(node)
-                continue
-
-            #parse struct member assign
-            node = self.parseStructMemberWrite()
-            if node != None:
-                program.appendChild(node)
-                continue
-
-            #parse variable assign
-            node = self.parseVariableAssign()
             if node != None:
                 program.appendChild(node)
                 continue
@@ -173,39 +173,61 @@ class SSParser:
             return c
         
         params = []
-        child = self.parseExpression()
+        child = self.parseExpressionStatement()
         while child != None:
             params.append(child)
             if self.test(SSTokens.RParenToken):
                 break
             elif self.expect(SSTokens.CommaToken):
                 pass
-            child = self.parseExpression()
+            child = self.parseExpressionStatement()
         c.setParams(params)
         
         return c
     
     def parseArrayReference(self) -> Node:
+        #identifier[expression]
         if self.test(SSTokens.LSquareBracketToken, 1):
             identifier = self.expect(SSTokens.IdentifierToken)
-            index = self.parseExpression()
+            index = self.parseExpressionStatement()
             self.expect(SSTokens.RSquareBracketToken)
 
             a = ArrayReferenceNode()
-            a.setIdentifier(identifier.value)
+            i = IdentifierNode()
+            i.setIdentifier(identifier.value)
+            a.setArray(i)
             a.setIndex(index)
 
             return a
+        
+        #function()[expression]
+        node = self.parseFunctionCall()
+        if node:
+            if self.test(SSTokens.LSquareBracketToken):
+                index = self.parseExpressionStatement()
+                self.expect(SSTokens.RSquareBracketToken)
+
+                a = ArrayReferenceNode()
+                a.setArray(node)
+                a.setIndex(index)
+
+                return a
+            return node
                     
     def parseFactor(self) -> Node:
         #check for exp inside paren
         if self.test(SSTokens.LParenToken):
-            n = self.parseExpression()
+            n = self.parseExpressionStatement()
             self.expect(SSTokens.RParenToken)
             return n
         
         #array indexer
         node = self.parseArrayReference()
+        if node:
+            return node
+        
+        #struct member access
+        node = self.parseStructMemberAccess()
         if node:
             return node
         
@@ -227,24 +249,6 @@ class SSParser:
             n = NumberNode()
             n.setValue(number.value)
             return n
-
-        #struct.field
-        #struct.method()
-        methodCall = self.parseImplMemberCall()
-        if methodCall:
-            return methodCall
-        structMember = self.parseStructMemberAccess()
-        if structMember:
-            return structMember
-        
-        #method access to struct field
-        if self.oop:
-            node = self.parseImplMemberCall()
-            if node:
-                return node
-            node = self.parseStructMemberAccess()
-            if node:
-                return node
 
         #identifier
         identifier = self.test(SSTokens.IdentifierToken)
@@ -378,7 +382,7 @@ class SSParser:
             e.setChild(i)
             e.setOperator(operator.value)
             return e
-
+        
     def parseExpression(self) -> Node:
         node = self.parseUnaryExpression()
         if node:
@@ -389,6 +393,13 @@ class SSParser:
             return node
         
         return self.parseLogicalExpression()
+
+    def parseExpressionStatement(self) -> Node:
+        # node = self.parseStructMemberAccess()
+        # if node:
+        #     return node
+        
+        return self.parseExpression()
 
     def parseArray(self) -> Node:
         children = []
@@ -435,7 +446,7 @@ class SSParser:
             
             return v
 
-        expression = self.parseExpression()
+        expression = self.parseExpressionStatement()
         if expression:
             v = DeclareVariableAssignNode()
             v.setIdentifier(identifier.value)
@@ -458,12 +469,15 @@ class SSParser:
         return v
 
     def parseVariableAssign(self) -> Node:
+        if not (self.peak().type == SSTokens.IdentifierToken and self.peak(1).type == SSTokens.AssignOperatorToken):
+            return
+        
         identifier = self.test(SSTokens.IdentifierToken)
         if not identifier:
             return
         
         self.expect(SSTokens.AssignOperatorToken)
-        expression = self.parseExpression()
+        expression = self.parseExpressionStatement()
         if expression:
             v = VariableAssignNode()
             v.setIdentifier(identifier.value)
@@ -482,29 +496,48 @@ class SSParser:
         return v
     
     def parseArrayElementOverride(self) -> Node:
-        if not self.test(SSTokens.LSquareBracketToken, 1):
-            return
+        #identifier[expression] = expression
+        if self.test(SSTokens.LSquareBracketToken, 1):
+            identifier = self.expect(SSTokens.IdentifierToken)
+            index = self.parseExpressionStatement()
+            self.expect(SSTokens.RSquareBracketToken)
+
+            self.expect(SSTokens.AssignOperatorToken)
+            expression = self.parseExpressionStatement()
+
+            v = ArrayElementOverrideNode()
+            i = IdentifierNode()
+            i.setIdentifier(identifier.value)
+            v.setArray(i)
+            v.setIndex(index)
+            v.setChild(expression)
+
+            return v
         
-        identifier = self.expect(SSTokens.IdentifierToken)
-        index = self.parseExpression()
-        self.expect(SSTokens.RSquareBracketToken)
+        #function()[expression]
+        node = self.parseFunctionCall()
+        if node:
+            if self.test(SSTokens.LSquareBracketToken):
+                index = self.parseExpressionStatement()
+                self.expect(SSTokens.RSquareBracketToken)
 
-        self.expect(SSTokens.AssignOperatorToken)
-        expression = self.parseExpression()
+                self.expect(SSTokens.AssignOperatorToken)
+                expression = self.parseExpressionStatement()
 
-        v = ArrayElementOverrideNode()
-        v.setIdentifier(identifier.value)
-        v.setIndex(index)
-        v.setChild(expression)
+                a = ArrayElementOverrideNode()
+                a.setArray(node)
+                a.setIndex(index)
+                a.setChild(expression)
 
-        return v
+                return a
+            return node
 
     def parseLog(self) -> Node:
         if not self.test(SSTokens.LogKwToken):
             return
         
         self.expect(SSTokens.LParenToken)
-        expression = self.parseExpression()
+        expression = self.parseExpressionStatement()
         self.expect(SSTokens.RParenToken)
 
         log = LogNode()
@@ -517,7 +550,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        expression = self.parseExpression()
+        expression = self.parseExpressionStatement()
         self.expect(SSTokens.RParenToken)
 
         log = LoglnNode()
@@ -529,7 +562,7 @@ class SSParser:
         if not self.test(SSTokens.ReturnKwToken):
             return
         
-        expression = self.parseExpression()
+        expression = self.parseExpressionStatement()
 
         r = ReturnNode()
         if expression:
@@ -549,6 +582,12 @@ class SSParser:
                 childs.append(node)
                 continue
 
+            #parse variable assign
+            node = self.parseVariableAssign()
+            if node != None:
+                childs.append(node)
+                continue
+
             #array item assing
             node = self.parseArrayElementOverride()
             if node != None:
@@ -563,12 +602,6 @@ class SSParser:
 
             #parse struct member assign
             node = self.parseStructMemberWrite()
-            if node != None:
-                childs.append(node)
-                continue
-
-            #parse variable assign
-            node = self.parseVariableAssign()
             if node != None:
                 childs.append(node)
                 continue
@@ -694,7 +727,7 @@ class SSParser:
         self.expect(SSTokens.LParenToken)
         sexpression = self.parseForLoopStarter()
         self.expect(SSTokens.SemicolonToken)
-        lexpression = self.parseExpression()
+        lexpression = self.parseExpressionStatement()
         self.expect(SSTokens.SemicolonToken)
         mexpression = self.parseForLoopModifier()
         self.expect(SSTokens.RParenToken)
@@ -715,7 +748,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseExpression()
+        lexpression = self.parseExpressionStatement()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()
@@ -736,7 +769,7 @@ class SSParser:
         self.expect(SSTokens.RBracketToken)
         self.expect(SSTokens.WhileKwToken)
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseExpression()
+        lexpression = self.parseExpressionStatement()
         self.expect(SSTokens.RParenToken)
 
         do = DoWhileLoopNode()
@@ -750,7 +783,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseExpression()
+        lexpression = self.parseExpressionStatement()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()
@@ -773,7 +806,7 @@ class SSParser:
             return
         
         self.expect(SSTokens.LParenToken)
-        lexpression = self.parseExpression()
+        lexpression = self.parseExpressionStatement()
         self.expect(SSTokens.RParenToken)
         self.expect(SSTokens.LBracketToken)
         body = self.parseBody()
@@ -824,7 +857,7 @@ class SSParser:
             
             return field
 
-        expression = self.parseExpression()
+        expression = self.parseExpressionStatement()
 
         if expression:
             field = DeclareFieldAssignNode()
@@ -942,174 +975,117 @@ class SSParser:
         return impl
     
     def parseStructMemberAccess(self):
-        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
-            identifier = self.expect(SSTokens.IdentifierToken)
-            self.expect(SSTokens.DotToken)
+        obj = self.parseFunctionCall()
+        if not obj:
+            identifier = self.test(SSTokens.IdentifierToken)
+            if not identifier:
+                if self.test(SSTokens.SelfKwToken):
+                    obj = IdentifierNode()
+                    obj.setIdentifier("self")
+                else:
+                    return
+            else:
+                obj = IdentifierNode()
+                obj.setIdentifier(identifier.value)
 
-            v = StructMemberAccess()
-            v.setSymbol(identifier.value)
+        root = StructMemberAccess()
+        root.setParent(obj)
 
-            member = self.parseImplMemberCall()
-            if member:
-                v.setMember(member)
-                return v
-
-            member = self.parseStructMemberAccess()
-            if member:
-                v.setMember(member)
-                return v
-            
-            member = self.parseArrayReference()
-            if member:
-                v.setMember(member)
-                return v
-
-            member = self.expect(SSTokens.IdentifierToken)
-            v.setMember(member.value)
-
-            return v
+        if not self.test(SSTokens.DotToken):
+            return obj
         
-        if self.test(SSTokens.SelfKwToken):
-            self.expect(SSTokens.DotToken)
+        v = root
 
-            v = StructMemberAccess()
-            v.setSymbol("self")
+        #parent.(parent.(parent...))
+        while True:
+            t = StructMemberAccess()
 
-            member = self.parseImplMemberCall()
-            if member:
-                v.setMember(member)
-                return v
+            child = self.parseArrayReference()
+            if child:
+                t.setParent(child)
+                v.setChild(t)
+                v = t
+                if not self.test(SSTokens.DotToken):
+                    break
+                continue
 
-            member = self.parseStructMemberAccess()
-            if member:
-                v.setMember(member)
-                return v
+            child = self.parseImplMemberCall()
+            if child:
+                t.setParent(child)
+                v.setChild(t)
+                v = t
+                if not self.test(SSTokens.DotToken):
+                    break
+                continue
             
-            member = self.parseArrayReference()
-            if member:
-                v.setMember(member)
-                return v
+            child = self.parseStructMemberAccess()
+            if child:
+                t.setParent(child)
+                v.setChild(t)
+                v = t
+                if not self.test(SSTokens.DotToken):
+                    break
+                continue
 
-            member = self.expect(SSTokens.IdentifierToken)
-            v.setMember(member.value)
+            break
 
-            return v
+        return root
         
     def parseStructMemberWrite(self):
-        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken:
-            identifier = self.expect(SSTokens.IdentifierToken)
-            self.expect(SSTokens.DotToken)
+        node = self.parseStructMemberAccess()
+        if node:
+            if type(node) == IdentifierNode:
+                return node
             
-            v = StructMemberWrite()
-            v.setSymbol(identifier.value)
-
-            member = self.parseStructMemberWrite()
-            if member:
-                v.setMember(member)
-                return v
+            if not self.test(SSTokens.AssignOperatorToken):
+                return node
             
-            member = self.parseArrayElementOverride()
-            if member:
-                v.setMember(member)
-                return v
-
-            member = self.expect(SSTokens.IdentifierToken)
-            v.setMember(member.value)
-
-            self.expect(SSTokens.AssignOperatorToken)
-
-            expression = self.parseExpression()
-
+            expression = self.parseExpressionStatement()
             if expression:
+                v = StructMemberWrite()
                 v.setChild(expression)
-                return v
-            
+                #find last child
+                c = node
+                while c.child:
+                    c = c.child
+                c.setChild(v)
+                return node
+            else:
+                raise SSParserUnexpectedException(self.peak())
+
     def parseImplMemberCall(self):
-        if self.peak().type == SSTokens.IdentifierToken != None and self.peak(1).type == SSTokens.DotToken and self.peak(3).type == SSTokens.LParenToken:
+        if self.peak().type == SSTokens.IdentifierToken and self.peak(1).type == SSTokens.LParenToken:
+
             identifier = self.expect(SSTokens.IdentifierToken)
-            self.expect(SSTokens.DotToken)
-            member = self.expect(SSTokens.IdentifierToken)
             self.expect(SSTokens.LParenToken)
 
             v = ImplMemberCall()
             v.setSymbol(identifier.value)
-            v.setMember(member.value)
 
             if self.test(SSTokens.RParenToken):
-                return v
-        
-            params = []
-            child = self.parseExpression()
-            while child != None:
-                params.append(child)
-                if self.test(SSTokens.RParenToken):
-                    break
-                elif self.expect(SSTokens.CommaToken):
-                    pass
+                pass
+            else:        
+                params = []
                 child = self.parseExpression()
-            v.setParams(params)
-            
+                while child != None:
+                    params.append(child)
+                    if self.test(SSTokens.RParenToken):
+                        break
+                    elif self.expect(SSTokens.CommaToken):
+                        pass
+                    child = self.parseExpression()
+                v.setParams(params)
+
+            if self.test(SSTokens.DotToken):
+                member = self.parseImplMemberCall()
+                if member:
+                    v.setMember(member)
+                    return v
+                member = self.parseExpressionStatement()
+                if member:
+                    v.setMember(member)
+                    return v
             return v
-        
-        if self.peak().type == SSTokens.SelfKwToken and self.peak(3).type == SSTokens.LParenToken:
-            self.expect(SSTokens.SelfKwToken)
-            self.expect(SSTokens.DotToken)
-            member = self.expect(SSTokens.IdentifierToken)
-            self.expect(SSTokens.LParenToken)
-            
-            v = ImplMemberCall()
-            v.setSymbol("self")
-            v.setMember(member.value)
 
-            if self.test(SSTokens.RParenToken):
-                return v
-        
-            params = []
-            child = self.parseExpression()
-            while child != None:
-                params.append(child)
-                if self.test(SSTokens.RParenToken):
-                    break
-                elif self.expect(SSTokens.CommaToken):
-                    pass
-                child = self.parseExpression()
-            v.setParams(params)
-            
-            return v
-            
-    #special copy for impl methods
-    #duo to self kw syntax
-    def parseStructFieldAssign(self) -> Node:
-        if not self.test(SSTokens.SelfKwToken):
-            return
-        
-        self.expect(SSTokens.DotToken)
-
-        v = StructMemberWrite()
-        v.setSymbol("self")
-
-        member = self.parseStructMemberWrite()
-        if member:
-            v.setMember(member)
-            return v   
-
-        identifier = self.expect(SSTokens.IdentifierToken)
-        
-        self.expect(SSTokens.AssignOperatorToken)
-        expression = self.parseExpression()
-        if expression:
-            v.setMember(identifier.value)
-            v.setChild(expression)
-
-            return v
-        
-        self.expect(SSTokens.LSquareBracketToken)
-        child = self.parseArray()
-        self.expect(SSTokens.RSquareBracketToken)
-        
-        v = StructMemberWrite()
-        v.setSymbol("self")
-        v.setMember(identifier.value)
-        v.setChild(child)
-
-        return v
+    def parseStructFieldAssign(self):
+        pass

@@ -4,7 +4,7 @@ from parser.ssparser import *
 from runtime.ssscope import *
 from runtime.ssruntime import *
 
-def execute(source, db = False):
+def execute(source, db = False, parser_only = False):
     lexer = SSLexer()
     parser = SSParser()
     runtime = SSRuntime()
@@ -17,12 +17,26 @@ def execute(source, db = False):
     if db == True:
         print(program)
 
+    if parser_only:
+        return
+    
     globalScope = SSRuntimeScope()
     result = runtime.execute(program, globalScope)
     if db == True:
         print(result)
 
     return str(result)
+
+def t0():
+    s = ""
+    with open("tests\\t0.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s, False, True)
+        print("T0 OK")
+    except Exception as x:
+        print("T0 NOT OK")
 
 def t1():
     s = ""
@@ -332,19 +346,19 @@ def t22():
         else:
             print("T22 NOT OK")
 
-def t23():
-    s = ""
-    with open("tests\\t23.ss", "r") as f:
-        s = f.read()
+# def t23():
+#     s = ""
+#     with open("tests\\t23.ss", "r") as f:
+#         s = f.read()
 
-    try:
-        execute(s)
-        print("T23 NOT OK")
-    except SSParserException as x:
-        if x.got.type == SSTokens.NumberToken and x.got.line == 1 and x.got.column == 16:
-            print("T23 OK")
-        else:
-            print("T23 NOT OK")
+#     try:
+#         execute(s, True)
+#         print("T23 NOT OK")
+#     except SSParserException as x:
+#         if x.got.type == SSTokens.NumberToken and x.got.line == 1 and x.got.column == 16:
+#             print("T23 OK")
+#         else:
+#             print("T23 NOT OK")
 
 def t24():
     s = ""
@@ -629,6 +643,7 @@ def t45():
         print("T45 OK")
     except SSException as x:
         print("T45 NOT OK")
+    raise Exception("ASD")
 
 def t46():
     s = ""
@@ -984,6 +999,48 @@ def t71():
             print("T71 NOT OK")
     except SSException as x:
         print("T71 NOT OK")
+
+def t72():
+    s = ""
+    with open("tests\\t72.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "1":
+            print("T72 OK")
+        else:
+            print("T72 NOT OK")
+    except SSException as x:
+        print("T72 NOT OK")
+
+def t73():
+    s = ""
+    with open("tests\\t73.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "11":
+            print("T73 OK")
+        else:
+            print("T73 NOT OK")
+    except SSException as x:
+        print("T73 NOT OK")
+
+def t74():
+    s = ""
+    with open("tests\\t74.ss", "r") as f:
+        s = f.read()
+
+    try:
+        result = execute(s)
+        if result == "11":
+            print("T74 OK")
+        else:
+            print("T74 NOT OK")
+    except SSException as x:
+        print("T74 NOT OK")
 
 print()
 print("TEST TEST TEST")

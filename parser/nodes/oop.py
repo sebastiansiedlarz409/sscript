@@ -109,64 +109,53 @@ class StructAllocNode(Node):
     
 class StructMemberAccess(Node):
     def __init__(self):
-        self.symbol: str = None
-        self.member: str = None
+        self.parent: Node = None
         self.child: Node = None
 
-    def setSymbol(self, symbol: str):
-        self.symbol = symbol
-
-    def setMember(self, member: str):
-        self.member = member
-
-    def setChild(self, child: Node):
-        self.child = child
-
-    def __repr__(self) -> str:
-        ret = f"{self.symbol}.{self.member}"
-        if type(self.child).__name__ == "StructMemberAccess":
-            ret += f".{self.child}"
-        return ret
-    
-class StructMemberWrite(Node):
-    def __init__(self):
-        self.symbol: str = None
-        self.member: str = None
-        self.child: Node = None
-
-    def setSymbol(self, symbol: str):
-        self.symbol = symbol
-
-    def setMember(self, member: str):
-        self.member = member
+    def setParent(self, parent: Node):
+        self.parent = parent
 
     def setChild(self, child: Node):
         self.child = child
 
     def __repr__(self) -> str:
         if self.child:
-            ret = f"{self.symbol}.{self.member} = {self.child}"
+            if type(self) == type(self.child):
+                ret = f"{self.parent}.{self.child}"
+            else:
+                ret = f"{self.parent}{self.child}"
         else:
-            ret = f"{self.symbol}.{self.member}"
+            ret = f"{self.parent}"
+        return ret
+    
+class StructMemberWrite(Node):
+    def __init__(self):
+        self.child: Node = None
+
+    def setChild(self, child: Node):
+        self.child = child
+
+    def __repr__(self) -> str:
+        ret = f" <= {self.child}"
         return ret
     
 class ImplMemberCall(Node):
     def __init__(self):
         self.symbol: str = None
-        self.member: str = None
         self.params: list[Node] = []
+        self.member: Node = None
 
     def setSymbol(self, symbol: str):
         self.symbol = symbol
 
-    def setMember(self, member: str):
+    def setMember(self, member: Node):
         self.member = member
 
     def setParams(self, params: list[Node]):
         self.params = params
 
     def __repr__(self) -> str:
-        ret = f"{self.symbol}.{self.member}("
+        ret = f"{self.symbol}("
         if len(self.params) == 0:
             ret += ")"
         else:
@@ -175,4 +164,6 @@ class ImplMemberCall(Node):
                 ret += ","
             ret = ret[:-1]
             ret += ")"
+        if self.member:
+            ret += f".{self.member}"
         return ret

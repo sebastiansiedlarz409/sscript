@@ -1,11 +1,13 @@
+#exceptions
 from misc.exceptions import *
+
+#runtime values
 from runtime.values import *
+
+#scope stuff
 from runtime.ssscope import *
 
 class Expressions():
-    def __init__(self):
-        pass
-
     def evalBinaryExpressionArithmetic(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
         result = 0
 
@@ -31,18 +33,15 @@ class Expressions():
             elif operator == ">>":
                 result = int(lvalue.value) >> int(rvalue.value)
         except TypeError:
-            raise SSException(f"SSRuntime: Cant {operator} this type of values")
+            raise SSException(f"SSRuntime: Cannot evaluate operator '{operator}' on this types of values")
 
-        if lvalue.type == ValueTypes.Number:
-            ret = NumberRuntimeValue()
-            ret.setValue(result)
-            return ret
-        elif lvalue.type == ValueTypes.String:
-            ret = StringRuntimeValue()
-            ret.setValue(str(result))
-            return ret
+        #try to adapt result to lvalue type
+        if type(lvalue) == NumberRuntimeValue:
+            return NumberRuntimeValue(result)
+        elif type(lvalue) == StringRuntimeValue:
+            return StringRuntimeValue(result)
         else:
-            raise SSException(f"SSRuntime: Cant handle binary expression")
+            raise SSException(f"SSRuntime: Cannot adapt binary expression result to lvalue type of {type(lvalue)}")
             
 
     def evalBinaryExpressionLogical(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
@@ -54,13 +53,11 @@ class Expressions():
             elif operator == "and":
                 result = lvalue.value and rvalue.value
             else:
-                raise SSException(f"SSRuntime: Bool expression not support this operator {operator}")
+                raise SSException(f"SSRuntime: Bool expression not support this operator '{operator}'")
         except TypeError:
-            raise SSException(f"SSRuntime: Cant {operator} this type of values")
+            raise SSException(f"SSRuntime: Cannot evaluate operator '{operator}' on this types of values")
 
-        ret = BoolRuntimeValue()
-        ret.setValue(result)
-        return ret
+        return BoolRuntimeValue(result)
 
     def evalBinaryExpressionComparasion(self, lvalue: RuntimeValue, rvalue: RuntimeValue, operator: str) -> RuntimeValue:
         result = False
@@ -79,211 +76,175 @@ class Expressions():
             elif operator == "le":
                 result = lvalue.value <= rvalue.value
             else:
-                raise SSException(f"SSRuntime: Bool expression not support this operator {operator}")
+                raise SSException(f"SSRuntime: Bool expression not support this operator '{operator}'")
         except TypeError:
-            raise SSException(f"SSRuntime: Cant {operator} this type of values")
+            raise SSException(f"SSRuntime: Cannot evaluate operator '{operator}' on this types of values")
 
-        ret = BoolRuntimeValue()
-        ret.setValue(result)
-        return ret
+        return BoolRuntimeValue(result)
     
     def binaryExpressionNode(self, node: Node, left: RuntimeValue, right: RuntimeValue, scope: SSRuntimeScope) -> RuntimeValue:
         #not logical operator
         if node.operator in "+-*/%&|<<>>^":
             #NUMBER <> NUMBER
-            if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
+            if type(left) == NumberRuntimeValue and type(right) == NumberRuntimeValue:
                 return self.evalBinaryExpressionArithmetic(left, right, node.operator)
             
             #NUMBER <> BOOL
-            elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
-                r = NumberRuntimeValue()
-                r.setValue(1 if right.value else 0)
+            elif type(left) == NumberRuntimeValue and type(right) == BoolRuntimeValue:
+                r = NumberRuntimeValue(1 if right.value else 0)
                 return self.evalBinaryExpressionArithmetic(left, r, node.operator)
             
             #NUMBER <> STRING
-            elif left.type == ValueTypes.Number and right.type == ValueTypes.String:
-                l = StringRuntimeValue()
-                l.setValue(str(left.value))
+            elif type(left) == NumberRuntimeValue and type(right) == StringRuntimeValue:
+                l = StringRuntimeValue(str(left.value))
                 return self.evalBinaryExpressionArithmetic(l, right, node.operator)
             
             #BOOL <> NUMBER
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
-                l = NumberRuntimeValue()
-                l.setValue(1 if right.value else 0)
+            elif type(left) == BoolRuntimeValue and type(right) == NumberRuntimeValue:
+                l = NumberRuntimeValue(1 if left.value else 0)
                 return self.evalBinaryExpressionArithmetic(l, right, node.operator)
             
             #BOOL <> BOOL
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
-                l = NumberRuntimeValue()
-                l.setValue(1 if left.value else 0)
-                r = NumberRuntimeValue()
-                r.setValue(1 if left.value else 0)
+            elif type(left) == BoolRuntimeValue and type(right) == BoolRuntimeValue:
+                l = NumberRuntimeValue(1 if left.value else 0)
+                r = NumberRuntimeValue(1 if right.value else 0)
                 return self.evalBinaryExpressionArithmetic(l, r, node.operator)
             
             #BOOL <> STRING
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.String:
-                l = StringRuntimeValue()
-                l.setValue("true" if left.value else "false")
+            elif type(left) == BoolRuntimeValue and type(right) == StringRuntimeValue:
+                l = StringRuntimeValue("true" if left.value else "false")
                 return self.evalBinaryExpressionArithmetic(l, right, node.operator)
             
             #STRING <> NUMBER
-            elif left.type == ValueTypes.String and right.type == ValueTypes.Number:
-                r = StringRuntimeValue()
-                r.setValue(str(right.value))
+            elif type(left) == StringRuntimeValue and type(right) == NumberRuntimeValue:
+                r = StringRuntimeValue(str(right.value))
                 return self.evalBinaryExpressionArithmetic(left, r, node.operator)
             
             #STRING <> BOOL
-            elif left.type == ValueTypes.String and right.type == ValueTypes.Bool:
-                r = StringRuntimeValue()
-                r.setValue("true" if right.value else "false")
+            elif type(left) == StringRuntimeValue and type(right) == BoolRuntimeValue:
+                r = StringRuntimeValue("true" if right.value else "false")
                 return self.evalBinaryExpressionArithmetic(left, r, node.operator)
             
             #STRING <> STRING
-            elif left.type == ValueTypes.String and right.type == ValueTypes.String:
+            elif type(left) == StringRuntimeValue and type(right) == StringRuntimeValue:
                 return self.evalBinaryExpressionArithmetic(left, right, node.operator)
             
             else:
-                raise SSException(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+                raise SSException(f"SSRuntime: Cannot use operator '{node.operator}' with this types of values")
             
         #comparasion operators
         elif node.operator in ["eq", "neq", "gr", "ge", "ls", "le"]:
             #NUMBER <> NUMBER
-            if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
+            if type(left) == NumberRuntimeValue and type(right) == NumberRuntimeValue:
                 return self.evalBinaryExpressionComparasion(left, right, node.operator)
             
             #NUMBER <> BOOL
-            elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
-                r = NumberRuntimeValue()
-                r.setValue(1 if right.value else 0)
+            elif type(left) == NumberRuntimeValue and type(right) == BoolRuntimeValue:
+                r = NumberRuntimeValue(1 if right.value else 0)
                 return self.evalBinaryExpressionComparasion(left, r, node.operator)
             
             #NUMBER <> STRING
-            elif left.type == ValueTypes.Number and right.type == ValueTypes.String:
-                l = StringRuntimeValue()
-                l.setValue(str(left.value))
+            elif type(left) == NumberRuntimeValue and type(right) == StringRuntimeValue:
+                l = StringRuntimeValue(str(left.value))
                 return self.evalBinaryExpressionComparasion(l, right, node.operator)
             
             #BOOL <> NUMBER
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
-                l = NumberRuntimeValue()
-                l.setValue(1 if right.value else 0)
+            elif type(left) == BoolRuntimeValue and type(right) == NumberRuntimeValue:
+                l = NumberRuntimeValue(1 if left.value else 0)
                 return self.evalBinaryExpressionComparasion(l, right, node.operator)
             
             #BOOL <> BOOL
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
+            elif type(left) == BoolRuntimeValue and type(right) == BoolRuntimeValue:
                 return self.evalBinaryExpressionComparasion(left, right, node.operator)
             
             #BOOL <> STRING
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.String:
-                l = StringRuntimeValue()
-                l.setValue("true" if left.value else "false")
+            elif type(left) == BoolRuntimeValue and type(right) == StringRuntimeValue:
+                l = StringRuntimeValue("true" if left.value else "false")
                 return self.evalBinaryExpressionComparasion(l, right, node.operator)
             
             #STRING <> NUMBER
-            elif left.type == ValueTypes.String and right.type == ValueTypes.Number:
-                r = StringRuntimeValue()
-                r.setValue(str(right.value))
+            elif type(left) == StringRuntimeValue and type(right) == NumberRuntimeValue:
+                r = StringRuntimeValue(str(right.value))
                 return self.evalBinaryExpressionComparasion(left, r, node.operator)
             
             #STRING <> BOOL
-            elif left.type == ValueTypes.String and right.type == ValueTypes.Bool:
-                r = StringRuntimeValue()
-                r.setValue("true" if right.value else "false")
+            elif type(left) == StringRuntimeValue and type(right) == BoolRuntimeValue:
+                r = StringRuntimeValue("true" if right.value else "false")
                 return self.evalBinaryExpressionComparasion(left, r, node.operator)
             
             #STRING <> STRING
-            elif left.type == ValueTypes.String and right.type == ValueTypes.String:
+            elif type(left) == StringRuntimeValue and type(right) == StringRuntimeValue:
                 return self.evalBinaryExpressionComparasion(left, right, node.operator)
             
             else:
-                raise SSException(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+                raise SSException(f"SSRuntime: Cannot use operator '{node.operator}' with this types of values")
 
         #logical operator
         else:
             #NUMBER <> NUMBER
-            if left.type == ValueTypes.Number and right.type == ValueTypes.Number:
+            if type(left) == NumberRuntimeValue and type(right) == NumberRuntimeValue:
                 return self.evalBinaryExpressionLogical(left, right, node.operator)
             
             #NUMBER <> BOOL
-            elif left.type == ValueTypes.Number and right.type == ValueTypes.Bool:
-                r = NumberRuntimeValue()
-                r.setValue(False if left.value == 0 else True)
+            elif type(left) == NumberRuntimeValue and type(right) == BoolRuntimeValue:
+                r = NumberRuntimeValue(False if right.value == 0 else True)
                 return self.evalBinaryExpressionLogical(left, right, node.operator)
             
             #NUMBER <> STRING
-            elif left.type == ValueTypes.Number and right.type == ValueTypes.String:
-                l = StringRuntimeValue()
-                l.setValue(str(left.value))
+            elif type(left) == NumberRuntimeValue and type(right) == StringRuntimeValue:
+                l = StringRuntimeValue(str(left.value))
                 return self.evalBinaryExpressionLogical(l, right, node.operator)
             
             #BOOL <> NUMBER
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Number:
-                l = NumberRuntimeValue()
-                l.setValue(1 if right.value else 0)
+            elif type(left) == BoolRuntimeValue and type(right) == NumberRuntimeValue:
+                l = NumberRuntimeValue(1 if left.value else 0)
                 return self.evalBinaryExpressionLogical(l, right, node.operator)
             
             #BOOL <> BOOL
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.Bool:
+            elif type(left) == BoolRuntimeValue and type(right) == BoolRuntimeValue:
                 return self.evalBinaryExpressionLogical(left, right, node.operator)
             
             #BOOL <> STRING
-            elif left.type == ValueTypes.Bool and right.type == ValueTypes.String:
-                l = StringRuntimeValue()
-                l.setValue("true" if left.value else "false")
+            elif type(left) == BoolRuntimeValue and type(right) == StringRuntimeValue:
+                l = StringRuntimeValue("true" if left.value else "false")
                 return self.evalBinaryExpressionLogical(l, right, node.operator)
             
             #STRING <> NUMBER
-            elif left.type == ValueTypes.String and right.type == ValueTypes.Number:
-                r = StringRuntimeValue()
-                r.setValue(str(right.value))
+            elif type(left) == StringRuntimeValue and type(right) == NumberRuntimeValue:
+                r = StringRuntimeValue(str(right.value))
                 return self.evalBinaryExpressionLogical(left, r, node.operator)
             
             #STRING <> BOOL
-            elif left.type == ValueTypes.String and right.type == ValueTypes.Bool:
-                r = StringRuntimeValue()
-                r.setValue("true" if right.value else "false")
+            elif type(left) == StringRuntimeValue and type(right) == BoolRuntimeValue:
+                r = StringRuntimeValue("true" if right.value else "false")
                 return self.evalBinaryExpressionLogical(left, r, node.operator)
             
             #STRING <> STRING
-            elif left.type == ValueTypes.String and right.type == ValueTypes.String:
+            elif type(left) == StringRuntimeValue and type(right) == StringRuntimeValue:
                 return self.evalBinaryExpressionLogical(left, right, node.operator)
             
             else:
-                raise SSException(f"SSRuntime: Cant evaluate binary node when lvalue or rvalue is 'null'")
+                raise SSException(f"SSRuntime: Cannot evaluate binary node for lvalue type of '{type(left)}' and rvalue type of '{type(right)}'")
 
     def unaryExpressionNode(self, node: Node, child: RuntimeValue, scope: SSRuntimeScope) -> RuntimeValue:
         if node.operator == "not":
-            if child.type == ValueTypes.Number:
-                r = BoolRuntimeValue()
-                r.setValue(True if child.value == 0 else False)
-                return r
-            elif child.type == ValueTypes.Bool:
-                r = BoolRuntimeValue()
-                r.setValue(not child.value)
-                return r
-            elif child.type == ValueTypes.String:
-                r = BoolRuntimeValue()
-                r.setValue(False if len(child.value) > 0 else True)
-                return r
+            if type(child) == NumberRuntimeValue:
+                return BoolRuntimeValue(True if child.value == 0 else False)
+            elif type(child) == BoolRuntimeValue:
+                return BoolRuntimeValue(not child.value)
+            elif type(child) == StringRuntimeValue:
+                return BoolRuntimeValue(False if len(child.value) > 0 else True)
         elif node.operator == "+":
-            if child.type == ValueTypes.Number:
-                r = NumberRuntimeValue()
-                r.setValue(child.value)
-                return r
-            elif child.type == ValueTypes.Bool:
-                r = BoolRuntimeValue()
-                r.setValue(1 if child.value else 0)
-                return r
-            elif child.type == ValueTypes.String:
-                raise SSException(f"SSRuntime: Cant {node.operator} this type of values")
+            if type(child) == NumberRuntimeValue:
+                return NumberRuntimeValue(child.value)
+            elif type(child) == BoolRuntimeValue:
+                return BoolRuntimeValue(1 if child.value else 0)
+            elif type(child) == StringRuntimeValue:
+                raise SSException(f"SSRuntime: Cannot use operator '{node.operator}' with this types of values")
         elif node.operator == "-":
-            if child.type == ValueTypes.Number:
-                r = NumberRuntimeValue()
-                r.setValue(child.value*(-1))
-                return r
-            elif child.type == ValueTypes.Bool:
-                r = BoolRuntimeValue()
-                r.setValue(-1 if child.value else 0)
-                return r
-            elif child.type == ValueTypes.String:
-                raise SSException(f"SSRuntime: Cant {node.operator} this type of values")
+            if type(child) == NumberRuntimeValue:
+                return NumberRuntimeValue(child.value*(-1))
+            elif type(child) == BoolRuntimeValue:
+                return BoolRuntimeValue(-1 if child.value else 0)
+            elif type(child) == StringRuntimeValue:
+                raise SSException(f"SSRuntime: Cannot use operator '{node.operator}' with this types of values")

@@ -82,27 +82,27 @@ class ArrayNode(Node):
     
 class ArrayReferenceNode(Node):
     def __init__(self):
-        self.identifier: str = None
+        self.array: Node = None
         self.index = None
 
-    def setIdentifier(self, identifier: str):
-        self.identifier = identifier
+    def setArray(self, array: str):
+        self.array = array
     
     def setIndex(self, index: Node):
         self.index = index
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier}[{self.index}]"
+        ret = f"{self.array}[{self.index}]"
         return ret
     
 class ArrayElementOverrideNode(Node):
     def __init__(self):
-        self.identifier: str = None
+        self.array: Node = None
         self.index = None
         self.child = None
 
-    def setIdentifier(self, identifier: str):
-        self.identifier = identifier
+    def setArray(self, array: str):
+        self.array = array
     
     def setIndex(self, index: Node):
         self.index = index
@@ -111,5 +111,5 @@ class ArrayElementOverrideNode(Node):
         self.child = child
 
     def __repr__(self) -> str:
-        ret = f"{self.identifier}[{self.index}] = {self.child}"
+        ret = f"{self.array}[{self.index}] = {self.child}"
         return ret
