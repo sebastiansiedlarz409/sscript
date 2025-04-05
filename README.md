@@ -1,6 +1,6 @@
-# SScript - programming language written for fun
+## SScript - programming language written for fun
 
-## Supported stuff:
+### Things that I think work :P:
 * variables (let) and constant (const)
 * basic arithmetic operations (+-/*%) and some binary operations (|&^<<>>)
 * logic operations (eq, neq, gr, ge, ls, le)
@@ -13,7 +13,7 @@
 * arrays declaration, array element read and override
 * object oriented programming (struct and implementation syntax)
 
-## Basic types
+### Basic types
 
 ```
 //source.ss
@@ -22,7 +22,6 @@ let b = "B"
 let c = "E"
 let d = true
 let e = 99
-
 return c + b + a + d + e
 
 //output
@@ -31,7 +30,7 @@ EBAtrue99 //as exit code
 
 ```
 
-## Loops
+### Loops
 
 ```
 //source.ss
@@ -46,7 +45,7 @@ while(i gr 0){
     i = i - 1
 }
 
-for(let j = 0;j le 10;j++){
+for(let j = 0;j le 4;j++){
     logln(j)
 }
 
@@ -55,16 +54,9 @@ for(let j = 0;j le 10;j++){
 1
 2
 3
-4
-5
-6
-7
-8
-9
-10
 ```
 
-## Conditional instructions
+### Conditional instructions
 
 ```
 //source.ss
@@ -89,7 +81,7 @@ logln(c)
 20
 ```
 
-## Functions
+### Functions
 
 ```
 //source.ss
@@ -109,8 +101,7 @@ logln(pow(2, 9))
 512
 ```
 
-## Arrays
-
+### Arrays
 
 ```
 //source.ss
@@ -125,8 +116,7 @@ logln(c)
 3
 ```
 
-## Object Oriented Programming
-
+### Object Oriented Programming
 
 ```
 //source.ss
